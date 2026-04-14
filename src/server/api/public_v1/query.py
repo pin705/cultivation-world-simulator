@@ -30,6 +30,7 @@ def create_public_query_router(
     build_detail: Callable[..., dict],
     build_deceased_list: Callable[[], dict],
     build_recap: Callable[[str], dict],  # NEW: recap query
+    build_sect_dashboard: Callable[[str], dict],  # NEW: sect dashboard
     resolve_viewer_id: Callable[[Request, str | None], str | None] | None = None,
 ) -> APIRouter:
     router = APIRouter()
@@ -156,5 +157,16 @@ def create_public_query_router(
         if not resolved_viewer_id:
             return ok_response({"error": "viewer_id is required"})
         return ok_response(build_recap(resolved_viewer_id))
+
+    # NEW: Sect dashboard endpoint
+    @router.get("/api/v1/query/sect/dashboard")
+    def get_sect_dashboard_v1(request: Request, viewer_id: str | None = Query(default=None)):
+        resolved_viewer_id = _resolve_request_viewer_id(request, viewer_id)
+        if not resolved_viewer_id:
+            return ok_response({"error": "viewer_id is required"})
+        try:
+            return ok_response(build_sect_dashboard(resolved_viewer_id))
+        except ValueError as e:
+            return ok_response({"error": str(e)})
 
     return router

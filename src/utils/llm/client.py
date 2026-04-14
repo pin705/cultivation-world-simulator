@@ -205,17 +205,19 @@ async def call_llm_with_task_name(
     task_name: str,
     template_path: Path | str,
     infos: dict,
-    max_retries: int | None = None
+    max_retries: int | None = None,
+    budget_tracker=None,  # NEW: Optional AIBudgetTracker
 ) -> dict:
     """
     根据任务名称自动选择 LLM 模式并调用
-    
+
     Args:
         task_name: 任务名称，用于在 config.yml 中查找对应的模式
         template_path: 模板路径
         infos: 模板参数
         max_retries: 最大重试次数
-        
+        budget_tracker: Optional AIBudgetTracker for per-world budget enforcement
+
     Returns:
         dict: LLM 返回的 JSON 数据
     """
@@ -237,18 +239,52 @@ async def call_llm_with_task_name(
             duration=0.0,
             additional_info=additional_info,
         )
+        # Record fallback in budget tracker if provided
+        if budget_tracker is not None:
+            budget_tracker.record_fallback(task_name)
         return {}
+
+    # NEW: Check budget before making LLM call
+    if budget_tracker is not None:
+        allowed, budget_reason = budget_tracker.should_allow_llm_call()
+        if not allowed:
+            log_llm_call(
+                model_name="budget_exhausted",
+                prompt="",
+                response="{}",
+                duration=0.0,
+                additional_info={**additional_info, "budget_reason": budget_reason},
+            )
+            budget_tracker.record_fallback(task_name)
+            return {}
+        additional_info["budget_status"] = budget_reason
 
     mode = get_task_mode(task_name)
     additional_info["task_mode"] = mode.value
 
-    return await call_llm_with_template(
+    result = await call_llm_with_template(
         template_path,
         infos,
         mode,
         max_retries,
         additional_info=additional_info,
     )
+
+    # NEW: Record usage if we got a result (rough estimate based on char count)
+    if budget_tracker is not None and result:
+        prompt_str = str(infos.get("prompt", ""))
+        response_str = str(result)
+        # Rough estimate: 1 token ≈ 4 chars for English, ~1.5 for Chinese
+        avg_chars_per_token = 2.0
+        input_tokens = int(len(prompt_str) / avg_chars_per_token)
+        output_tokens = int(len(response_str) / avg_chars_per_token)
+        budget_tracker.record_usage(
+            task_name=task_name,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+
+    return result
 
 
 def test_connectivity(mode: LLMMode = LLMMode.NORMAL, config: Optional[LLMConfig] = None) -> tuple[bool, str]:

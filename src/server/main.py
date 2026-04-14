@@ -81,6 +81,8 @@ from src.server.services.game_queries import (
 from src.server.services.event_control import cleanup_events as cleanup_events_command
 from src.server.recap_query import build_recap_query
 from src.server.recap_commands import handle_acknowledge_recap, handle_spend_action_point
+from src.server.services.sect_dashboard import build_sect_dashboard
+from src.server.services.disciple_control import fund_disciple_training, set_sect_priority
 from src.server.api.public_v1 import (
     create_public_auth_router,
     create_public_command_router,
@@ -644,6 +646,53 @@ async def run_spend_action_point(req) -> dict:
 
 
 
+def build_public_sect_dashboard(viewer_id: str) -> dict:
+    """Build sect dashboard query response for the given viewer."""
+    from src.server.services.sect_dashboard import build_sect_dashboard as _build_dashboard
+    
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    
+    world = runtime["world"]
+    try:
+        return _build_dashboard(world, viewer_id)
+    except ValueError as e:
+        return {"error": str(e)}
+
+
+async def run_fund_disciple(req) -> dict:
+    """Handle disciple funding command."""
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    
+    world = runtime["world"]
+    viewer_id = getattr(req, "viewer_id", None)
+    funding_type = getattr(req, "funding_type", "pills")
+    
+    try:
+        return fund_disciple_training(world, viewer_id=viewer_id, funding_type=funding_type)
+    except Exception as e:
+        return {"error": str(e)}
+
+
+async def run_set_sect_priority(req) -> dict:
+    """Handle sect priority setting command."""
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    
+    world = runtime["world"]
+    viewer_id = getattr(req, "viewer_id", None)
+    priority = getattr(req, "priority", "cultivation")
+    
+    try:
+        return set_sect_priority(world, viewer_id=viewer_id, priority=priority)
+    except Exception as e:
+        return {"error": str(e)}
+
+
 def resolve_request_viewer_id(request, explicit_viewer_id: str | None = None) -> str | None:
     return resolve_viewer_id_from_request(
         request=request,
@@ -696,6 +745,7 @@ configure_routes_and_mounts(
     build_detail=build_public_detail,
     build_deceased_list=build_public_deceased_list,
     build_recap=build_public_recap,  # NEW: recap query
+    build_sect_dashboard=build_public_sect_dashboard,  # NEW: sect dashboard
     create_public_command_router=create_public_command_router,
     resolve_viewer_id=resolve_request_viewer_id,
     run_start_game=run_start_game,
@@ -743,6 +793,8 @@ configure_routes_and_mounts(
     run_load_game=run_load_game,
     run_acknowledge_recap=run_acknowledge_recap,  # NEW: recap acknowledgment
     run_spend_action_point=run_spend_action_point,  # NEW: action point spending
+    run_fund_disciple=run_fund_disciple,  # NEW: disciple funding
+    run_set_sect_priority=run_set_sect_priority,  # NEW: sect priority
     assets_path=ASSETS_PATH,
     web_dist_path=WEB_DIST_PATH,
     is_dev_mode=IS_DEV_MODE,

@@ -234,6 +234,16 @@ class SpendActionPointRequest(BaseModel):
     viewer_id: Optional[str] = None
 
 
+class FundDiscipleRequest(BaseModel):
+    funding_type: str = "pills"  # pills/manuals/weapons/closed_door
+    viewer_id: Optional[str] = None
+
+
+class SetSectPriorityRequest(BaseModel):
+    priority: str = "cultivation"  # cultivation/expansion/diplomacy/commerce/defense
+    viewer_id: Optional[str] = None
+
+
 def create_public_command_router(
     *,
     run_start_game: Callable[[BaseModel], object],
@@ -281,6 +291,8 @@ def create_public_command_router(
     run_load_game: Callable[..., object],
     run_acknowledge_recap: Callable[[BaseModel], object],  # NEW: recap acknowledgment
     run_spend_action_point: Callable[[BaseModel], object],  # NEW: action point spending
+    run_fund_disciple: Callable[[BaseModel], object],  # NEW: disciple funding
+    run_set_sect_priority: Callable[[BaseModel], object],  # NEW: sect priority
     resolve_viewer_id: Callable[[Request, str | None], str | None] | None = None,
 ) -> APIRouter:
     router = APIRouter()
@@ -607,5 +619,23 @@ def create_public_command_router(
             return ok_response({"error": "viewer_id is required"})
         payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
         return ok_response(await run_spend_action_point(payload))
+
+    # NEW: Disciple funding endpoint
+    @router.post("/api/v1/command/disciple/fund")
+    async def fund_disciple_v1(request: Request, req: FundDiscipleRequest):
+        resolved_viewer_id = _resolve_request_viewer_id(request, req.viewer_id)
+        if not resolved_viewer_id:
+            return ok_response({"error": "viewer_id is required"})
+        payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
+        return ok_response(await run_fund_disciple(payload))
+
+    # NEW: Sect priority endpoint
+    @router.post("/api/v1/command/sect/set-priority")
+    async def set_sect_priority_v1(request: Request, req: SetSectPriorityRequest):
+        resolved_viewer_id = _resolve_request_viewer_id(request, req.viewer_id)
+        if not resolved_viewer_id:
+            return ok_response({"error": "viewer_id is required"})
+        payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
+        return ok_response(await run_set_sect_priority(payload))
 
     return router

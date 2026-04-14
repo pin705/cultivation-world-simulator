@@ -12,7 +12,10 @@
       "Bash(npm install *)",
       "Bash(npm run *)",
       "Bash(rm *)",
-      "Bash(sed *)"
+      "Bash(sed *)",
+      "Bash(pytest *)",
+      "Bash(.venv/bin/pytest *)",
+      "Bash(.venv/bin/pip *)"
     ]
   },
   "$version": 3
