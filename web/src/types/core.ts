@@ -69,7 +69,7 @@ export interface AvatarDetail extends EntityBase {
     reason: string;
     location: [number, number];
   };
-  
+
   // 修行状态
   realm: string;
   level: number;
@@ -83,20 +83,20 @@ export interface AvatarDetail extends EntityBase {
   sect_contribution: number;
   base_battle_strength: number;
   ranking?: { type: string; rank: number };
-  
+
   // 情绪
   emotion: {
     name: string;
     emoji: string;
     desc: string;
   };
-  
+
   // 属性与资质
   alignment: string;
   alignment_detail?: EffectEntity;
   root: string;
   root_detail?: EffectEntity;
-  
+
   // 思维与目标
   thinking: string;
   short_term_objective: string;
@@ -134,7 +134,7 @@ export interface AvatarDetail extends EntityBase {
   player_seed_can_appoint?: boolean;
   player_seed_active?: boolean;
   backstory?: string | null;
-  
+
   // 关联实体
   sect?: SectInfo;
   orthodoxy?: EffectEntity; // 新增道统字段
@@ -144,11 +144,11 @@ export interface AvatarDetail extends EntityBase {
   weapon?: EffectEntity & { proficiency: string };
   auxiliary?: EffectEntity;
   spirit_animal?: EffectEntity;
-  
+
   // 列表数据
   materials: Material[];
   relations: RelationInfo[];
-  
+
   // 附加信息
   current_effects?: string;
   "当前效果"?: string;
@@ -168,6 +168,51 @@ export interface AvatarDetail extends EntityBase {
     sect_alignment?: string;
     sect_orthodoxy?: string;
   } | null;
+
+  // Cultivation Advancement
+  foundation_quality?: {
+    quality: 'perfect' | 'good' | 'flawed';
+    bonus_exp_multiplier: number;
+    bonus_breakthrough_rate: number;
+    bonus_lifespan: number;
+  };
+  dao_heart?: {
+    state: 'stable' | 'fluctuating' | 'unstable' | 'demonic';
+    stability: number;
+    demon_seeds: number;
+  };
+  cultivation_streak?: {
+    current_streak: number;
+    best_streak: number;
+    streak_bonus_multiplier: number;
+  };
+  epiphany_count?: number;
+
+  // Thrill System
+  secret_realms_explored?: number;
+  heart_demon_encounters?: number;
+  tribulations_survived?: number;
+  forced_breakthroughs?: number;
+
+  // Competition System
+  arena_rank?: number;
+  arena_rating?: number;
+  rivalries?: Record<string, number>;
+  tournament_history?: Array<{
+    tournament: string;
+    bracket: string;
+    placement: string;
+    month: number;
+  }>;
+}
+
+export interface SecretRealm {
+  name: string;
+  danger_level: number;
+  reward_multiplier: number;
+  death_risk: number;
+  required_realm?: number;
+  possible_rewards: string[];
 }
 
 export interface SectInfo extends EffectEntity {
@@ -319,18 +364,18 @@ export interface RegionDetail extends EntityBase {
   sect_id?: number;
   population?: number;
   population_capacity?: number;
-  
-  essence?: { 
-    type: string; 
-    density: number; 
+
+  essence?: {
+    type: string;
+    density: number;
   };
-  
+
   // 洞府主人（修炼区域特有）
   host?: {
     id: string;
     name: string;
   } | null;
-  
+
   animals: EffectEntity[];
   plants: EffectEntity[];
   lodes: EffectEntity[];
@@ -459,17 +504,17 @@ export interface GameEvent {
   year: number;
   month: number;
   // 排序权重
-  timestamp: number; 
+  timestamp: number;
   relatedAvatarIds: string[];
   relatedSects?: number[];
   isMajor: boolean;
   isStory: boolean;
   renderKey?: string;
   renderParams?: Record<string, string | number | boolean | null>;
-  
+
   // 真实创建时间 (用于精确排序)
   createdAt?: number;
 
   // 运行时辅助字段
-  _seq?: number; 
+  _seq?: number;
 }

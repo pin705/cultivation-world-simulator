@@ -183,6 +183,11 @@ def configure_routes_and_mounts(
     run_spend_action_point,  # NEW: action point spending
     run_fund_disciple,  # NEW: disciple funding
     run_set_sect_priority,  # NEW: sect priority
+    run_explore_secret_realm,
+    run_force_breakthrough,
+    run_intervene_near_death,
+    run_arena_challenge,
+    run_escalate_sect_rivalry,
     assets_path: str,
     web_dist_path: str,
     is_dev_mode: bool,
@@ -298,6 +303,11 @@ def configure_routes_and_mounts(
             run_spend_action_point=run_spend_action_point,  # NEW: action point spending
             run_fund_disciple=run_fund_disciple,  # NEW: disciple funding
             run_set_sect_priority=run_set_sect_priority,  # NEW: sect priority
+            run_explore_secret_realm=run_explore_secret_realm,
+            run_force_breakthrough=run_force_breakthrough,
+            run_intervene_near_death=run_intervene_near_death,
+            run_arena_challenge=run_arena_challenge,
+            run_escalate_sect_rivalry=run_escalate_sect_rivalry,
             resolve_viewer_id=resolve_viewer_id,
         )
     )

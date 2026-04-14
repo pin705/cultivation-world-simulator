@@ -88,12 +88,12 @@ const objectiveCooldownText = computed(() => (
     ? t('game.info_panel.avatar.control_unclaimed')
     : !isPlayerOwnedAvatar.value
       ? t('game.info_panel.avatar.control_foreign_sect', {
-          sect: ownedSectName.value || t('game.info_panel.avatar.stats.rogue'),
-        })
+        sect: ownedSectName.value || t('game.info_panel.avatar.stats.rogue'),
+      })
       : !isPlayerMainAvatar.value
         ? t('game.info_panel.avatar.objective_requires_main_avatar', {
-            name: mainAvatarName.value || t('common.none'),
-          })
+          name: mainAvatarName.value || t('common.none'),
+        })
         : objectiveRemainingCooldown.value <= 0
           ? t('game.info_panel.avatar.objective_ready')
           : t('game.info_panel.avatar.objective_cooldown', { months: objectiveRemainingCooldown.value })
@@ -117,8 +117,8 @@ const supportStatusText = computed(() => (
     ? t('game.info_panel.avatar.control_unclaimed')
     : !isPlayerOwnedAvatar.value
       ? t('game.info_panel.avatar.control_foreign_sect', {
-          sect: ownedSectName.value || t('game.info_panel.avatar.stats.rogue'),
-        })
+        sect: ownedSectName.value || t('game.info_panel.avatar.stats.rogue'),
+      })
       : supportRemainingCooldown.value <= 0
         ? t('game.info_panel.avatar.support_ready')
         : t('game.info_panel.avatar.support_cooldown', { months: supportRemainingCooldown.value })
@@ -320,7 +320,7 @@ const formattedRanking = computed(() => {
   if (!props.data.ranking) return null;
   const { type, rank } = props.data.ranking;
   const listName = t(`game.ranking.${type}`).split(' ')[0];
-  
+
   const isZh = locale.value.startsWith('zh');
   if (isZh) {
     return `${listName}第${ZH_NUMBERS[rank] || rank}`;
@@ -330,6 +330,44 @@ const formattedRanking = computed(() => {
     return `${listName} Rank ${rank}`;
   }
 });
+
+function getFoundationQualityType(quality: string): string {
+  const types: Record<string, string> = {
+    'perfect': 'success',
+    'good': 'primary',
+    'flawed': 'error',
+  };
+  return types[quality] || 'default';
+}
+
+function getFoundationQualityName(quality: string): string {
+  const names: Record<string, string> = {
+    'perfect': '完美道基',
+    'good': '优良道基',
+    'flawed': '瑕疵道基',
+  };
+  return names[quality] || quality;
+}
+
+function getDaoHeartType(state: string): string {
+  const types: Record<string, string> = {
+    'stable': 'success',
+    'fluctuating': 'warning',
+    'unstable': 'error',
+    'demonic': 'error',
+  };
+  return types[state] || 'default';
+}
+
+function getDaoHeartName(state: string): string {
+  const names: Record<string, string> = {
+    'stable': '道心稳固',
+    'fluctuating': '道心动摇',
+    'unstable': '道心不稳',
+    'demonic': '心魔缠身',
+  };
+  return names[state] || state;
+}
 
 function formatGenderLabel(rawGender: string): string {
   if (rawGender === 'Male' || rawGender === 'male') return t('ui.create_avatar.gender_labels.male');
@@ -416,30 +454,30 @@ function createMortalRelationPlaceholder(labelKey: 'father_short' | 'mother_shor
 
 const groupedRelations = computed(() => {
   const rels = props.data.relations || [];
-  
+
   const existingParents = rels.filter(r => r.blood_relation === BloodRelationType.TO_ME_IS_PARENT);
   const displayParents = [...existingParents];
-  
+
   // 补全凡人父母占位符
   // Check genders of existing parents
   const hasFather = existingParents.some(p => p.target_gender === 'male');
   const hasMother = existingParents.some(p => p.target_gender === 'female');
-  
+
   // 如果现有的不足2个，尝试补全
   if (existingParents.length < 2) {
     if (!hasFather) {
       displayParents.unshift(createMortalRelationPlaceholder('father_short'));
     }
-    
+
     if (!hasMother) {
       displayParents.push(createMortalRelationPlaceholder('mother_short'));
     }
   }
-  
+
   const children = rels.filter(r =>
     r.blood_relation === BloodRelationType.TO_ME_IS_CHILD && (r.is_mortal || hasVisibleRelationMeta(r))
   );
-  
+
   const bloodOthers = rels.filter(r =>
     r.blood_relation &&
     r.blood_relation !== BloodRelationType.TO_ME_IS_PARENT &&
@@ -447,7 +485,7 @@ const groupedRelations = computed(() => {
     hasVisibleRelationMeta(r)
   );
 
-  const others = rels.filter(r => 
+  const others = rels.filter(r =>
     !r.blood_relation && hasVisibleRelationMeta(r)
   );
 
@@ -576,56 +614,48 @@ async function handleAppointSeed() {
 
 <template>
   <div class="avatar-detail">
-    <SecondaryPopup 
-      :item="secondaryItem" 
-      @close="secondaryItem = null" 
-    />
-    <AvatarAdjustPanel
-      :avatar-id="data.id"
-      :category="adjustCategory"
+    <SecondaryPopup :item="secondaryItem" @close="secondaryItem = null" />
+    <AvatarAdjustPanel :avatar-id="data.id" :category="adjustCategory"
       :current-item="adjustCategory === 'technique' ? data.technique ?? null : adjustCategory === 'weapon' ? data.weapon ?? null : adjustCategory === 'auxiliary' ? data.auxiliary ?? null : adjustCategory === 'goldfinger' ? data.goldfinger ?? null : null"
-      :current-personas="adjustCategory === 'personas' ? data.personas : []"
-      @close="closeAdjustPanel"
-      @updated="uiStore.refreshDetail()"
-    />
-    <AvatarPortraitPanel
-      :avatar-id="data.id"
-      :gender="data.gender"
-      :current-pic-id="data.pic_id"
-      :visible="showPortraitPanel"
-      @close="showPortraitPanel = false"
-      @updated="uiStore.refreshDetail()"
-    />
+      :current-personas="adjustCategory === 'personas' ? data.personas : []" @close="closeAdjustPanel"
+      @updated="uiStore.refreshDetail()" />
+    <AvatarPortraitPanel :avatar-id="data.id" :gender="data.gender" :current-pic-id="data.pic_id"
+      :visible="showPortraitPanel" @close="showPortraitPanel = false" @updated="uiStore.refreshDetail()" />
 
     <!-- Actions Bar -->
     <div class="actions-bar" v-if="!data.is_dead">
-      <button class="btn primary" :disabled="!canUpdateObjective" @click="openObjectiveModal">{{ t('game.info_panel.avatar.set_objective') }}</button>
-      <button class="btn secondary" :disabled="!canSetMainAvatar" @click="handleSetMainAvatar">{{ t('game.info_panel.avatar.set_main_avatar') }}</button>
-      <button class="btn secondary" :disabled="!canGrantSupport" @click="handleGrantSupport">{{ t('game.info_panel.avatar.grant_support') }}</button>
-      <button class="btn secondary" :disabled="!canAppointSeed" @click="handleAppointSeed">{{ t('game.info_panel.avatar.appoint_seed') }}</button>
-      <button class="btn" :disabled="!canClearObjective" @click="handleClearObjective">{{ t('game.info_panel.avatar.clear_objective') }}</button>
+      <button class="btn primary" :disabled="!canUpdateObjective" @click="openObjectiveModal">{{
+        t('game.info_panel.avatar.set_objective') }}</button>
+      <button class="btn secondary" :disabled="!canSetMainAvatar" @click="handleSetMainAvatar">{{
+        t('game.info_panel.avatar.set_main_avatar') }}</button>
+      <button class="btn secondary" :disabled="!canGrantSupport" @click="handleGrantSupport">{{
+        t('game.info_panel.avatar.grant_support') }}</button>
+      <button class="btn secondary" :disabled="!canAppointSeed" @click="handleAppointSeed">{{
+        t('game.info_panel.avatar.appoint_seed') }}</button>
+      <button class="btn" :disabled="!canClearObjective" @click="handleClearObjective">{{
+        t('game.info_panel.avatar.clear_objective') }}</button>
     </div>
     <div class="dead-banner" v-else>
       <span class="inline-icon" :style="{ '--icon-url': `url(${triangleAlertIcon})` }" aria-hidden="true"></span>
-      {{ t('game.info_panel.avatar.dead_with_reason', { reason: data.death_info?.reason || t('game.info_panel.avatar.unknown_reason') }) }}
+      {{ t('game.info_panel.avatar.dead_with_reason', {
+        reason: data.death_info?.reason ||
+          t('game.info_panel.avatar.unknown_reason')
+      }) }}
     </div>
 
     <div class="content-scroll">
       <div class="avatar-header">
-        <button
-          class="portrait-button"
-          type="button"
-          :title="t('game.info_panel.avatar.portrait.entry')"
-          :aria-label="t('game.info_panel.avatar.portrait.entry')"
-          @click="showPortraitPanel = true"
-        >
+        <button class="portrait-button" type="button" :title="t('game.info_panel.avatar.portrait.entry')"
+          :aria-label="t('game.info_panel.avatar.portrait.entry')" @click="showPortraitPanel = true">
           <div class="portrait-shell">
-            <img v-if="portraitUrl" class="portrait-image" :src="portraitUrl" :alt="t('game.info_panel.avatar.portrait.preview_alt')" />
+            <img v-if="portraitUrl" class="portrait-image" :src="portraitUrl"
+              :alt="t('game.info_panel.avatar.portrait.preview_alt')" />
             <div v-else class="portrait-fallback">{{ data.name.slice(0, 1) }}</div>
             <div class="portrait-overlay">
               <span class="portrait-overlay-text">{{ t('game.info_panel.avatar.portrait.entry') }}</span>
               <span class="portrait-edit-badge">
-                <span class="portrait-edit-icon" :style="{ '--icon-url': `url(${pencilLineIcon})` }" aria-hidden="true"></span>
+                <span class="portrait-edit-icon" :style="{ '--icon-url': `url(${pencilLineIcon})` }"
+                  aria-hidden="true"></span>
               </span>
             </div>
           </div>
@@ -670,53 +700,101 @@ async function handleAppointSeed() {
       <div class="stats-grid">
         <StatItem :label="t('game.info_panel.avatar.stats.realm')" :value="formatCultivationText(data.realm, t)" />
         <StatItem :label="t('game.info_panel.avatar.stats.age')" :value="`${data.age} / ${data.lifespan}`" />
-        <StatItem 
-          v-if="data.cultivation_start_age !== undefined"
-          :label="t('game.info_panel.avatar.stats.awakened_age')" 
-          :value="`${data.cultivation_start_age}`" 
-        />
+        <StatItem v-if="data.cultivation_start_age !== undefined"
+          :label="t('game.info_panel.avatar.stats.awakened_age')" :value="`${data.cultivation_start_age}`" />
         <StatItem :label="t('game.info_panel.avatar.stats.origin')" :value="data.origin" />
-        
+
         <StatItem :label="t('game.info_panel.avatar.stats.hp')" :value="formatHp(data.hp.cur, data.hp.max)" />
         <StatItem :label="t('game.info_panel.avatar.stats.gender')" :value="formatGenderLabel(data.gender)" />
-        
-        <StatItem 
-          :label="t('game.info_panel.avatar.stats.alignment')" 
-          :value="data.alignment" 
-          :on-click="() => showDetail(data.alignment_detail)"
-        />
-        <StatItem 
-          :label="t('game.info_panel.avatar.stats.sect')" 
-          :value="data.sect?.name || t('game.info_panel.avatar.stats.rogue')" 
-          :sub-value="data.sect?.rank"
-          :on-click="data.sect ? () => jumpToSect(data.sect!.id) : (data.orthodoxy ? () => showDetail(data.orthodoxy) : undefined)"
-        />
-        <StatItem
-          :label="t('game.info_panel.avatar.stats.official_rank')"
+
+        <StatItem :label="t('game.info_panel.avatar.stats.alignment')" :value="data.alignment"
+          :on-click="() => showDetail(data.alignment_detail)" />
+        <StatItem :label="t('game.info_panel.avatar.stats.sect')"
+          :value="data.sect?.name || t('game.info_panel.avatar.stats.rogue')" :sub-value="data.sect?.rank"
+          :on-click="data.sect ? () => jumpToSect(data.sect!.id) : (data.orthodoxy ? () => showDetail(data.orthodoxy) : undefined)" />
+        <StatItem :label="t('game.info_panel.avatar.stats.official_rank')"
           :value="data.official_rank || t('common.none')"
-          :sub-value="data.court_reputation !== undefined ? `${t('game.info_panel.avatar.stats.court_reputation')} ${data.court_reputation}` : undefined"
-        />
-        
-        <StatItem 
-          :label="t('game.info_panel.avatar.stats.root')" 
-          :value="data.root" 
-          :on-click="() => showDetail(data.root_detail)"
-        />
+          :sub-value="data.court_reputation !== undefined ? `${t('game.info_panel.avatar.stats.court_reputation')} ${data.court_reputation}` : undefined" />
+
+        <StatItem :label="t('game.info_panel.avatar.stats.root')" :value="data.root"
+          :on-click="() => showDetail(data.root_detail)" />
         <StatItem :label="t('game.info_panel.avatar.stats.luck')" :value="data.luck" />
         <StatItem :label="t('game.info_panel.avatar.stats.magic_stone')" :value="data.magic_stone" />
         <StatItem :label="t('game.info_panel.avatar.stats.sect_contribution')" :value="data.sect_contribution ?? 0" />
         <StatItem :label="t('game.info_panel.avatar.stats.appearance')" :value="data.appearance" />
         <StatItem :label="t('game.info_panel.avatar.stats.battle_strength')" :value="data.base_battle_strength" />
-        <StatItem 
-          v-if="formattedRanking"
-          :label="t('game.info_panel.avatar.stats.ranking')" 
-          :value="formattedRanking" 
-        />
-        <StatItem 
-          :label="t('game.info_panel.avatar.stats.emotion')" 
-          :value="data.emotion.emoji" 
-          :sub-value="data.emotion.name"
-        />
+        <StatItem v-if="formattedRanking" :label="t('game.info_panel.avatar.stats.ranking')"
+          :value="formattedRanking" />
+        <StatItem :label="t('game.info_panel.avatar.stats.emotion')" :value="data.emotion.emoji"
+          :sub-value="data.emotion.name" />
+      </div>
+
+      <!-- Cultivation Advancement Section -->
+      <div v-if="data.foundation_quality || data.dao_heart || data.cultivation_streak"
+        class="section cultivation-section">
+        <div class="section-title">
+          <span class="section-title-icon" :style="{ '--icon-url': `url(${zapIcon})` }" aria-hidden="true"></span>
+          修炼进度
+        </div>
+
+        <div v-if="data.foundation_quality" class="stat-row">
+          <span class="stat-label">道基品质:</span>
+          <m-tag :type="getFoundationQualityType(data.foundation_quality.quality)" size="small">
+            {{ getFoundationQualityName(data.foundation_quality.quality) }}
+          </m-tag>
+        </div>
+
+        <div v-if="data.dao_heart" class="stat-row">
+          <span class="stat-label">道心状态:</span>
+          <m-tag :type="getDaoHeartType(data.dao_heart.state)" size="small">
+            {{ getDaoHeartName(data.dao_heart.state) }} ({{ data.dao_heart.stability.toFixed(0) }}%)
+          </m-tag>
+        </div>
+
+        <div v-if="data.cultivation_streak" class="stat-row">
+          <span class="stat-label">连续修炼:</span>
+          <span class="stat-value">{{ data.cultivation_streak.current_streak }} months (+{{
+            ((data.cultivation_streak.streak_bonus_multiplier - 1) * 100).toFixed(0) }}% exp)</span>
+        </div>
+      </div>
+
+      <!-- Thrill System Section -->
+      <div v-if="data.secret_realms_explored || data.heart_demon_encounters || data.tribulations_survived"
+        class="section thrill-section">
+        <div class="section-title">
+          <span class="section-title-icon" :style="{ '--icon-url': `url(${swordsIcon})` }" aria-hidden="true"></span>
+          历练记录
+        </div>
+
+        <div class="thrill-stats">
+          <div v-if="data.secret_realms_explored" class="thrill-stat">
+            <span class="stat-label">秘境探索:</span>
+            <span class="stat-value">{{ data.secret_realms_explored }}</span>
+          </div>
+          <div v-if="data.heart_demon_encounters" class="thrill-stat">
+            <span class="stat-label">心魔遭遇:</span>
+            <span class="stat-value">{{ data.heart_demon_encounters }}</span>
+          </div>
+          <div v-if="data.tribulations_survived" class="thrill-stat">
+            <span class="stat-label">天劫渡过:</span>
+            <span class="stat-value">{{ data.tribulations_survived }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Competition Section -->
+      <div v-if="data.arena_rating" class="section competition-section">
+        <div class="section-title">
+          <span class="section-title-icon" :style="{ '--icon-url': `url(${swordsIcon})` }" aria-hidden="true"></span>
+          竞技排名
+        </div>
+
+        <div class="competition-stats">
+          <div class="competition-stat">
+            <span class="stat-label">竞技场评分:</span>
+            <span class="stat-value highlight">{{ data.arena_rating }}</span>
+          </div>
+        </div>
       </div>
 
       <!-- Thinking -->
@@ -732,10 +810,12 @@ async function handleAppointSeed() {
       <div class="section">
         <div class="section-header">
           <div class="section-title">
-            <span class="section-title-icon" :style="{ '--icon-url': `url(${messageCircleIcon})` }" aria-hidden="true"></span>
+            <span class="section-title-icon" :style="{ '--icon-url': `url(${messageCircleIcon})` }"
+              aria-hidden="true"></span>
             {{ t('game.info_panel.avatar.sections.traits') }}
           </div>
-          <button class="adjust-btn" :title="t('game.info_panel.avatar.adjust.entry')" :aria-label="t('game.info_panel.avatar.adjust.entry')" @click="openAdjustPanel('personas')">
+          <button class="adjust-btn" :title="t('game.info_panel.avatar.adjust.entry')"
+            :aria-label="t('game.info_panel.avatar.adjust.entry')" @click="openAdjustPanel('personas')">
             <span class="adjust-icon" :style="{ '--icon-url': `url(${pencilLineIcon})` }" aria-hidden="true"></span>
           </button>
         </div>
@@ -746,41 +826,24 @@ async function handleAppointSeed() {
       <!-- Equipment & Sect -->
       <div class="section">
         <div class="equipment-slots plain">
-          <div
-            v-for="slot in equipmentSlots"
-            :key="slot.category"
-            class="equipment-slot-block"
-          >
+          <div v-for="slot in equipmentSlots" :key="slot.category" class="equipment-slot-block">
             <div class="section-title subsection-title">
               <span class="section-title-icon" :style="{ '--icon-url': `url(${slot.icon})` }" aria-hidden="true"></span>
               {{ slot.label }}
             </div>
             <div class="adjustable-row">
-              <EntityRow
-                v-if="slot.item"
-                :item="slot.item"
-                :meta="slot.meta"
-                details-below
-                @click="showDetail(slot.item)"
-              />
+              <EntityRow v-if="slot.item" :item="slot.item" :meta="slot.meta" details-below
+                @click="showDetail(slot.item)" />
               <div v-else class="empty-row slot-empty">{{ t('game.info_panel.avatar.empty_short') }}</div>
-              <button
-                class="adjust-btn inline"
-                :title="t('game.info_panel.avatar.adjust.entry')"
-                :aria-label="t('game.info_panel.avatar.adjust.entry')"
-                @click="openAdjustPanel(slot.category)"
-              >
+              <button class="adjust-btn inline" :title="t('game.info_panel.avatar.adjust.entry')"
+                :aria-label="t('game.info_panel.avatar.adjust.entry')" @click="openAdjustPanel(slot.category)">
                 <span class="adjust-icon" :style="{ '--icon-url': `url(${pencilLineIcon})` }" aria-hidden="true"></span>
               </button>
             </div>
           </div>
         </div>
-         <EntityRow 
-          v-if="data.spirit_animal" 
-          :item="data.spirit_animal" 
-          details-below
-          @click="showDetail(data.spirit_animal)" 
-        />
+        <EntityRow v-if="data.spirit_animal" :item="data.spirit_animal" details-below
+          @click="showDetail(data.spirit_animal)" />
       </div>
 
       <!-- Materials -->
@@ -790,24 +853,19 @@ async function handleAppointSeed() {
           {{ t('game.info_panel.avatar.sections.materials') }}
         </div>
         <div class="list-container">
-          <EntityRow 
-            v-for="item in data.materials"
-            :key="item.name"
-            :item="item"
-            :meta="`x${item.count}`"
-            compact
-            @click="showDetail(item)"
-          />
+          <EntityRow v-for="item in data.materials" :key="item.name" :item="item" :meta="`x${item.count}`" compact
+            @click="showDetail(item)" />
         </div>
       </div>
 
       <!-- Relations (Refactored) -->
       <div class="section" v-if="data.relations?.length || groupedRelations.parents.length">
         <div class="section-title">
-          <span class="section-title-icon" :style="{ '--icon-url': `url(${heartHandshakeIcon})` }" aria-hidden="true"></span>
+          <span class="section-title-icon" :style="{ '--icon-url': `url(${heartHandshakeIcon})` }"
+            aria-hidden="true"></span>
           {{ t('game.info_panel.avatar.sections.relations') }}
         </div>
-        
+
         <div class="list-container">
           <!-- Parents Group -->
           <template v-if="groupedRelations.parents.length">
@@ -819,14 +877,8 @@ async function handleAppointSeed() {
                 <span class="value">{{ t('game.info_panel.avatar.mortal_realm') }}</span>
               </div>
               <!-- Cultivator Parent -->
-              <RelationRow 
-                v-else
-                :name="rel.name"
-                :meta-lines="buildRelationMetaLines(rel)"
-                :sub="formatRelationSub(rel)"
-                :type="rel.relation_type"
-                @click="jumpToAvatar(rel.target_id)"
-              />
+              <RelationRow v-else :name="rel.name" :meta-lines="buildRelationMetaLines(rel)"
+                :sub="formatRelationSub(rel)" :type="rel.relation_type" @click="jumpToAvatar(rel.target_id)" />
             </template>
           </template>
 
@@ -839,40 +891,22 @@ async function handleAppointSeed() {
                 <span class="value">{{ t('game.info_panel.avatar.mortal_realm') }}</span>
               </div>
               <!-- Cultivator Child -->
-              <RelationRow 
-                v-else
-                :name="rel.name"
-                :meta-lines="buildRelationMetaLines(rel)"
-                :sub="formatRelationSub(rel)"
-                :type="rel.relation_type" 
-                @click="jumpToAvatar(rel.target_id)"
-              />
+              <RelationRow v-else :name="rel.name" :meta-lines="buildRelationMetaLines(rel)"
+                :sub="formatRelationSub(rel)" :type="rel.relation_type" @click="jumpToAvatar(rel.target_id)" />
             </template>
           </template>
 
           <template v-if="groupedRelations.bloodOthers.length">
-            <RelationRow 
-              v-for="rel in groupedRelations.bloodOthers"
-              :key="rel.target_id"
-              :name="rel.name"
-              :meta-lines="buildRelationMetaLines(rel)"
-              :sub="formatRelationSub(rel)"
-              :type="rel.relation_type"
-              @click="jumpToAvatar(rel.target_id)"
-            />
+            <RelationRow v-for="rel in groupedRelations.bloodOthers" :key="rel.target_id" :name="rel.name"
+              :meta-lines="buildRelationMetaLines(rel)" :sub="formatRelationSub(rel)" :type="rel.relation_type"
+              @click="jumpToAvatar(rel.target_id)" />
           </template>
 
           <!-- Others Group -->
           <template v-if="groupedRelations.others.length">
-            <RelationRow 
-              v-for="rel in groupedRelations.others"
-              :key="rel.target_id"
-              :name="rel.name"
-              :meta-lines="buildRelationMetaLines(rel)"
-              :sub="formatRelationSub(rel)"
-              :type="rel.relation_type"
-              @click="jumpToAvatar(rel.target_id)"
-            />
+            <RelationRow v-for="rel in groupedRelations.others" :key="rel.target_id" :name="rel.name"
+              :meta-lines="buildRelationMetaLines(rel)" :sub="formatRelationSub(rel)" :type="rel.relation_type"
+              @click="jumpToAvatar(rel.target_id)" />
           </template>
         </div>
       </div>
@@ -884,11 +918,7 @@ async function handleAppointSeed() {
           {{ t('game.info_panel.avatar.sections.current_effects') }}
         </div>
         <div class="effects-list">
-          <div
-            v-for="effect in parsedCurrentEffects"
-            :key="effect.id"
-            class="effect-row"
-          >
+          <div v-for="effect in parsedCurrentEffects" :key="effect.id" class="effect-row">
             <div class="effect-source">{{ effect.source }}</div>
             <div class="effect-content">
               <div v-for="(segment, sIdx) in effect.segments" :key="`${effect.id}-${sIdx}`">
@@ -922,8 +952,10 @@ async function handleAppointSeed() {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 0; /* Ensure flex child scrolling works */
-  position: relative; /* For secondary popup */
+  min-height: 0;
+  /* Ensure flex child scrolling works */
+  position: relative;
+  /* For secondary popup */
 }
 
 .actions-bar {
@@ -999,7 +1031,8 @@ async function handleAppointSeed() {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding-right: 4px; /* Space for scrollbar */
+  padding-right: 4px;
+  /* Space for scrollbar */
 }
 
 .avatar-header {
@@ -1423,6 +1456,77 @@ async function handleAppointSeed() {
   min-width: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+/* Cultivation Advancement Section */
+.cultivation-section .stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.cultivation-section .stat-label {
+  color: #888;
+  white-space: nowrap;
+}
+
+/* Thrill System Section */
+.thrill-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.thrill-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.thrill-stat .stat-label {
+  color: #888;
+}
+
+.thrill-stat .stat-value {
+  color: #aaddff;
+  font-weight: 600;
+}
+
+/* Competition Section */
+.competition-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.competition-stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 193, 7, 0.08);
+  border: 1px solid rgba(255, 193, 7, 0.2);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.competition-stat .stat-label {
+  color: #888;
+}
+
+.competition-stat .stat-value.highlight {
+  color: #ffc107;
+  font-weight: 700;
+  font-size: 16px;
 }
 
 @media (max-width: 420px) {

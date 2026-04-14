@@ -682,13 +682,97 @@ async def run_set_sect_priority(req) -> dict:
     runtime = room_registry.get_runtime()
     if not runtime or not runtime.get("world"):
         return {"error": "Game not started"}
-    
+
     world = runtime["world"]
     viewer_id = getattr(req, "viewer_id", None)
     priority = getattr(req, "priority", "cultivation")
-    
+
     try:
         return set_sect_priority(world, viewer_id=viewer_id, priority=priority)
+    except Exception as e:
+        return {"error": str(e)}
+
+
+async def run_explore_secret_realm(req) -> dict:
+    """Handle secret realm exploration command."""
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    from src.server.services.thrill_control import explore_secret_realm
+    try:
+        return explore_secret_realm(
+            runtime,
+            avatar_id=getattr(req, "avatar_id", ""),
+            realm_index=getattr(req, "realm_index", 0),
+            viewer_id=getattr(req, "viewer_id", None),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+async def run_force_breakthrough(req) -> dict:
+    """Handle forced breakthrough attempt command."""
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    from src.server.services.thrill_control import force_breakthrough_attempt
+    try:
+        return force_breakthrough_attempt(
+            runtime,
+            avatar_id=getattr(req, "avatar_id", ""),
+            viewer_id=getattr(req, "viewer_id", None),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+async def run_intervene_near_death(req) -> dict:
+    """Handle near-death intervention command."""
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    from src.server.services.thrill_control import intervene_near_death
+    try:
+        return intervene_near_death(
+            runtime,
+            avatar_id=getattr(req, "avatar_id", ""),
+            viewer_id=getattr(req, "viewer_id", None),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+async def run_arena_challenge(req) -> dict:
+    """Handle arena challenge command."""
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    from src.server.services.competition_control import challenge_arena
+    try:
+        return challenge_arena(
+            runtime,
+            challenger_id=getattr(req, "challenger_id", ""),
+            defender_id=getattr(req, "defender_id", ""),
+            viewer_id=getattr(req, "viewer_id", None),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+async def run_escalate_sect_rivalry(req) -> dict:
+    """Handle sect rivalry escalation command."""
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    from src.server.services.competition_control import escalate_sect_rivalry
+    try:
+        return escalate_sect_rivalry(
+            runtime,
+            sect_id_a=getattr(req, "sect_id_a", 0),
+            sect_id_b=getattr(req, "sect_id_b", 0),
+            trigger_event=getattr(req, "trigger_event", "player_intervention"),
+            viewer_id=getattr(req, "viewer_id", None),
+        )
     except Exception as e:
         return {"error": str(e)}
 
@@ -795,6 +879,11 @@ configure_routes_and_mounts(
     run_spend_action_point=run_spend_action_point,  # NEW: action point spending
     run_fund_disciple=run_fund_disciple,  # NEW: disciple funding
     run_set_sect_priority=run_set_sect_priority,  # NEW: sect priority
+    run_explore_secret_realm=run_explore_secret_realm,
+    run_force_breakthrough=run_force_breakthrough,
+    run_intervene_near_death=run_intervene_near_death,
+    run_arena_challenge=run_arena_challenge,
+    run_escalate_sect_rivalry=run_escalate_sect_rivalry,
     assets_path=ASSETS_PATH,
     web_dist_path=WEB_DIST_PATH,
     is_dev_mode=IS_DEV_MODE,

@@ -21,6 +21,7 @@ from src.sim.load.avatar_load_mixin import AvatarLoadMixin
 from src.classes.environment.tile import Tile
 from src.classes.environment.region import Region
 from src.systems.cultivation import CultivationProgress
+from src.systems.cultivation_advancement import FoundationQuality, DaoHeart, CultivationStreak
 from src.classes.root import Root
 from src.classes.technique import Technique, get_technique_by_sect
 from src.classes.age import Age
@@ -153,6 +154,25 @@ class Avatar(
     # [新增] 关系开始时间缓存
     # Key: 对方Avatar ID, Value: 开始时的 MonthStamp (int)
     relation_start_dates: dict[str, int] = field(default_factory=dict)
+
+    # Cultivation Advancement System
+    foundation_quality: "FoundationQuality" = field(default_factory=FoundationQuality)
+    dao_heart: "DaoHeart" = field(default_factory=DaoHeart)
+    cultivation_streak: "CultivationStreak" = field(default_factory=CultivationStreak)
+    epiphany_count: int = 0
+    excess_exp_at_bottleneck: int = 0
+
+    # Thrill System
+    secret_realms_explored: list[dict] = field(default_factory=list)
+    heart_demon_encounters: int = 0
+    tribulations_survived: int = 0
+    forced_breakthroughs: int = 0
+
+    # Competition System
+    arena_rank: int = 0
+    arena_rating: int = 1000
+    rivalries: dict[str, int] = field(default_factory=dict)
+    tournament_history: list[dict] = field(default_factory=list)
 
     # 拥有的洞府列表（不参与序列化，通过 load_game 重建）
     owned_regions: List["CultivateRegion"] = field(default_factory=list, init=False)

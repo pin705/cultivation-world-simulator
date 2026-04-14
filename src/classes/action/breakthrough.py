@@ -71,6 +71,30 @@ class Breakthrough(TimedAction):
             if new_realm != old_realm:
                 self._update_hp_on_breakthrough(new_realm)
                 self.avatar.recalc_effects()
+
+            # Determine foundation quality
+            from src.systems.cultivation_advancement import FoundationQuality
+
+            quality = FoundationQuality.determine_quality(
+                exp_at_bottleneck=getattr(self.avatar, 'excess_exp_at_bottleneck', 0),
+                epiphany_count=getattr(self.avatar, 'epiphany_count', 0),
+            )
+            self.avatar.foundation_quality = quality
+
+            # Reset streak
+            if hasattr(self.avatar, 'cultivation_streak'):
+                self.avatar.cultivation_streak.current_streak = 0
+                self.avatar.cultivation_streak.streak_bonus_multiplier = 1.0
+
+            # Reset tracking
+            self.avatar.excess_exp_at_bottleneck = 0
+            self.avatar.epiphany_count = 0
+
+            # Update Dao Heart
+            if hasattr(self.avatar, 'dao_heart'):
+                self.avatar.dao_heart.stability = min(100, self.avatar.dao_heart.stability + 5)
+                self.avatar.dao_heart.update_state()
+
             # 记录结果用于 finish 事件
             self._last_result = (
                 "success",
@@ -90,6 +114,14 @@ class Breakthrough(TimedAction):
                     self.avatar,
                     DeathReason(DeathType.OLD_AGE),
                 )
+
+            # Dao Heart damage on failure
+            if hasattr(self.avatar, 'dao_heart'):
+                self.avatar.dao_heart.add_demon_seed(1)
+
+            # Increment forced breakthroughs counter
+            self.avatar.forced_breakthroughs = getattr(self.avatar, 'forced_breakthroughs', 0) + 1
+
             # 记录结果用于 finish 事件
             self._last_result = ("fail", int(reduce_years))
 

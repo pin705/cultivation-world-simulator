@@ -97,6 +97,13 @@
               <span class="label">状态:</span>
               <span>{{ recapStore.recap.main_disciple.current_status }}</span>
             </div>
+
+            <!-- Breakthrough Alerts -->
+            <div v-if="recapStore.recap?.main_disciple?.cultivation_progress" class="breakthrough-alert">
+              <m-tag type="warning" size="medium">
+                🔥 {{ recapStore.recap.main_disciple.cultivation_progress }}
+              </m-tag>
+            </div>
           </div>
 
           <!-- 世界事件 -->
@@ -165,6 +172,72 @@
               </m-button>
             </div>
           </div>
+
+          <!-- Thrill Events -->
+          <div v-if="hasThrillEvents" class="recap-card thrill-events">
+            <div class="card-header">
+              <span class="card-title">历练事件</span>
+            </div>
+            <!-- Show secret realm discoveries, heart demon encounters, etc. -->
+            <m-divider>秘境探索</m-divider>
+            <m-list v-if="recapStore.recap?.thrill_events?.secret_realms?.length"
+              :data="recapStore.recap.thrill_events.secret_realms" size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet thrill"></div>
+                  </template>
+                  {{ item }}
+                </m-li>
+              </template>
+            </m-list>
+
+            <m-divider>心魔遭遇</m-divider>
+            <m-list v-if="recapStore.recap?.thrill_events?.heart_demons?.length"
+              :data="recapStore.recap.thrill_events.heart_demons" size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet heart-demon"></div>
+                  </template>
+                  {{ item }}
+                </m-li>
+              </template>
+            </m-list>
+          </div>
+
+          <!-- Competition Results -->
+          <div v-if="hasCompetitionEvents" class="recap-card competition-results">
+            <div class="card-header">
+              <span class="card-title">竞技事件</span>
+            </div>
+            <!-- Show arena challenges, rivalry changes, etc. -->
+            <m-divider>竞技场挑战</m-divider>
+            <m-list v-if="recapStore.recap?.competition_events?.arena_challenges?.length"
+              :data="recapStore.recap.competition_events.arena_challenges" size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet arena"></div>
+                  </template>
+                  {{ item }}
+                </m-li>
+              </template>
+            </m-list>
+
+            <m-divider>宿敌变化</m-divider>
+            <m-list v-if="recapStore.recap?.competition_events?.rivalry_changes?.length"
+              :data="recapStore.recap.competition_events.rivalry_changes" size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet rivalry"></div>
+                  </template>
+                  {{ item }}
+                </m-li>
+              </template>
+            </m-list>
+          </div>
         </div>
       </div>
     </m-dialog>
@@ -198,6 +271,24 @@ const showModal = computed({
 
 // Has action points?
 const hasActionPoints = computed(() => recapStore.hasActionPoints);
+
+// Has thrill events?
+const hasThrillEvents = computed(() => {
+  const thrill = recapStore.recap?.thrill_events;
+  return (
+    thrill?.secret_realms?.length ||
+    thrill?.heart_demons?.length
+  );
+});
+
+// Has competition events?
+const hasCompetitionEvents = computed(() => {
+  const comp = recapStore.recap?.competition_events;
+  return (
+    comp?.arena_challenges?.length ||
+    comp?.rivalry_changes?.length
+  );
+});
 
 // Get viewerId
 const viewerId = computed(() => {
@@ -343,6 +434,27 @@ watch(() => recapStore.showOverlay, (visible) => {
 
 .bullet.opportunity {
   background: v-bind('shuimoColors.opportunity');
+}
+
+.bullet.thrill {
+  background: v-bind('shuimoColors.success');
+}
+
+.bullet.heart-demon {
+  background: v-bind('shuimoColors.error');
+}
+
+.bullet.arena {
+  background: v-bind('shuimoColors.major');
+}
+
+.bullet.rivalry {
+  background: v-bind('shuimoColors.threat');
+}
+
+/* Breakthrough alerts */
+.breakthrough-alert {
+  margin-top: 12px;
 }
 
 /* Text utilities */

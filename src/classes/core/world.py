@@ -77,6 +77,12 @@ class World():
     # 宗门上下文（惰性初始化），用于统一本局启用宗门作用域
     _sect_context: Any = field(default=None, init=False, repr=False)
 
+    # Competition System fields
+    active_secret_realms: list = field(default_factory=list)
+    resource_competitions: list = field(default_factory=list)
+    arena_challenges: list = field(default_factory=list)
+    sect_rivalry_levels: dict = field(default_factory=dict)
+
     def get_info(self, detailed: bool = False, avatar: Optional["Avatar"] = None) -> dict:
         """
         返回世界信息（dict），其中包含地图信息（dict）。
@@ -1061,8 +1067,21 @@ class World():
             month_stamp.get_month().value
         )
         world.refill_player_intervention_points()
-        
+
         return world
+
+    def get_active_secret_realms(self) -> list:
+        return getattr(self, 'active_secret_realms', [])
+
+    def get_sect_rivalry_level(self, sect_a: int, sect_b: int) -> int:
+        key = (min(sect_a, sect_b), max(sect_a, sect_b))
+        return getattr(self, 'sect_rivalry_levels', {}).get(key, 1)
+
+    def set_sect_rivalry_level(self, sect_a: int, sect_b: int, level: int) -> None:
+        key = (min(sect_a, sect_b), max(sect_a, sect_b))
+        if not hasattr(self, 'sect_rivalry_levels'):
+            self.sect_rivalry_levels = {}
+        self.sect_rivalry_levels[key] = level
 
 
 class SectContext:

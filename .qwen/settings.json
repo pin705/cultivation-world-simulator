@@ -15,7 +15,8 @@
       "Bash(sed *)",
       "Bash(pytest *)",
       "Bash(.venv/bin/pytest *)",
-      "Bash(.venv/bin/pip *)"
+      "Bash(.venv/bin/pip *)",
+      "Bash(.venv/bin/python *)"
     ]
   },
   "$version": 3

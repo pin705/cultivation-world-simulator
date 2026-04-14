@@ -131,7 +131,20 @@ class Tournament(Gathering):
             events.append(event_end)
             
             # Reward
-            final_winner.magic_stone += reward
+            reward_multiplier = 1.0
+
+            # Add foundation quality bonus to tournament performance
+            winner_quality = getattr(final_winner, 'foundation_quality', None)
+            if winner_quality:
+                reward_multiplier *= winner_quality.bonus_exp_multiplier
+
+            # Add streak bonus
+            winner_streak = getattr(final_winner, 'cultivation_streak', None)
+            if winner_streak and winner_streak.current_streak >= 6:
+                reward_multiplier *= winner_streak.streak_bonus_multiplier
+
+            final_reward = int(reward * reward_multiplier)
+            final_winner.magic_stone += final_reward
             contribution_gain = {
                 "heaven": 120,
                 "earth": 80,
@@ -170,9 +183,30 @@ class Tournament(Gathering):
             winners[list_name] = {
                 "id": str(final_winner.id),
                 "name": final_winner.name,
-                "reward": reward
+                "reward": final_reward
             }
-            
+
+            # Update arena ratings for all participants
+            for participant in participants:
+                old_rating = getattr(participant, 'arena_rating', 1000)
+                # Winners gain rating, losers lose rating
+                if participant == final_winner:
+                    new_rating = old_rating + 50
+                else:
+                    new_rating = max(100, old_rating - 25)
+                participant.arena_rating = new_rating
+
+                # Record tournament history
+                history_entry = {
+                    "tournament": "tournament",
+                    "bracket": list_name,
+                    "placement": "winner" if participant == final_winner else "participant",
+                    "month": int(world.month_stamp),
+                }
+                if not hasattr(participant, 'tournament_history'):
+                    participant.tournament_history = []
+                participant.tournament_history.append(history_entry)
+
             story_candidates.append({
                 "list_name": list_name,
                 "winner": final_winner,

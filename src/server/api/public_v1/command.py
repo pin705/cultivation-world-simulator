@@ -244,6 +244,35 @@ class SetSectPriorityRequest(BaseModel):
     viewer_id: Optional[str] = None
 
 
+class ExploreSecretRealmRequest(BaseModel):
+    avatar_id: str
+    realm_index: int
+    viewer_id: Optional[str] = None
+
+
+class ForceBreakthroughRequest(BaseModel):
+    avatar_id: str
+    viewer_id: Optional[str] = None
+
+
+class InterveneNearDeathRequest(BaseModel):
+    avatar_id: str
+    viewer_id: Optional[str] = None
+
+
+class ArenaChallengeRequest(BaseModel):
+    challenger_id: str
+    defender_id: str
+    viewer_id: Optional[str] = None
+
+
+class EscalateSectRivalryRequest(BaseModel):
+    sect_id_a: int
+    sect_id_b: int
+    trigger_event: str = "player_intervention"
+    viewer_id: Optional[str] = None
+
+
 def create_public_command_router(
     *,
     run_start_game: Callable[[BaseModel], object],
@@ -293,6 +322,11 @@ def create_public_command_router(
     run_spend_action_point: Callable[[BaseModel], object],  # NEW: action point spending
     run_fund_disciple: Callable[[BaseModel], object],  # NEW: disciple funding
     run_set_sect_priority: Callable[[BaseModel], object],  # NEW: sect priority
+    run_explore_secret_realm: Callable[[BaseModel], object],
+    run_force_breakthrough: Callable[[BaseModel], object],
+    run_intervene_near_death: Callable[[BaseModel], object],
+    run_arena_challenge: Callable[[BaseModel], object],
+    run_escalate_sect_rivalry: Callable[[BaseModel], object],
     resolve_viewer_id: Callable[[Request, str | None], str | None] | None = None,
 ) -> APIRouter:
     router = APIRouter()
@@ -637,5 +671,47 @@ def create_public_command_router(
             return ok_response({"error": "viewer_id is required"})
         payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
         return ok_response(await run_set_sect_priority(payload))
+
+    # NEW: Thrill control endpoints
+    @router.post("/api/v1/command/thrill/explore-realm")
+    async def explore_secret_realm_v1(request: Request, req: ExploreSecretRealmRequest):
+        resolved_viewer_id = _resolve_request_viewer_id(request, req.viewer_id)
+        if not resolved_viewer_id:
+            return ok_response({"error": "viewer_id is required"})
+        payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
+        return ok_response(await run_explore_secret_realm(payload))
+
+    @router.post("/api/v1/command/thrill/force-breakthrough")
+    async def force_breakthrough_v1(request: Request, req: ForceBreakthroughRequest):
+        resolved_viewer_id = _resolve_request_viewer_id(request, req.viewer_id)
+        if not resolved_viewer_id:
+            return ok_response({"error": "viewer_id is required"})
+        payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
+        return ok_response(await run_force_breakthrough(payload))
+
+    @router.post("/api/v1/command/thrill/intervene-near-death")
+    async def intervene_near_death_v1(request: Request, req: InterveneNearDeathRequest):
+        resolved_viewer_id = _resolve_request_viewer_id(request, req.viewer_id)
+        if not resolved_viewer_id:
+            return ok_response({"error": "viewer_id is required"})
+        payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
+        return ok_response(await run_intervene_near_death(payload))
+
+    # NEW: Competition control endpoints
+    @router.post("/api/v1/command/competition/arena-challenge")
+    async def arena_challenge_v1(request: Request, req: ArenaChallengeRequest):
+        resolved_viewer_id = _resolve_request_viewer_id(request, req.viewer_id)
+        if not resolved_viewer_id:
+            return ok_response({"error": "viewer_id is required"})
+        payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
+        return ok_response(await run_arena_challenge(payload))
+
+    @router.post("/api/v1/command/competition/escalate-rivalry")
+    async def escalate_sect_rivalry_v1(request: Request, req: EscalateSectRivalryRequest):
+        resolved_viewer_id = _resolve_request_viewer_id(request, req.viewer_id)
+        if not resolved_viewer_id:
+            return ok_response({"error": "viewer_id is required"})
+        payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
+        return ok_response(await run_escalate_sect_rivalry(payload))
 
     return router
