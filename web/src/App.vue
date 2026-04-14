@@ -16,6 +16,7 @@ import StatusBar from './components/layout/StatusBar.vue'
 import EventPanel from './components/game/panels/EventPanel.vue'
 import SystemMenu from './components/SystemMenu.vue'
 import LoadingOverlay from './components/LoadingOverlay.vue'
+import RecapOverlay from './components/game/panels/RecapOverlay.vue'
 import menuIcon from '@/assets/icons/ui/lucide/menu.svg'
 import playIcon from '@/assets/icons/ui/lucide/play.svg'
 import pauseIcon from '@/assets/icons/ui/lucide/pause.svg'
@@ -39,11 +40,13 @@ import {
 import { useUiStore } from './stores/ui'
 import { useSettingStore } from './stores/setting'
 import { useSystemStore } from './stores/system'
+import { useRecapStore } from './stores/recap'
 
 const uiStore = useUiStore()
 const settingStore = useSettingStore()
 const systemStore = useSystemStore()
 const { playerOnboarding, viewerId } = storeToRefs(systemStore)
+const recapStore = useRecapStore()
 
 // Sidebar resizer 状态
 const { sidebarWidth, isResizing, onResizerMouseDown } = useSidebarResize()
@@ -53,9 +56,9 @@ function syncLayoutCssVars(width: number) {
 }
 
 // 1. 游戏初始化逻辑
-const { 
-  initStatus, 
-  gameInitialized, 
+const {
+  initStatus,
+  gameInitialized,
   showLoading,
 } = useGameInit()
 
@@ -232,6 +235,15 @@ onMounted(() => {
   })
 })
 
+// Load recap when game is initialized
+watch(gameInitialized, (initialized) => {
+  if (initialized && viewerId.value) {
+    recapStore.loadRecap(viewerId.value).catch(err => {
+      console.warn('[App] Failed to load recap (non-critical):', err)
+    })
+  }
+})
+
 onUnmounted(() => {
   window.removeEventListener('keydown', onKeydown)
   document.documentElement.style.removeProperty('--cws-sidebar-width')
@@ -248,36 +260,29 @@ watch(sidebarWidth, width => {
       <n-message-provider>
         <div v-if="scene === 'boot'" class="app-layout app-layout--shell"></div>
 
-        <SplashLayer 
-          v-else-if="canRenderSplash" 
-          @action="handleSplashAction"
-        />
+        <SplashLayer v-else-if="canRenderSplash" @action="handleSplashAction" />
 
         <div v-else-if="scene === 'initializing'" class="app-layout app-layout--shell"></div>
 
         <div v-else-if="canRenderGameShell" class="app-layout">
           <StatusBar />
-          
+
           <div class="main-content">
             <div class="map-container">
               <!-- 顶部控制栏 -->
               <div class="top-controls">
                 <!-- 暂停/播放按钮 -->
-                <button class="control-btn pause-toggle" @click="toggleManualPause" :title="isManualPaused ? t('game.controls.resume') : t('game.controls.pause')">
-                  <span
-                    class="control-btn-icon"
+                <button class="control-btn pause-toggle" @click="toggleManualPause"
+                  :title="isManualPaused ? t('game.controls.resume') : t('game.controls.pause')">
+                  <span class="control-btn-icon"
                     :style="{ '--icon-url': `url(${isManualPaused ? playIcon : pauseIcon})` }"
-                    aria-hidden="true"
-                  ></span>
+                    aria-hidden="true"></span>
                 </button>
 
                 <!-- 菜单按钮 -->
                 <button class="control-btn menu-toggle" @click="openGameMenu()">
-                  <span
-                    class="control-btn-icon"
-                    :style="{ '--icon-url': `url(${menuIcon})` }"
-                    aria-hidden="true"
-                  ></span>
+                  <span class="control-btn-icon" :style="{ '--icon-url': `url(${menuIcon})` }"
+                    aria-hidden="true"></span>
                 </button>
               </div>
 
@@ -294,17 +299,9 @@ watch(sidebarWidth, width => {
                   </div>
                   <p class="player-onboarding-desc">{{ t('ui.player_campaign_desc') }}</p>
 
-                  <div
-                    v-if="onboardingRecommendedStep === 'claim_sect'"
-                    class="player-onboarding-options"
-                  >
-                    <button
-                      v-for="sect in onboardingClaimableSects"
-                      :key="sect.id"
-                      class="player-onboarding-option"
-                      :disabled="isSubmittingOnboarding"
-                      @click="claimSectFromOverlay(sect.id)"
-                    >
+                  <div v-if="onboardingRecommendedStep === 'claim_sect'" class="player-onboarding-options">
+                    <button v-for="sect in onboardingClaimableSects" :key="sect.id" class="player-onboarding-option"
+                      :disabled="isSubmittingOnboarding" @click="claimSectFromOverlay(sect.id)">
                       <span class="player-onboarding-option-title">{{ sect.name }}</span>
                       <span class="player-onboarding-option-meta">
                         {{ t('ui.player_campaign_members', { count: sect.member_count }) }}
@@ -312,17 +309,10 @@ watch(sidebarWidth, width => {
                     </button>
                   </div>
 
-                  <div
-                    v-else-if="onboardingRecommendedStep === 'set_main_avatar'"
-                    class="player-onboarding-options"
-                  >
-                    <button
-                      v-for="avatar in onboardingMainAvatarCandidates"
-                      :key="avatar.id"
-                      class="player-onboarding-option"
-                      :disabled="isSubmittingOnboarding"
-                      @click="setMainAvatarFromOverlay(avatar.id)"
-                    >
+                  <div v-else-if="onboardingRecommendedStep === 'set_main_avatar'" class="player-onboarding-options">
+                    <button v-for="avatar in onboardingMainAvatarCandidates" :key="avatar.id"
+                      class="player-onboarding-option" :disabled="isSubmittingOnboarding"
+                      @click="setMainAvatarFromOverlay(avatar.id)">
                       <span class="player-onboarding-option-title">{{ avatar.name }}</span>
                       <span class="player-onboarding-option-meta">
                         {{ avatar.realm }} · {{ t('ui.player_campaign_age', { age: avatar.age }) }}
@@ -330,17 +320,10 @@ watch(sidebarWidth, width => {
                     </button>
                   </div>
 
-                  <div
-                    v-else-if="onboardingRecommendedStep === 'choose_opening'"
-                    class="player-onboarding-options"
-                  >
-                    <button
-                      v-for="choice in onboardingOpeningChoices"
-                      :key="choice.id"
-                      class="player-onboarding-option"
+                  <div v-else-if="onboardingRecommendedStep === 'choose_opening'" class="player-onboarding-options">
+                    <button v-for="choice in onboardingOpeningChoices" :key="choice.id" class="player-onboarding-option"
                       :disabled="isSubmittingOnboarding || !choice.can_select"
-                      @click="chooseOpeningFromOverlay(choice.id)"
-                    >
+                      @click="chooseOpeningFromOverlay(choice.id)">
                       <span class="player-onboarding-option-title">
                         {{ playerOpeningChoiceTitle(t, choice.id) }}
                       </span>
@@ -355,50 +338,33 @@ watch(sidebarWidth, width => {
                   </div>
 
                   <div class="player-onboarding-actions">
-                    <button
-                      class="player-onboarding-link"
-                      :disabled="isSubmittingOnboarding"
-                      @click="openPlayerCampaignSetup"
-                    >
+                    <button class="player-onboarding-link" :disabled="isSubmittingOnboarding"
+                      @click="openPlayerCampaignSetup">
                       {{ t('ui.player_campaign_open_setup') }}
                     </button>
                   </div>
                 </div>
               </div>
 
-              <GameCanvas
-                :sidebar-width="sidebarWidth"
-                @avatarSelected="handleSelection"
-                @regionSelected="handleSelection"
-              />
+              <GameCanvas :sidebar-width="sidebarWidth" @avatarSelected="handleSelection"
+                @regionSelected="handleSelection" />
               <InfoPanelContainer />
             </div>
-            <div
-              class="sidebar-resizer"
-              :class="{ 'is-resizing': isResizing }"
-              @mousedown="onResizerMouseDown"
-            ></div>
+            <div class="sidebar-resizer" :class="{ 'is-resizing': isResizing }" @mousedown="onResizerMouseDown"></div>
             <aside class="sidebar" :style="{ width: sidebarWidth + 'px' }">
               <EventPanel />
             </aside>
           </div>
         </div>
 
-        <SystemMenu 
-          :visible="showMenu"
-          :default-tab="menuDefaultTab"
-          :game-initialized="gameInitialized"
-          :closable="canCloseMenu"
-          @close="handleMenuCloseWrapper"
-          @llm-ready="handleLLMReady"
-          @return-to-main="handleReturnToMain"
-          @exit-game="() => handleSplashAction('exit')"
-        />
+        <SystemMenu :visible="showMenu" :default-tab="menuDefaultTab" :game-initialized="gameInitialized"
+          :closable="canCloseMenu" @close="handleMenuCloseWrapper" @llm-ready="handleLLMReady"
+          @return-to-main="handleReturnToMain" @exit-game="() => handleSplashAction('exit')" />
 
-        <LoadingOverlay 
-          v-if="showLoadingOverlay"
-          :status="initStatus"
-        />
+        <!-- Recap Overlay - 天机推演 -->
+        <RecapOverlay />
+
+        <LoadingOverlay v-if="showLoadingOverlay" :status="initStatus" />
       </n-message-provider>
     </n-dialog-provider>
   </n-config-provider>
@@ -557,7 +523,7 @@ watch(sidebarWidth, width => {
 }
 
 .control-btn {
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   border: 1px solid #444;
   color: #ddd;
   width: 40px;
@@ -586,7 +552,7 @@ watch(sidebarWidth, width => {
 }
 
 .control-btn:hover {
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   border-color: #666;
   color: #fff;
 }
