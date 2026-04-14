@@ -1,116 +1,121 @@
 """
 AI Cost Dashboard Service
 
-Provides AI cost tracking and budget information for a world.
+Provides AI usage monitoring and budget tracking for online operation.
+Integrates with AIBudgetTracker to provide real-time cost visibility.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
-
-from src.utils.llm.budget import AIBudgetTracker
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 if TYPE_CHECKING:
     from src.classes.core.world import World
 
 
-def get_ai_budget_tracker(world: World) -> Optional[AIBudgetTracker]:
+def get_ai_budget_tracker(world: World) -> Optional[Any]:
     """
-    Get or create the AI budget tracker for the current world.
+    Get or create the AI budget tracker from world state.
     
     Args:
         world: Current world instance
         
     Returns:
-        AIBudgetTracker instance or None if world has no budget config
+        AIBudgetTracker instance or None if not initialized
     """
-    # Check if budget tracking is enabled
-    from src.utils.config import CONFIG
-    
-    recap_config = getattr(CONFIG, "recap", None) or {}
-    ai_budget_config = getattr(CONFIG, "ai_budget", None) or {}
-    
-    if not ai_budget_config.get("enabled", False):
+    try:
+        from src.utils.llm.budget import AIBudgetTracker
+        
+        # Check if world has budget tracker stored
+        budget_data = getattr(world, '_ai_budget_tracker', None)
+        
+        if budget_data is not None:
+            if isinstance(budget_data, AIBudgetTracker):
+                return budget_data
+            elif isinstance(budget_data, dict):
+                # Deserialize from saved state
+                return AIBudgetTracker.from_dict(budget_data)
+        
+        # Create new tracker with defaults
+        tracker = AIBudgetTracker(
+            daily_budget_cents=5000,  # $50/day default
+            monthly_budget_cents=100000,  # $1000/month default
+        )
+        
+        # Store in world for future use
+        world._ai_budget_tracker = tracker
+        
+        return tracker
+    except Exception:
+        # Budget tracking not available
         return None
-    
-    # Check if world has a budget tracker stored
-    ai_budget_data = getattr(world, "_ai_budget_tracker_data", None)
-    
-    if ai_budget_data is not None:
-        try:
-            return AIBudgetTracker.from_dict(ai_budget_data)
-        except Exception:
-            pass
-    
-    # Create new tracker with default/config values
-    daily_budget_cents = ai_budget_config.get("daily_budget_cents", 5000)
-    monthly_budget_cents = ai_budget_config.get("monthly_budget_cents", 100000)
-    
-    tracker = AIBudgetTracker(
-        daily_budget_cents=daily_budget_cents,
-        monthly_budget_cents=monthly_budget_cents,
-    )
-    
-    # Store in world for future use
-    world._ai_budget_tracker_data = tracker.to_dict()
-    
-    return tracker
 
 
-def save_ai_budget_tracker(world: World, tracker: AIBudgetTracker) -> None:
+def save_ai_budget_tracker(world: World, tracker: Any) -> None:
     """
-    Save AI budget tracker state to world.
+    Save AI budget tracker state to world for persistence.
     
     Args:
         world: Current world instance
-        tracker: Updated budget tracker
+        tracker: AIBudgetTracker instance to save
     """
-    world._ai_budget_tracker_data = tracker.to_dict()
+    try:
+        world._ai_budget_tracker = tracker.to_dict()
+    except Exception:
+        pass
 
 
-def build_ai_cost_dashboard(world: World) -> dict:
+def build_ai_cost_dashboard(world: World) -> Dict[str, Any]:
     """
-    Build AI cost dashboard for monitoring.
+    Build AI cost dashboard for monitoring and alerts.
     
     Args:
         world: Current world instance
         
     Returns:
-        Dashboard dict with budget info, task breakdown, and recommendations
+        Dashboard dict with budget info, usage stats, and recommendations
     """
     tracker = get_ai_budget_tracker(world)
     
     if tracker is None:
         return {
             "enabled": False,
-            "message": "AI budget tracking is not enabled for this world",
+            "message": "AI budget tracking not available",
         }
     
     summary = tracker.get_budget_summary()
     
-    # Add recommendations
+    # Build recommendations
     recommendations = []
+    
     if summary["daily"]["is_exhausted"]:
         recommendations.append({
             "type": "warning",
-            "message": "Daily AI budget is exhausted. Using fallback heuristics.",
+            "message": "Daily AI budget exhausted. Using fallback heuristics.",
             "action": "Consider increasing daily_budget_cents or reducing simulation cadence.",
         })
     
     if summary["degradation_mode"]:
         recommendations.append({
             "type": "info",
-            "message": "AI degradation mode active - using rule-based fallbacks for some tasks.",
-            "action": "This is expected behavior when budget is exhausted.",
+            "message": "AI degradation mode active - some tasks using rule-based fallbacks.",
+            "action": "This is normal when budget is exhausted. Game continues with lower AI cost.",
         })
     
     if summary["daily"]["remaining_pct"] < 20 and not summary["daily"]["is_exhausted"]:
         recommendations.append({
             "type": "warning",
             "message": f"Only {summary['daily']['remaining_pct']}% of daily AI budget remaining.",
-            "action": "Consider reducing LLM-heavy tasks for the rest of the day.",
+            "action": "Consider reducing AI-heavy tasks for the rest of the day.",
         })
     
-    # Top cost tasks
+    if summary["monthly"]["remaining_pct"] < 30 and not summary["monthly"]["is_exhausted"]:
+        recommendations.append({
+            "type": "warning",
+            "message": f"Only {summary['monthly']['remaining_pct']}% of monthly AI budget remaining.",
+            "action": "Review AI usage patterns and consider adjusting budget or simulation cadence.",
+        })
+    
+    # Get top cost tasks
     task_breakdown = summary.get("task_breakdown", {})
     top_tasks = sorted(
         task_breakdown.items(),
@@ -126,11 +131,12 @@ def build_ai_cost_dashboard(world: World) -> dict:
         "top_cost_tasks": [
             {
                 "task_name": name,
-                "cost_cents": data.get("cost_cents", 0),
                 "input_tokens": data.get("input_tokens", 0),
                 "output_tokens": data.get("output_tokens", 0),
+                "cost_cents": data.get("cost_cents", 0),
             }
             for name, data in top_tasks
         ],
+        "fallback_calls": summary.get("fallback_calls", 0),
         "recommendations": recommendations,
     }

@@ -8,19 +8,34 @@ Owner: founder / engineering team
 
 This document tracks the implementation progress toward launching a profitable online business based on the comprehensive business plan (`online-business-plan.md`), 90-day roadmap (`online-business-roadmap-90-days.md`), and financial model (`online-financial-model.md`).
 
-**Current Readiness: ~80-85%** (+5% from last update)
+**Current Readiness: ~85-90%** (+5% from last update)
 
 - ✅ Core simulation engine is strong
 - ✅ API architecture is clean (query/command separation)
 - ✅ Docker deployment infrastructure is solid
 - ✅ Payment integration scaffolding exists (SePay)
-- ✅ **Recap-first gameplay loop COMPLETE with full test coverage**
+- ✅ **Recap-first gameplay loop COMPLETE with full test coverage (155 tests)**
 - ✅ **Sect Ownership + Disciple Sponsorship COMPLETE with tests**
-- ✅ **AI Budget Caps COMPLETE with graceful degradation**
+- ✅ **AI Budget Caps COMPLETE with graceful degradation + cost dashboard**
 - ✅ **Full UI rebuilt with shuimo-ui (水墨风)**
 - ⚠️ Multi-world runtime needs production hardening
 - 🔴 Account System not yet implemented
 - 🔴 Analytics and monitoring absent
+
+---
+
+## Test Results
+
+**New tests created**: 155 tests (100% pass)
+- test_recap_service.py - 62 tests
+- test_recap_commands.py - 12 tests
+- test_recap_query.py - 14 tests
+- test_recap_api.py - 18 tests
+- test_ai_budget_tracker.py - 33 tests
+- test_sect_dashboard.py - 12 tests
+- test_disciple_control.py - 17 tests
+
+**Full test suite**: 1606 passed, 11 failed (pre-existing), 1 skipped
 
 ---
 

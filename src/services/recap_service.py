@@ -382,45 +382,87 @@ class RecapService:
     def _build_opportunities(self, viewer_id: str) -> OpportunitySection:
         """Build opportunities and pending decisions."""
         section = OpportunitySection()
-        
-        # Example: Check for gathering events player can participate in
-        # This is simplified - would need more complex logic in production
+
+        # Check for gathering events player can participate in
         gatherings = getattr(self.world, 'gathering_manager', None)
         if gatherings and hasattr(gatherings, 'active_gatherings'):
             for gathering in gatherings.active_gatherings:
                 section.opportunities.append(
                     f"Gathering available: {gathering.name}"
                 )
-        
+
+        # NEW: Check for pending disciple breakthroughs (THRILL)
+        if self.world.player_main_avatar_id:
+            main_avatar = self.world.avatar_manager.get_avatar(self.world.player_main_avatar_id)
+            if main_avatar:
+                level = getattr(main_avatar, 'level', 0)
+                if level % 30 == 0 and level > 0:
+                    # Disciple is at bottleneck!
+                    section.opportunities.append(
+                        f"⚡ {main_avatar.name} is at a breakthrough bottleneck!"
+                    )
+                    section.pending_decisions.append(
+                        f"Fund breakthrough resources to improve success rate?"
+                    )
+                    section.suggested_actions.append(
+                        f"Consider sponsoring {main_avatar.name}'s breakthrough"
+                    )
+
+        # NEW: Check for sect rivalry escalation (COMPETITION)
+        if self.world.player_owned_sect_id:
+            wars = getattr(self.world, 'sect_wars', [])
+            active_wars = [w for w in wars if w.get('status') == 'war']
+            if active_wars:
+                section.opportunities.append(
+                    f"🔥 Your sect is at war with {len(active_wars)} rival sect(s)!"
+                )
+                section.pending_decisions.append(
+                    "Consider intervening in the war or seeking peace"
+                )
+                section.suggested_actions.append(
+                    "Review sect war status and take action"
+                )
+
         # Suggested actions based on sect/disciple state
         if self.world.player_owned_sect_id:
             section.suggested_actions.append("Review sect priorities")
-        
+
         if self.world.player_main_avatar_id:
             section.suggested_actions.append("Check disciple progress")
-        
+
         return section
-    
+
     def _generate_summary_text(self, recap: Recap) -> Optional[str]:
         """
-        Generate LLM summary text (premium feature).
-        
-        This is gated behind commercial_action='keep' for story_teller task.
-        For Phase 1, we use simple rule-based summary.
+        Generate dramatic summary with stakes and tension.
+
+        For Phase 1, we use rule-based summary but with emotional hooks.
         """
-        # Phase 1: Rule-based summary
         parts = []
-        
+
         if recap.sect:
-            parts.append(f"Your sect, {recap.sect.sect_name}, experienced {len(recap.sect.status_changes)} major changes.")
-        
+            threat_count = len(recap.sect.threats)
+            if threat_count > 0:
+                parts.append(f"⚠️ {recap.sect.sect_name} faces {threat_count} threat(s)!")
+            else:
+                parts.append(f"Your sect {recap.sect.sect_name} experienced {len(recap.sect.status_changes)} major changes.")
+
         if recap.main_disciple:
-            parts.append(f"Your disciple {recap.main_disciple.name} had {len(recap.main_disciple.major_events)} notable events.")
-        
+            if recap.main_disciple.major_events:
+                parts.append(f"Your disciple {recap.main_disciple.name} had {len(recap.main_disciple.major_events)} notable events.")
+            if recap.main_disciple.cultivation_progress:
+                parts.append(f"🔥 {recap.main_disciple.cultivation_progress}")
+
         if recap.world.major_events:
             parts.append(f"The world witnessed {len(recap.world.major_events)} major events.")
-        
+
+        if recap.world.phenomenon:
+            parts.append(f"✨ {recap.world.phenomenon}")
+
         if recap.opportunities.opportunities:
-            parts.append(f"You have {len(recap.opportunities.opportunities)} opportunities to explore.")
+            parts.append(f"You have {len(recap.opportunities.opportunities)} opportunities demanding attention.")
+
+        if recap.opportunities.pending_decisions:
+            parts.append(f"⏰ {len(recap.opportunities.pending_decisions)} decision(s) pending!")
         
         return " ".join(parts) if parts else None
