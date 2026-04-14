@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import { NModal, NTable, NTag, NSpin } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { SHARED_UI_COLORS, SYSTEM_PANEL_THEMES } from '@/constants/uiColors'
 import { useMortalStore } from '@/stores/mortal'
@@ -64,14 +63,9 @@ watch(
 </script>
 
 <template>
-  <n-modal
-    :show="show"
-    @update:show="handleShowChange"
-    preset="card"
-    :title="t('game.mortal_system.title')"
-    style="width: 980px; max-height: 80vh; overflow-y: auto;"
-  >
-    <n-spin :show="mortalStore.isLoading">
+  <m-dialog :show="show" @update:show="handleShowChange" :title="t('game.mortal_system.title')"
+    style="width: 980px; max-height: 80vh; overflow-y: auto;">
+    <m-loading :show="mortalStore.isLoading">
       <div class="mortal-overview" :style="panelStyleVars">
         <section class="section">
           <div class="section-title">
@@ -104,10 +98,11 @@ watch(
 
         <section class="section">
           <div class="section-title">
-            <span class="section-title-icon" :style="{ '--icon-url': `url(${buildingIcon})` }" aria-hidden="true"></span>
+            <span class="section-title-icon" :style="{ '--icon-url': `url(${buildingIcon})` }"
+              aria-hidden="true"></span>
             {{ t('game.mortal_system.cities.title') }}
           </div>
-          <n-table :bordered="false" :single-line="false" size="small">
+          <table class="shuimo-table">
             <thead>
               <tr>
                 <th>{{ t('game.mortal_system.cities.city') }}</th>
@@ -127,12 +122,12 @@ watch(
                 <td colspan="4" class="empty-cell">{{ t('game.mortal_system.empty') }}</td>
               </tr>
             </tbody>
-          </n-table>
+          </table>
         </section>
 
         <section class="section">
           <div class="section-title">{{ t('game.mortal_system.tracked.title') }}</div>
-          <n-table :bordered="false" :single-line="false" size="small">
+          <table class="shuimo-table">
             <thead>
               <tr>
                 <th>{{ t('game.mortal_system.tracked.name') }}</th>
@@ -152,11 +147,11 @@ watch(
                 <td colspan="4" class="empty-cell">{{ t('game.mortal_system.empty') }}</td>
               </tr>
             </tbody>
-          </n-table>
+          </table>
         </section>
       </div>
-    </n-spin>
-  </n-modal>
+    </m-loading>
+  </m-dialog>
 </template>
 
 <style scoped>
@@ -228,8 +223,23 @@ watch(
   color: var(--panel-accent-strong);
 }
 
-:deep(.n-table th) {
+.shuimo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.shuimo-table th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--panel-border);
   color: var(--panel-text-secondary);
+  font-weight: 600;
+}
+
+.shuimo-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--panel-border);
 }
 
 .empty-cell {

@@ -5,13 +5,16 @@ import { useEventStore } from '../../../stores/event'
 import { useUiStore } from '../../../stores/ui'
 import { useMapStore } from '../../../stores/map'
 import { useSectStore } from '../../../stores/sect'
-import { NSelect, NSpin } from 'naive-ui'
-import type { SelectOption } from 'naive-ui'
 import { tokenizeEventContent, buildAvatarColorMap, buildSectColorMap, avatarIdToColor } from '../../../utils/eventHelper'
 import { prependAllOption } from '../../../utils/selectOptions'
 import type { GameEvent } from '../../../types/core'
 import type { FetchEventsParams } from '../../../types/api'
 import { useI18n } from 'vue-i18n'
+
+interface SelectOption {
+  label: string
+  value: any
+}
 
 const { t } = useI18n()
 const avatarStore = useAvatarStore()
@@ -55,7 +58,7 @@ const displayEvents = computed(() => eventStore.events || [])
 // 渲染带颜色圆点的选项标签
 const renderLabel = (option: SelectOption) => {
   if (option.value === 'all') return option.label as string
-  
+
   const color = avatarIdToColor(option.value as string)
   return h('div', { style: { display: 'flex', alignItems: 'center', gap: '6px' } }, [
     h('span', {
@@ -96,7 +99,7 @@ function buildFilter() {
     // 单人筛选
     params.avatar_id = filterValue1.value
   }
-  
+
   if (filterSectValue.value !== 'all') {
     params.sect_id = filterSectValue.value
   }
@@ -104,7 +107,7 @@ function buildFilter() {
   if (filterMajorScope.value && filterMajorScope.value !== 'all') {
     params.major_scope = filterMajorScope.value
   }
-  
+
   return params
 }
 
@@ -232,31 +235,16 @@ function handleSectClick(sectId?: number) {
     <div class="sidebar-header">
       <h3>{{ t('game.event_panel.title') }}</h3>
       <div class="filter-group">
-        <n-select
-          v-model:value="filterSectValue"
-          :options="sectFilterOptions"
-          size="tiny"
-          class="event-filter"
-          data-testid="sect-filter"
-        />
-        <n-select
-          v-model:value="filterValue1"
-          :options="filterOptions"
-          :render-label="renderLabel"
-          size="tiny"
-          class="event-filter"
-        />
-        <n-select
-          v-model:value="filterMajorScope"
-          :options="majorFilterOptions"
-          size="tiny"
-          class="event-filter event-filter--scope"
-          data-testid="major-filter"
-        />
+        <m-select v-model="filterSectValue" :options="sectFilterOptions" size="tiny" class="event-filter"
+          data-testid="sect-filter" />
+        <m-select v-model="filterValue1" :options="filterOptions" :render-label="renderLabel" size="tiny"
+          class="event-filter" />
+        <m-select v-model="filterMajorScope" :options="majorFilterOptions" size="tiny"
+          class="event-filter event-filter--scope" data-testid="major-filter" />
       </div>
     </div>
     <div v-if="eventStore.eventsLoading && displayEvents.length === 0" class="loading">
-      <n-spin size="small" />
+      <m-loading size="small" />
       <span>{{ t('common.loading') }}</span>
     </div>
     <div v-else-if="displayEvents.length === 0" class="empty">{{ emptyEventMessage }}</div>
@@ -270,20 +258,12 @@ function handleSectClick(sectId?: number) {
         <div class="event-date">{{ formatEventDate(event) }}</div>
         <div class="event-content">
           <template v-for="(segment, index) in renderEventContent(event)" :key="`${event.id}-${index}`">
-            <span
-              v-if="segment.type === 'avatar'"
-              class="clickable-avatar"
-              :style="{ color: segment.color }"
-              @click="handleAvatarClick(segment.avatarId)"
-            >
+            <span v-if="segment.type === 'avatar'" class="clickable-avatar" :style="{ color: segment.color }"
+              @click="handleAvatarClick(segment.avatarId)">
               {{ segment.text }}
             </span>
-            <span
-              v-else-if="segment.type === 'sect'"
-              class="clickable-sect"
-              :style="{ color: segment.color }"
-              @click="handleSectClick(segment.sectId)"
-            >
+            <span v-else-if="segment.type === 'sect'" class="clickable-sect" :style="{ color: segment.color }"
+              @click="handleSectClick(segment.sectId)">
               {{ segment.text }}
             </span>
             <span v-else>{{ segment.text }}</span>
@@ -359,7 +339,8 @@ function handleSectClick(sectId?: number) {
   white-space: pre-line;
 }
 
-.empty, .loading {
+.empty,
+.loading {
   padding: 20px;
   text-align: center;
   color: #666;

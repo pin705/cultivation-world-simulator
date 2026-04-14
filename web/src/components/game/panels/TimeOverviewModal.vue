@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { NModal, NSpin } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { worldApi } from '@/api/modules/world'
 import { SHARED_UI_COLORS, SYSTEM_PANEL_THEMES } from '@/constants/uiColors'
@@ -133,14 +132,9 @@ watch(
 </script>
 
 <template>
-  <n-modal
-    :show="show"
-    @update:show="handleShowChange"
-    preset="card"
-    :title="t('game.status_bar.time.title')"
-    style="width: 520px; max-height: 80vh; overflow-y: auto;"
-  >
-    <n-spin :show="loading">
+  <m-dialog :show="show" @update:show="handleShowChange" :title="t('game.status_bar.time.title')"
+    style="width: 520px; max-height: 80vh; overflow-y: auto;">
+    <m-loading :show="loading">
       <div class="time-overview" :style="panelStyleVars">
         <section class="time-hero">
           <div class="hero-label">{{ t('game.status_bar.time.current_date') }}</div>
@@ -181,8 +175,8 @@ watch(
           </article>
         </div>
       </div>
-    </n-spin>
-  </n-modal>
+    </m-loading>
+  </m-dialog>
 </template>
 
 <style scoped>

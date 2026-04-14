@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { NModal, NTabs, NTabPane, NTable, NSpin } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { worldApi } from '../../../api/modules/world'
 import type { RankingsDTO } from '@/types/api'
@@ -69,32 +68,44 @@ const handleShowChange = (val: boolean) => {
   emit('update:show', val)
 }
 
+const activeTab = ref('heaven')
+
+const tabs = [
+  { key: 'heaven', labelKey: 'game.ranking.heaven' },
+  { key: 'earth', labelKey: 'game.ranking.earth' },
+  { key: 'human', labelKey: 'game.ranking.human' },
+  { key: 'sect', labelKey: 'game.ranking.sect_ranking' },
+]
+
 watch(() => props.show, (newVal) => {
   if (newVal) {
+    activeTab.value = 'heaven'
     fetchRankings()
   }
 })
 </script>
 
 <template>
-  <n-modal
-    :show="show"
-    @update:show="handleShowChange"
-    preset="card"
-    :title="t('game.ranking.title')"
-    style="width: 750px; max-height: 80vh; overflow-y: auto;"
-  >
-    <n-spin :show="loading">
+  <m-dialog :show="show" @update:show="handleShowChange" :title="t('game.ranking.title')"
+    style="width: 750px; max-height: 80vh; overflow-y: auto;">
+    <m-loading :show="loading">
       <div class="ranking-modal" :style="panelStyleVars">
         <div class="ranking-lead">
           <span class="lead-icon" :style="{ '--icon-url': `url(${trophyIcon})` }" aria-hidden="true"></span>
           <span>{{ t('game.ranking.title') }}</span>
         </div>
-        <div style="display: flex; gap: 20px;">
-        <div style="flex: 1; min-width: 0;">
-          <n-tabs type="line" animated>
-        <n-tab-pane name="heaven" :tab="t('game.ranking.heaven')">
-          <n-table :bordered="false" :single-line="false" size="small">
+
+        <!-- Custom Tabs -->
+        <div class="tabs-header">
+          <button v-for="tab in tabs" :key="tab.key" class="tab-btn" :class="{ active: activeTab === tab.key }"
+            type="button" @click="activeTab = tab.key">
+            {{ t(tab.labelKey) }}
+          </button>
+        </div>
+
+        <!-- Heaven Tab -->
+        <div v-show="activeTab === 'heaven'" class="tab-content">
+          <table class="shuimo-table">
             <thead>
               <tr>
                 <th>{{ t('game.ranking.rank') }}</th>
@@ -119,11 +130,12 @@ watch(() => props.show, (newVal) => {
                 <td colspan="5" class="empty-cell">{{ t('game.ranking.empty') }}</td>
               </tr>
             </tbody>
-          </n-table>
-        </n-tab-pane>
+          </table>
+        </div>
 
-        <n-tab-pane name="earth" :tab="t('game.ranking.earth')">
-          <n-table :bordered="false" :single-line="false" size="small">
+        <!-- Earth Tab -->
+        <div v-show="activeTab === 'earth'" class="tab-content">
+          <table class="shuimo-table">
             <thead>
               <tr>
                 <th>{{ t('game.ranking.rank') }}</th>
@@ -148,11 +160,12 @@ watch(() => props.show, (newVal) => {
                 <td colspan="5" class="empty-cell">{{ t('game.ranking.empty') }}</td>
               </tr>
             </tbody>
-          </n-table>
-        </n-tab-pane>
+          </table>
+        </div>
 
-        <n-tab-pane name="human" :tab="t('game.ranking.human')">
-          <n-table :bordered="false" :single-line="false" size="small">
+        <!-- Human Tab -->
+        <div v-show="activeTab === 'human'" class="tab-content">
+          <table class="shuimo-table">
             <thead>
               <tr>
                 <th>{{ t('game.ranking.rank') }}</th>
@@ -177,11 +190,12 @@ watch(() => props.show, (newVal) => {
                 <td colspan="5" class="empty-cell">{{ t('game.ranking.empty') }}</td>
               </tr>
             </tbody>
-          </n-table>
-        </n-tab-pane>
+          </table>
+        </div>
 
-        <n-tab-pane name="sect" :tab="t('game.ranking.sect_ranking')">
-          <n-table :bordered="false" :single-line="false" size="small">
+        <!-- Sect Tab -->
+        <div v-show="activeTab === 'sect'" class="tab-content">
+          <table class="shuimo-table">
             <thead>
               <tr>
                 <th>{{ t('game.ranking.rank') }}</th>
@@ -203,14 +217,11 @@ watch(() => props.show, (newVal) => {
                 <td colspan="5" class="empty-cell">{{ t('game.ranking.empty') }}</td>
               </tr>
             </tbody>
-          </n-table>
-        </n-tab-pane>
-      </n-tabs>
+          </table>
         </div>
       </div>
-      </div>
-    </n-spin>
-  </n-modal>
+    </m-loading>
+  </m-dialog>
 </template>
 
 <style scoped>
@@ -226,24 +237,51 @@ watch(() => props.show, (newVal) => {
   text-decoration: underline;
 }
 
-:deep(.n-tabs-tab) {
-  color: var(--panel-text-secondary);
+.shuimo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
 }
 
-:deep(.n-tabs-tab.n-tabs-tab--active) {
+.shuimo-table th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--panel-border);
+  color: var(--panel-text-secondary);
+  font-weight: 600;
+}
+
+.shuimo-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.tabs-header {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--panel-border);
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--panel-text-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--panel-text-primary);
+}
+
+.tab-btn.active {
   color: var(--panel-accent-strong);
-}
-
-:deep(.n-tabs-bar) {
-  background-color: var(--panel-accent-soft);
-}
-
-:deep(.n-table) {
-  background-color: transparent;
-}
-:deep(.n-table th) {
-  font-weight: bold;
-  color: var(--panel-text-secondary);
+  border-bottom-color: var(--panel-accent-soft);
 }
 
 .ranking-lead {

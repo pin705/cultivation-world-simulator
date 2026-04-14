@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useMessage } from 'naive-ui';
+import { MMessage } from 'shuimo-ui';
 import { avatarApi } from '@/api';
 import { useAvatarStore } from '@/stores/avatar';
 import { getAvatarPortraitUrl } from '@/utils/assetUrls';
@@ -22,7 +22,6 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const message = useMessage();
 const avatarStore = useAvatarStore();
 
 const avatarMeta = ref<{ males: number[]; females: number[] } | null>(null);
@@ -77,7 +76,7 @@ async function handleApply() {
       pic_id: selectedPicId.value,
     });
     avatarStore.updateAvatarSummary(props.avatarId, { pic_id: selectedPicId.value });
-    message.success(t('game.info_panel.avatar.portrait.apply_success'));
+    MMessage.success(t('game.info_panel.avatar.portrait.apply_success'));
     emit('updated');
     emit('close');
   } catch (error) {
@@ -113,15 +112,10 @@ async function handleApply() {
           <div v-if="isLoading" class="state-text">{{ t('common.loading') }}</div>
           <div v-else-if="errorText" class="state-text error">{{ errorText }}</div>
           <div v-else-if="availableAvatars.length" class="avatar-grid">
-            <button
-              v-for="id in availableAvatars"
-              :key="id"
-              class="avatar-option"
-              :class="{ selected: id === selectedPicId }"
-              type="button"
-              @click="selectedPicId = id"
-            >
-              <img :src="getAvatarPortraitUrl(gender, id)" :alt="`${t('game.info_panel.avatar.portrait.option_alt')} ${id}`" loading="lazy" />
+            <button v-for="id in availableAvatars" :key="id" class="avatar-option"
+              :class="{ selected: id === selectedPicId }" type="button" @click="selectedPicId = id">
+              <img :src="getAvatarPortraitUrl(gender, id)"
+                :alt="`${t('game.info_panel.avatar.portrait.option_alt')} ${id}`" loading="lazy" />
             </button>
           </div>
           <div v-else class="state-text">{{ t('game.info_panel.avatar.portrait.empty_library') }}</div>
@@ -129,7 +123,8 @@ async function handleApply() {
 
         <div class="footer">
           <button class="action-btn primary" :disabled="!selectedPicId || submitLoading" @click="handleApply">
-            <span class="icon-mask button-icon" :style="{ '--icon-url': `url(${checkIcon})` }" aria-hidden="true"></span>
+            <span class="icon-mask button-icon" :style="{ '--icon-url': `url(${checkIcon})` }"
+              aria-hidden="true"></span>
             {{ submitLoading ? t('common.loading') : t('common.confirm') }}
           </button>
           <button class="action-btn" :disabled="submitLoading" @click="$emit('close')">

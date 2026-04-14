@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { NModal, NEmpty, NTag } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { SHARED_UI_COLORS, SYSTEM_PANEL_THEMES } from '@/constants/uiColors'
 import { useWorldStore } from '@/stores/world'
@@ -44,13 +43,8 @@ function formatPercent(value: number): string {
 </script>
 
 <template>
-  <n-modal
-    :show="show"
-    @update:show="handleShowChange"
-    preset="card"
-    :title="t('game.status_bar.hidden_domain.title')"
-    style="width: 860px; max-height: 80vh; overflow-y: auto;"
-  >
+  <m-dialog :show="show" @update:show="handleShowChange" :title="t('game.status_bar.hidden_domain.title')"
+    style="width: 860px; max-height: 80vh; overflow-y: auto;">
     <div class="hidden-domain-overview" :style="panelStyleVars">
       <section class="hero-card">
         <div class="hero-title-wrap">
@@ -65,32 +59,30 @@ function formatPercent(value: number): string {
       <section class="section">
         <div class="section-header">
           <div class="section-title">
-            <span class="section-title-icon" :style="{ '--icon-url': `url(${sparklesIcon})` }" aria-hidden="true"></span>
+            <span class="section-title-icon" :style="{ '--icon-url': `url(${sparklesIcon})` }"
+              aria-hidden="true"></span>
             {{ t('game.status_bar.hidden_domain.title') }}
           </div>
           <div class="section-meta">{{ domainItems.length }}</div>
         </div>
 
         <div v-if="domainItems.length" class="domain-list">
-          <article
-            v-for="item in domainItems"
-            :key="item.id"
-            class="domain-card"
-          >
+          <article v-for="item in domainItems" :key="item.id" class="domain-card">
             <div class="domain-card-header">
               <div>
                 <div class="domain-name">{{ item.name }}</div>
                 <div class="domain-desc">{{ item.desc }}</div>
               </div>
-              <n-tag size="small" :bordered="false" class="realm-tag">
+              <m-tag size="small" :bordered="false" class="realm-tag">
                 {{ t('game.status_bar.hidden_domain.required_realm') }}：{{ formatRealmLabel(item.required_realm, t) }}
-              </n-tag>
+              </m-tag>
             </div>
 
             <div class="stats-grid">
               <div class="stat-card stat-card-danger">
                 <div class="stat-title">
-                  <span class="stat-icon" :style="{ '--icon-url': `url(${triangleAlertIcon})` }" aria-hidden="true"></span>
+                  <span class="stat-icon" :style="{ '--icon-url': `url(${triangleAlertIcon})` }"
+                    aria-hidden="true"></span>
                   {{ t('game.status_bar.hidden_domain.danger') }}
                 </div>
                 <div class="stat-value">{{ formatPercent(item.danger_prob) }}</div>
@@ -120,14 +112,12 @@ function formatPercent(value: number): string {
           </article>
         </div>
 
-        <n-empty
-          v-else
-          :description="t('game.status_bar.hidden_domain.empty')"
-          class="empty-state"
-        />
+        <div v-else class="empty-state">
+          {{ t('game.status_bar.hidden_domain.empty') }}
+        </div>
       </section>
     </div>
-  </n-modal>
+  </m-dialog>
 </template>
 
 <style scoped>

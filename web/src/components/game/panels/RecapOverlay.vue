@@ -1,18 +1,10 @@
-/**
-* Recap Overlay Component
-*
-* 使用 shuimo-ui 水墨风组件
-* Replaces custom CSS with shuimo-ui components
-*/
 <template>
+  <!-- Recap Overlay - Using shuimo-ui components -->
   <Teleport to="body">
-    <!-- shuimo-ui dialog -->
     <m-dialog v-model:show="showModal" title="天机推演" @confirm="handleConfirm">
       <!-- 时间段 -->
       <div class="recap-period">
-        <m-text type="secondary" size="small">
-          {{ recapStore.recap?.period_text }}
-        </m-text>
+        <span class="text-secondary text-small">{{ recapStore.recap?.period_text }}</span>
       </div>
 
       <!-- Action Points -->
@@ -23,177 +15,158 @@
       </div>
 
       <!-- 总结文本 -->
-      <m-alert v-if="recapStore.recap?.summary_text" type="info" :show-icon="true">
+      <div v-if="recapStore.recap?.summary_text" class="recap-summary">
         {{ recapStore.recap.summary_text }}
-      </m-alert>
+      </div>
 
       <!-- 滚动内容 -->
-      <m-scroll style="max-height: 60vh; margin-top: 16px;">
-        <m-space direction="vertical" :size="20">
+      <div class="recap-content">
+        <div class="vertical-space">
           <!-- 宗门 recap -->
-          <m-card v-if="recapStore.recap?.sect" :title="recapStore.recap.sect.sect_name" size="small">
-            <template #extra>
+          <div v-if="recapStore.recap?.sect" class="recap-card">
+            <div class="card-header">
+              <span class="card-title">{{ recapStore.recap.sect.sect_name }}</span>
               <m-tag type="primary" size="small">宗门</m-tag>
-            </template>
+            </div>
 
-            <m-space direction="vertical" :size="12">
-              <!-- 状态变化 -->
-              <div v-if="recapStore.recap.sect.status_changes.length">
-                <m-text type="secondary" size="small">状态变化</m-text>
-                <m-list :data="recapStore.recap.sect.status_changes" size="small">
-                  <template #default="{ item }">
-                    <m-list-item>
-                      <template #prefix>
-                        <div class="bullet status"></div>
-                      </template>
-                      {{ item }}
-                    </m-list-item>
+            <m-divider>状态变化</m-divider>
+            <m-list v-if="recapStore.recap.sect.status_changes.length" :data="recapStore.recap.sect.status_changes"
+              size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet status"></div>
                   </template>
-                </m-list>
-              </div>
+                  {{ item }}
+                </m-li>
+              </template>
+            </m-list>
 
-              <!-- 成员事件 -->
-              <div v-if="recapStore.recap.sect.member_events.length">
-                <m-text type="secondary" size="small">成员事件</m-text>
-                <m-list :data="recapStore.recap.sect.member_events" size="small">
-                  <template #default="{ item }">
-                    <m-list-item>
-                      <template #prefix>
-                        <div class="bullet member"></div>
-                      </template>
-                      {{ item }}
-                    </m-list-item>
+            <m-divider>成员事件</m-divider>
+            <m-list v-if="recapStore.recap.sect.member_events.length" :data="recapStore.recap.sect.member_events"
+              size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet member"></div>
                   </template>
-                </m-list>
-              </div>
+                  {{ item }}
+                </m-li>
+              </template>
+            </m-list>
 
-              <!-- 威胁 -->
-              <div v-if="recapStore.recap.sect.threats.length">
-                <m-text type="secondary" size="small">威胁警告</m-text>
-                <m-list :data="recapStore.recap.sect.threats" size="small" type="danger">
-                  <template #default="{ item }">
-                    <m-list-item>
-                      <template #prefix>
-                        <div class="bullet threat"></div>
-                      </template>
-                      {{ item }}
-                    </m-list-item>
+            <m-divider>威胁警告</m-divider>
+            <m-list v-if="recapStore.recap.sect.threats.length" :data="recapStore.recap.sect.threats" size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet threat"></div>
                   </template>
-                </m-list>
-              </div>
-            </m-space>
-          </m-card>
+                  <span class="text-danger">{{ item }}</span>
+                </m-li>
+              </template>
+            </m-list>
+          </div>
 
           <!-- 弟子 recap -->
-          <m-card v-if="recapStore.recap?.main_disciple" :title="recapStore.recap.main_disciple.name" size="small">
-            <template #extra>
+          <div v-if="recapStore.recap?.main_disciple" class="recap-card">
+            <div class="card-header">
+              <span class="card-title">{{ recapStore.recap.main_disciple.name }}</span>
               <m-tag type="success" size="small">弟子</m-tag>
-            </template>
+            </div>
 
-            <m-space direction="vertical" :size="12">
-              <!-- 修炼进展 -->
-              <div v-if="recapStore.recap.main_disciple.cultivation_progress">
-                <m-text type="secondary" size="small">修炼</m-text>
-                <m-text type="success">{{ recapStore.recap.main_disciple.cultivation_progress }}</m-text>
-              </div>
+            <div v-if="recapStore.recap.main_disciple.cultivation_progress" class="info-row">
+              <span class="label">修炼:</span>
+              <span class="text-success">{{ recapStore.recap.main_disciple.cultivation_progress }}</span>
+            </div>
 
-              <!-- 重要事件 -->
-              <div v-if="recapStore.recap.main_disciple.major_events.length">
-                <m-text type="secondary" size="small">重要事件</m-text>
-                <m-list :data="recapStore.recap.main_disciple.major_events" size="small">
-                  <template #default="{ item }">
-                    <m-list-item>
-                      <template #prefix>
-                        <div class="bullet major"></div>
-                      </template>
-                      {{ item }}
-                    </m-list-item>
+            <m-divider>重要事件</m-divider>
+            <m-list v-if="recapStore.recap.main_disciple.major_events.length"
+              :data="recapStore.recap.main_disciple.major_events" size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet major"></div>
                   </template>
-                </m-list>
-              </div>
+                  {{ item }}
+                </m-li>
+              </template>
+            </m-list>
 
-              <!-- 当前状态 -->
-              <div v-if="recapStore.recap.main_disciple.current_status">
-                <m-text type="secondary" size="small">状态</m-text>
-                <m-text>{{ recapStore.recap.main_disciple.current_status }}</m-text>
-              </div>
-            </m-space>
-          </m-card>
+            <div v-if="recapStore.recap.main_disciple.current_status" class="info-row">
+              <span class="label">状态:</span>
+              <span>{{ recapStore.recap.main_disciple.current_status }}</span>
+            </div>
+          </div>
 
           <!-- 世界事件 -->
-          <m-card title="天下大势" size="small">
-            <m-space direction="vertical" :size="12">
-              <!-- 天地灵机 -->
-              <m-alert v-if="recapStore.recap?.world.phenomenon" type="warning" :show-icon="true">
-                {{ recapStore.recap.world.phenomenon }}
-              </m-alert>
+          <div class="recap-card">
+            <div class="card-header">
+              <span class="card-title">天下大势</span>
+            </div>
 
-              <!-- 重大事件 -->
-              <div v-if="recapStore.recap?.world.major_events.length">
-                <m-text type="secondary" size="small">重大事件</m-text>
-                <m-list :data="recapStore.recap.world.major_events" size="small">
-                  <template #default="{ item }">
-                    <m-list-item>
-                      <template #prefix>
-                        <div class="bullet world"></div>
-                      </template>
-                      {{ item }}
-                    </m-list-item>
-                  </template>
-                </m-list>
-              </div>
+            <div v-if="recapStore.recap?.world.phenomenon" class="phenomenon-alert">
+              <span class="phenomenon-text">{{ recapStore.recap.world.phenomenon }}</span>
+            </div>
 
-              <!-- 宗门关系 -->
-              <div v-if="recapStore.recap?.world.sect_relations.length">
-                <m-text type="secondary" size="small">宗门关系</m-text>
-                <m-list :data="recapStore.recap.world.sect_relations" size="small">
-                  <template #default="{ item }">
-                    <m-list-item>
-                      <template #prefix>
-                        <div class="bullet relation"></div>
-                      </template>
-                      {{ item }}
-                    </m-list-item>
+            <m-divider>重大事件</m-divider>
+            <m-list v-if="recapStore.recap?.world.major_events.length" :data="recapStore.recap.world.major_events"
+              size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet world"></div>
                   </template>
-                </m-list>
-              </div>
-            </m-space>
-          </m-card>
+                  {{ item }}
+                </m-li>
+              </template>
+            </m-list>
+
+            <m-divider>宗门关系</m-divider>
+            <m-list v-if="recapStore.recap?.world.sect_relations.length" :data="recapStore.recap.world.sect_relations"
+              size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet relation"></div>
+                  </template>
+                  {{ item }}
+                </m-li>
+              </template>
+            </m-list>
+          </div>
 
           <!-- 机会和建议 -->
-          <m-card
+          <div
             v-if="recapStore.recap?.opportunities.opportunities.length || recapStore.recap?.opportunities.suggested_actions.length"
-            title="机缘建议" size="small">
-            <m-space direction="vertical" :size="12">
-              <!-- 可用机会 -->
-              <div v-if="recapStore.recap?.opportunities.opportunities.length">
-                <m-text type="secondary" size="small">可用机会</m-text>
-                <m-list :data="recapStore.recap.opportunities.opportunities" size="small" type="success">
-                  <template #default="{ item }">
-                    <m-list-item>
-                      <template #prefix>
-                        <div class="bullet opportunity"></div>
-                      </template>
-                      {{ item }}
-                    </m-list-item>
-                  </template>
-                </m-list>
-              </div>
+            class="recap-card">
+            <div class="card-header">
+              <span class="card-title">机缘建议</span>
+            </div>
 
-              <!-- 建议行动 -->
-              <div v-if="recapStore.recap?.opportunities.suggested_actions.length">
-                <m-text type="secondary" size="small">建议行动</m-text>
-                <m-space direction="vertical" :size="8">
-                  <m-button v-for="(action, idx) in recapStore.recap.opportunities.suggested_actions" :key="idx"
-                    size="small" type="primary" plain>
-                    {{ action }}
-                  </m-button>
-                </m-space>
-              </div>
-            </m-space>
-          </m-card>
-        </m-space>
-      </m-scroll>
+            <m-divider>可用机会</m-divider>
+            <m-list v-if="recapStore.recap?.opportunities.opportunities.length"
+              :data="recapStore.recap.opportunities.opportunities" size="small">
+              <template #default="{ item }">
+                <m-li>
+                  <template #prefix>
+                    <div class="bullet opportunity"></div>
+                  </template>
+                  <span class="text-success">{{ item }}</span>
+                </m-li>
+              </template>
+            </m-list>
+
+            <m-divider>建议行动</m-divider>
+            <div v-if="recapStore.recap?.opportunities.suggested_actions.length" class="vertical-space small">
+              <m-button v-for="(action, idx) in recapStore.recap.opportunities.suggested_actions" :key="idx"
+                size="small" type="primary" plain>
+                {{ action }}
+              </m-button>
+            </div>
+          </div>
+        </div>
+      </div>
     </m-dialog>
   </Teleport>
 </template>
@@ -203,17 +176,14 @@ import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
   MDialog,
-  MCard,
-  MText,
   MTag,
   MList,
-  MListItem,
+  MLi,
   MButton,
-  MScroll,
-  MSpace,
-  MAlert,
+  MDivider,
 } from 'shuimo-ui';
 import { useRecapStore } from '@/stores/recap';
+import { shuimoColors } from '@/themes/shuimo';
 
 const { t } = useI18n();
 const recapStore = useRecapStore();
@@ -260,6 +230,85 @@ watch(() => recapStore.showOverlay, (visible) => {
   margin-bottom: 12px;
 }
 
+.recap-summary {
+  padding: 12px;
+  margin-bottom: 16px;
+  background: rgba(74, 144, 217, 0.08);
+  border-left: 3px solid v-bind('shuimoColors.info');
+  border-radius: 4px;
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.6;
+  color: v-bind('shuimoColors.info');
+}
+
+.recap-content {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-top: 16px;
+  padding-right: 8px;
+}
+
+.vertical-space {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vertical-space.small {
+  gap: 8px;
+}
+
+.recap-card {
+  padding: 16px;
+  border: 1px solid rgba(139, 119, 90, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: v-bind('shuimoColors.status');
+  font-family: "STKaiti", "KaiTi", sans-serif;
+}
+
+.info-row {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: rgba(139, 119, 90, 0.08);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.info-row .label {
+  color: v-bind('shuimoColors.threat');
+  font-weight: 500;
+}
+
+.phenomenon-alert {
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: rgba(255, 152, 0, 0.08);
+  border: 1px solid rgba(255, 152, 0, 0.2);
+  border-radius: 4px;
+}
+
+.phenomenon-text {
+  font-size: 13px;
+  color: v-bind('shuimoColors.major');
+  font-weight: 600;
+}
+
 /* Event type colored dots */
 .bullet {
   width: 8px;
@@ -269,30 +318,50 @@ watch(() => recapStore.showOverlay, (visible) => {
 }
 
 .bullet.status {
-  background: #4a90d9;
+  background: v-bind('shuimoColors.status');
 }
 
 .bullet.member {
-  background: #50c878;
+  background: v-bind('shuimoColors.member');
 }
 
 .bullet.threat {
-  background: #dc3545;
+  background: v-bind('shuimoColors.threat');
 }
 
 .bullet.major {
-  background: #ff9800;
+  background: v-bind('shuimoColors.major');
 }
 
 .bullet.world {
-  background: #9c27b0;
+  background: v-bind('shuimoColors.world');
 }
 
 .bullet.relation {
-  background: #00bcd4;
+  background: v-bind('shuimoColors.relation');
 }
 
 .bullet.opportunity {
-  background: #4caf50;
+  background: v-bind('shuimoColors.opportunity');
+}
+
+/* Text utilities */
+.text-secondary {
+  color: v-bind('shuimoColors.threat');
+  font-style: italic;
+}
+
+.text-small {
+  font-size: 13px;
+}
+
+.text-success {
+  color: v-bind('shuimoColors.success');
+  font-weight: 600;
+}
+
+.text-danger {
+  color: v-bind('shuimoColors.error');
+  font-weight: 600;
 }
 </style>

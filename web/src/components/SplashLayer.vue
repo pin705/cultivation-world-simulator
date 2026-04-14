@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { NButton, NSpace } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { useBgm } from '../composables/useBgm'
 import { withBasePublicPath } from '@/utils/assetUrls'
@@ -22,7 +21,7 @@ onMounted(() => {
   useBgm().play('splash')
 
   if (!videoRef.value) return
-  
+
   const video = videoRef.value
   // 整体基础速度设为 0.8
   video.playbackRate = 0.8
@@ -32,7 +31,7 @@ onMounted(() => {
     if (!duration) return
 
     const remaining = duration - video.currentTime
-    
+
     // 当剩余时间小于 2 秒时开始线性减速
     if (remaining < 2 && remaining > 0) {
       // 从 0.8 逐渐降低，最低保持在 0.35 左右避免视觉卡顿感
@@ -62,14 +61,7 @@ function handleClick(key: string) {
 <template>
   <div class="splash-container">
     <LocaleSwitcher variant="splash" />
-    <video
-      ref="videoRef"
-      class="splash-video"
-      autoplay
-      muted
-      playsinline
-      :poster="splashPosterUrl"
-    >
+    <video ref="videoRef" class="splash-video" autoplay muted playsinline :poster="splashPosterUrl">
       <source :src="splashVideoUrl" type="video/mp4" />
     </video>
     <!-- 左侧模糊层 -->
@@ -78,27 +70,17 @@ function handleClick(key: string) {
         <h1>{{ t('splash.title') }}</h1>
         <p>AI Cultivation World Simulator</p>
       </div>
-      
+
       <div class="menu-area">
-        <n-space vertical size="large">
-          <n-button
-            v-for="opt in menuOptions"
-            :key="opt.key"
-            size="large"
-            block
-            color="#ffffff20"
-            text-color="#fff"
-            class="menu-btn"
-            :disabled="opt.disabled"
-            v-sound="'click'"
-            @click="handleClick(opt.key)"
-          >
+        <div class="menu-stack">
+          <m-button v-for="opt in menuOptions" :key="opt.key" size="large" block class="menu-btn"
+            :disabled="opt.disabled" v-sound="'click'" @click="handleClick(opt.key)">
             <div class="btn-content">
               <span class="btn-label">{{ opt.label }}</span>
               <span class="btn-sub">{{ opt.subLabel }}</span>
             </div>
-          </n-button>
-        </n-space>
+          </m-button>
+        </div>
       </div>
     </div>
   </div>
@@ -114,7 +96,8 @@ function handleClick(key: string) {
   z-index: 500;
   display: flex;
   align-items: center;
-  background-color: #000; /* 视频加载前的底色 */
+  background-color: #000;
+  /* 视频加载前的底色 */
   overflow: hidden;
 }
 
@@ -134,8 +117,10 @@ function handleClick(key: string) {
   z-index: 1;
   width: 400px;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4); /* 半透明黑底 */
-  backdrop-filter: blur(20px); /* 核心模糊效果 */
+  background: rgba(0, 0, 0, 0.4);
+  /* 半透明黑底 */
+  backdrop-filter: blur(20px);
+  /* 核心模糊效果 */
   -webkit-backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
@@ -148,7 +133,7 @@ function handleClick(key: string) {
 .title-area {
   margin-bottom: 80px;
   color: #fff;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .title-area h1 {
@@ -164,20 +149,33 @@ function handleClick(key: string) {
   letter-spacing: 2px;
 }
 
+.menu-area {
+  /* vertical stack with gap (replaces n-space vertical) */
+}
+
+.menu-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  /* large spacing equivalent to n-space size="large" */
+}
+
 /* 按钮样式微调 */
 .menu-btn {
-  height: 60px; /* 稍微加大一点按钮高度 */
+  height: 60px;
+  /* 稍微加大一点按钮高度 */
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
-  
+
   /* 核心修复：强制内容左对齐 */
   justify-content: flex-start;
   text-align: left;
-  padding-left: 32px; /* 统一的左侧留白 */
+  padding-left: 32px;
+  /* 统一的左侧留白 */
 }
 
-/* 修复 Naive UI 按钮内容可能默认居中的问题 */
-.menu-btn :deep(.n-button__content) {
+/* fix button content alignment */
+.menu-btn :deep(.m-button__content) {
   justify-content: flex-start;
   width: 100%;
 }
@@ -185,7 +183,8 @@ function handleClick(key: string) {
 .btn-content {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* 左对齐 */
+  align-items: flex-start;
+  /* 左对齐 */
   width: 100%;
 }
 

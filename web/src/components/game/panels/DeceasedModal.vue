@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, shallowRef, watch } from 'vue'
-import { NModal, NTable, NSpin, NEmpty, NButton } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { worldApi } from '../../../api/modules/world'
 import { eventApi } from '../../../api/modules/event'
@@ -75,17 +74,12 @@ watch(() => props.show, (newVal) => {
 </script>
 
 <template>
-  <n-modal
-    :show="show"
-    @update:show="handleShowChange"
-    preset="card"
-    :title="t('game.deceased.title')"
-    style="width: 700px; max-height: 80vh; overflow-y: auto;"
-  >
-    <!-- 详情视图 -->
+  <m-dialog :show="show" @update:show="handleShowChange" :title="t('game.deceased.title')"
+    style="width: 700px; max-height: 80vh; overflow-y: auto;">
+    <!-- Detail View -->
     <template v-if="selectedRecord">
       <div style="margin-bottom: 12px;">
-        <n-button size="small" @click="backToList">{{ t('game.deceased.back_to_list') }}</n-button>
+        <m-button size="small" @click="backToList">{{ t('game.deceased.back_to_list') }}</m-button>
       </div>
 
       <div class="deceased-detail-card">
@@ -103,7 +97,8 @@ watch(() => props.show, (newVal) => {
         </div>
         <div class="detail-row">
           <span class="detail-label">{{ t('game.deceased.death_time') }}</span>
-          <span>{{ t('game.deceased.death_year', { year: selectedRecord.deathYear, month: selectedRecord.deathMonth }) }}</span>
+          <span>{{ t('game.deceased.death_year', { year: selectedRecord.deathYear, month: selectedRecord.deathMonth })
+            }}</span>
         </div>
         <div class="detail-row" v-if="selectedRecord.sectName">
           <span class="detail-label">{{ t('game.deceased.sect') }}</span>
@@ -120,8 +115,8 @@ watch(() => props.show, (newVal) => {
       </div>
 
       <h4 style="margin: 16px 0 8px;">{{ t('game.deceased.events') }}</h4>
-      <n-spin :show="eventsLoading">
-        <div v-if="events.length === 0 && !eventsLoading" style="text-align: center; color: #888; padding: 16px;">
+      <m-loading :show="eventsLoading">
+        <div v-if="events.length === 0 && !eventsLoading" class="empty-events">
           {{ t('game.deceased.no_events') }}
         </div>
         <div v-else class="event-list">
@@ -130,14 +125,16 @@ watch(() => props.show, (newVal) => {
             <span class="event-text">{{ evt.content }}</span>
           </div>
         </div>
-      </n-spin>
+      </m-loading>
     </template>
 
-    <!-- 列表视图 -->
+    <!-- List View -->
     <template v-else>
-      <n-spin :show="loading">
-        <n-empty v-if="!loading && records.length === 0" :description="t('game.deceased.empty')" />
-        <n-table v-else :bordered="false" :single-line="false" size="small" striped>
+      <m-loading :show="loading">
+        <div v-if="!loading && records.length === 0" class="empty-state">
+          {{ t('game.deceased.empty') }}
+        </div>
+        <table v-else class="shuimo-table" striped>
           <thead>
             <tr>
               <th>{{ t('game.deceased.name') }}</th>
@@ -149,12 +146,7 @@ watch(() => props.show, (newVal) => {
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="record in records"
-              :key="record.id"
-              class="clickable-row"
-              @click="selectRecord(record)"
-            >
+            <tr v-for="record in records" :key="record.id" class="clickable-row" @click="selectRecord(record)">
               <td>{{ record.name }}</td>
               <td>{{ record.sectName || t('game.deceased.rogue') }}</td>
               <td>{{ formatRealmStage(record.realmDisplay, record.stageDisplay, t) }}</td>
@@ -163,10 +155,10 @@ watch(() => props.show, (newVal) => {
               <td>{{ t('game.deceased.death_year', { year: record.deathYear, month: record.deathMonth }) }}</td>
             </tr>
           </tbody>
-        </n-table>
-      </n-spin>
+        </table>
+      </m-loading>
     </template>
-  </n-modal>
+  </m-dialog>
 </template>
 
 <style scoped>
@@ -174,8 +166,31 @@ watch(() => props.show, (newVal) => {
   cursor: pointer;
   transition: background-color 0.15s;
 }
+
 .clickable-row:hover {
   background-color: rgba(255, 255, 255, 0.06);
+}
+
+.shuimo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.shuimo-table th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+}
+
+.shuimo-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.shuimo-table[striped] tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .deceased-detail-card {
@@ -191,10 +206,17 @@ watch(() => props.show, (newVal) => {
   display: flex;
   gap: 12px;
 }
+
 .detail-label {
   color: #888;
   min-width: 80px;
   flex-shrink: 0;
+}
+
+.empty-events {
+  text-align: center;
+  color: #888;
+  padding: 16px;
 }
 
 .event-list {
@@ -204,22 +226,24 @@ watch(() => props.show, (newVal) => {
   max-height: 300px;
   overflow-y: auto;
 }
+
 .event-item {
   font-size: 13px;
   line-height: 1.5;
 }
+
 .event-time {
   color: #888;
   margin-right: 6px;
 }
+
 .event-text {
   color: #ccc;
 }
 
-:deep(.n-table) {
-  background-color: transparent;
-}
-:deep(.n-table th) {
-  font-weight: bold;
+.empty-state {
+  text-align: center;
+  color: #888;
+  padding: 16px;
 }
 </style>

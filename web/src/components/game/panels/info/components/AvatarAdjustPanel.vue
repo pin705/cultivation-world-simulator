@@ -6,7 +6,7 @@ import type { EffectEntity } from '@/types/core';
 import { getEntityColor, getEntityGradeTone } from '@/utils/theme';
 import { logError, toErrorMessage } from '@/utils/appError';
 import { useI18n } from 'vue-i18n';
-import { useMessage } from 'naive-ui';
+import { MMessage } from 'shuimo-ui';
 import EntityDetailCard from './EntityDetailCard.vue';
 import { formatAttributeLabel, formatEntityGrade } from '@/utils/cultivationText';
 import checkIcon from '@/assets/icons/ui/lucide/check.svg';
@@ -29,7 +29,6 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const message = useMessage();
 
 const catalog = ref<AvatarAdjustCatalogDTO | null>(null);
 const isLoading = ref(false);
@@ -116,9 +115,9 @@ const filteredOptions = computed(() => {
   const result = !q
     ? rawOptions
     : rawOptions.filter(option => {
-        const haystack = `${option.name} ${option.desc || ''} ${option.effect_desc || ''} ${option.grade || ''} ${option.rarity || ''} ${option.attribute || ''}`;
-        return haystack.toLowerCase().includes(q);
-      });
+      const haystack = `${option.name} ${option.desc || ''} ${option.effect_desc || ''} ${option.grade || ''} ${option.rarity || ''} ${option.attribute || ''}`;
+      return haystack.toLowerCase().includes(q);
+    });
 
   if (props.category === 'personas') return result;
 
@@ -209,7 +208,7 @@ async function handleSingleSelect(option: AvatarAdjustOptionDTO) {
       category: props.category,
       target_id: option.id === '__none__' ? null : Number(option.id),
     });
-    message.success(t('game.info_panel.avatar.adjust.apply_success'));
+    MMessage.success(t('game.info_panel.avatar.adjust.apply_success'));
     emit('updated');
     emit('close');
   } catch (error) {
@@ -230,7 +229,7 @@ async function applyPersonas() {
       category: 'personas',
       persona_ids: selectedPersonaIds.value,
     });
-    message.success(t('game.info_panel.avatar.adjust.apply_success'));
+    MMessage.success(t('game.info_panel.avatar.adjust.apply_success'));
     emit('updated');
     emit('close');
   } catch (error) {
@@ -282,7 +281,7 @@ async function saveCustomDraft() {
       category: props.category,
       target_id: Number(createResponse.item.id),
     });
-    message.success(t('game.info_panel.avatar.adjust.custom.create_success'));
+    MMessage.success(t('game.info_panel.avatar.adjust.custom.create_success'));
     emit('updated');
     emit('close');
   } catch (error) {
@@ -310,23 +309,15 @@ async function saveCustomDraft() {
 
           <div v-if="category === 'personas'" class="persona-summary">
             <template v-if="currentPersonaSummary.length">
-              <span
-                v-for="persona in currentPersonaSummary"
-                :key="persona.id || persona.name"
-                class="persona-chip"
-                :style="{ borderColor: getEntityColor(persona) }"
-              >
+              <span v-for="persona in currentPersonaSummary" :key="persona.id || persona.name" class="persona-chip"
+                :style="{ borderColor: getEntityColor(persona) }">
                 {{ persona.name }}
               </span>
             </template>
             <div v-else class="empty-text">{{ t('common.none') }}</div>
           </div>
 
-          <EntityDetailCard
-            v-else
-            :item="singleSlotCurrentItem"
-            :empty-label="t('common.none')"
-          />
+          <EntityDetailCard v-else :item="singleSlotCurrentItem" :empty-label="t('common.none')" />
         </div>
 
         <div v-if="supportsCustomGeneration" class="block custom-section">
@@ -338,13 +329,11 @@ async function saveCustomDraft() {
               {{ option.label }}
             </option>
           </select>
-          <textarea
-            v-model="customPrompt"
-            class="prompt-input"
-            :placeholder="t('game.info_panel.avatar.adjust.custom.prompt_placeholder')"
-          />
+          <textarea v-model="customPrompt" class="prompt-input"
+            :placeholder="t('game.info_panel.avatar.adjust.custom.prompt_placeholder')" />
           <button class="apply-btn" :disabled="draftLoading || saveDraftLoading" @click="generateCustomDraft">
-            <span class="icon-mask button-icon" :style="{ '--icon-url': `url(${refreshIcon})` }" aria-hidden="true"></span>
+            <span class="icon-mask button-icon" :style="{ '--icon-url': `url(${refreshIcon})` }"
+              aria-hidden="true"></span>
             {{ draftLoading ? t('common.loading') : t('game.info_panel.avatar.adjust.custom.generate') }}
           </button>
           <div v-if="customDraft" class="draft-preview">
@@ -353,13 +342,10 @@ async function saveCustomDraft() {
             </div>
             <EntityDetailCard :item="draftPreviewItem" :show-name="false" />
           </div>
-          <button
-            v-if="customDraft"
-            class="apply-btn secondary"
-            :disabled="saveDraftLoading || draftLoading"
-            @click="saveCustomDraft"
-          >
-            <span class="icon-mask button-icon" :style="{ '--icon-url': `url(${checkIcon})` }" aria-hidden="true"></span>
+          <button v-if="customDraft" class="apply-btn secondary" :disabled="saveDraftLoading || draftLoading"
+            @click="saveCustomDraft">
+            <span class="icon-mask button-icon" :style="{ '--icon-url': `url(${checkIcon})` }"
+              aria-hidden="true"></span>
             {{ saveDraftLoading ? t('common.loading') : t('game.info_panel.avatar.adjust.custom.save') }}
           </button>
         </div>
@@ -367,40 +353,30 @@ async function saveCustomDraft() {
         <div class="block grow">
           <div class="block-title">{{ t('game.info_panel.avatar.adjust.select') }}</div>
           <label class="search-field">
-            <span class="icon-mask search-icon" :style="{ '--icon-url': `url(${searchIcon})` }" aria-hidden="true"></span>
-            <input
-              v-model="searchText"
-              class="search-input"
-              type="text"
-              :placeholder="t('game.info_panel.avatar.adjust.search_placeholder')"
-            />
+            <span class="icon-mask search-icon" :style="{ '--icon-url': `url(${searchIcon})` }"
+              aria-hidden="true"></span>
+            <input v-model="searchText" class="search-input" type="text"
+              :placeholder="t('game.info_panel.avatar.adjust.search_placeholder')" />
           </label>
 
           <div v-if="isLoading" class="state-text">{{ t('common.loading') }}</div>
           <div v-else-if="errorText" class="state-text error">{{ errorText }}</div>
           <div v-else class="options-list">
-            <button
-              v-for="option in filteredOptions"
-              :key="`${category}-${option.id}-${option.name}`"
-              class="option-row"
-              :class="{
+            <button v-for="option in filteredOptions" :key="`${category}-${option.id}-${option.name}`"
+              class="option-row" :class="{
                 selected: category === 'personas' ? isSelectedPersona(option) : false,
                 disabled: submitLoading,
-              }"
-              :disabled="submitLoading"
-              @click="category === 'personas' ? togglePersona(option) : handleSingleSelect(option)"
-            >
+              }" :disabled="submitLoading"
+              @click="category === 'personas' ? togglePersona(option) : handleSingleSelect(option)">
               <div class="option-main">
                 <span class="option-name" :style="{ color: getEntityColor(option) }">{{ option.name }}</span>
-                <span
-                  v-if="option.grade || option.rarity"
-                  class="option-meta"
-                  :class="getOptionGradeClass(option)"
-                >
+                <span v-if="option.grade || option.rarity" class="option-meta" :class="getOptionGradeClass(option)">
                   {{ formatEntityGrade(option.grade || option.rarity, t) }}
                 </span>
                 <span v-if="option.attribute" class="option-meta">{{ formatAttributeLabel(option.attribute, t) }}</span>
-                <span v-if="option.is_custom" class="option-meta custom-tag">{{ t('game.info_panel.avatar.adjust.custom.tag') }}</span>
+                <span v-if="option.is_custom" class="option-meta custom-tag">{{
+                  t('game.info_panel.avatar.adjust.custom.tag')
+                }}</span>
               </div>
               <div v-if="option.desc" class="option-desc">{{ option.desc }}</div>
             </button>
@@ -409,7 +385,8 @@ async function saveCustomDraft() {
 
         <div v-if="category === 'personas'" class="footer">
           <button class="apply-btn" :disabled="submitLoading" @click="applyPersonas">
-            <span class="icon-mask button-icon" :style="{ '--icon-url': `url(${checkIcon})` }" aria-hidden="true"></span>
+            <span class="icon-mask button-icon" :style="{ '--icon-url': `url(${checkIcon})` }"
+              aria-hidden="true"></span>
             {{ submitLoading ? t('common.loading') : t('game.info_panel.avatar.adjust.apply_personas') }}
           </button>
         </div>

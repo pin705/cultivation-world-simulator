@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { NButton, NInput, useMessage } from 'naive-ui'
+import { MMessage } from 'shuimo-ui'
 import { useI18n } from 'vue-i18n'
 
 import GameStartPanel from '@/components/game/panels/system/GameStartPanel.vue'
@@ -25,7 +25,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const message = useMessage()
+const message = MMessage
 const systemStore = useSystemStore()
 const socketStore = useSocketStore()
 const {
@@ -364,55 +364,34 @@ onMounted(() => {
       </div>
 
       <div v-if="!isRegisteredAccount" class="start-flow__auth-mode">
-        <button
-          class="mode-pill"
-          :class="{ 'mode-pill--active': authMode === 'register' }"
-          @click="authMode = 'register'"
-        >
+        <button class="mode-pill" :class="{ 'mode-pill--active': authMode === 'register' }"
+          @click="authMode = 'register'">
           {{ t('ui.auth_mode_register') }}
         </button>
-        <button
-          class="mode-pill"
-          :class="{ 'mode-pill--active': authMode === 'login' }"
-          @click="authMode = 'login'"
-        >
+        <button class="mode-pill" :class="{ 'mode-pill--active': authMode === 'login' }" @click="authMode = 'login'">
           {{ t('ui.auth_mode_login') }}
         </button>
       </div>
 
       <div v-if="!isRegisteredAccount" class="start-flow__stack">
-        <n-input
-          v-model:value="pendingAuthEmail"
-          :placeholder="t('ui.auth_email_placeholder')"
-        />
-        <n-input
-          v-model:value="pendingAuthPassword"
-          type="password"
-          show-password-on="click"
-          :placeholder="t('ui.auth_password_placeholder')"
-        />
-        <n-input
-          v-if="authMode === 'register'"
-          v-model:value="pendingAuthDisplayName"
-          :placeholder="t('ui.auth_display_name_placeholder')"
-        />
-        <n-button
-          type="primary"
-          block
-          :loading="isSubmittingAuth"
+        <m-input v-model:value="pendingAuthEmail" :placeholder="t('ui.auth_email_placeholder')" />
+        <m-input v-model:value="pendingAuthPassword" type="password" show-password-on="click"
+          :placeholder="t('ui.auth_password_placeholder')" />
+        <m-input v-if="authMode === 'register'" v-model:value="pendingAuthDisplayName"
+          :placeholder="t('ui.auth_display_name_placeholder')" />
+        <m-button type="primary" block :loading="isSubmittingAuth"
           :disabled="authMode === 'register' ? !canRegisterPasswordAccount : !canLoginPasswordAccount"
-          @click="submitAuth"
-        >
+          @click="submitAuth">
           {{ authMode === 'register' ? t('ui.auth_register_submit') : t('ui.auth_login_submit') }}
-        </n-button>
+        </m-button>
         <div class="start-flow__hint">{{ t('ui.auth_hint_play_now') }}</div>
       </div>
 
       <div v-else class="start-flow__stack">
         <div class="start-flow__hint">{{ t('ui.auth_status_registered') }}</div>
-        <n-button secondary block @click="logoutAccount">
+        <m-button secondary block @click="logoutAccount">
           {{ t('ui.auth_logout') }}
-        </n-button>
+        </m-button>
       </div>
 
       <div v-if="authError" class="start-flow__error">
@@ -435,49 +414,27 @@ onMounted(() => {
       </div>
 
       <div class="start-flow__stack">
-        <n-button
-          v-if="activeRoomId !== 'main'"
-          secondary
-          block
-          :disabled="isSwitchingRoom"
-          @click="switchRoom('main')"
-        >
+        <m-button v-if="activeRoomId !== 'main'" secondary block :disabled="isSwitchingRoom"
+          @click="switchRoom('main')">
           {{ t('ui.play_flow_room_use_main') }}
-        </n-button>
+        </m-button>
 
         <div class="start-flow__inline">
-          <n-input
-            v-model:value="pendingRoomId"
-            :placeholder="t('ui.control_rooms_placeholder')"
-          />
-          <n-button
-            type="primary"
-            :loading="isSwitchingRoom"
-            :disabled="!canCreateOrSwitchRoom"
-            @click="switchRoom(normalizedPendingRoomId)"
-          >
+          <m-input v-model:value="pendingRoomId" :placeholder="t('ui.control_rooms_placeholder')" />
+          <m-button type="primary" :loading="isSwitchingRoom" :disabled="!canCreateOrSwitchRoom"
+            @click="switchRoom(normalizedPendingRoomId)">
             {{ t('ui.control_rooms_create') }}
-          </n-button>
+          </m-button>
         </div>
 
         <div class="start-flow__hint">{{ t('ui.play_flow_room_join_hint') }}</div>
 
         <div class="start-flow__inline start-flow__inline--join">
-          <n-input
-            v-model:value="pendingJoinRoomId"
-            :placeholder="t('ui.control_room_join_room_placeholder')"
-          />
-          <n-input
-            v-model:value="pendingInviteCode"
-            :placeholder="t('ui.control_room_join_code_placeholder')"
-          />
-          <n-button
-            :loading="isJoiningRoom"
-            :disabled="!canJoinPrivateRoom"
-            @click="joinRoomByInvite"
-          >
+          <m-input v-model:value="pendingJoinRoomId" :placeholder="t('ui.control_room_join_room_placeholder')" />
+          <m-input v-model:value="pendingInviteCode" :placeholder="t('ui.control_room_join_code_placeholder')" />
+          <m-button :loading="isJoiningRoom" :disabled="!canJoinPrivateRoom" @click="joinRoomByInvite">
             {{ t('ui.control_room_join_action') }}
-          </n-button>
+          </m-button>
         </div>
       </div>
 
@@ -507,11 +464,7 @@ onMounted(() => {
         <div v-if="worldStatus === 'error' && initStatus?.error" class="start-flow__error">
           {{ t('ui.play_flow_world_error', { error: initStatus.error }) }}
         </div>
-        <GameStartPanel
-          :readonly="false"
-          compact
-          @started="handleWorldStarted"
-        />
+        <GameStartPanel :readonly="false" compact @started="handleWorldStarted" />
       </div>
 
       <div v-else-if="worldIsStarting" class="start-flow__stack">
@@ -560,17 +513,9 @@ onMounted(() => {
           }}
         </div>
 
-        <div
-          v-if="!onboardingReady && onboardingRecommendedStep === 'claim_sect'"
-          class="start-flow__option-list"
-        >
-          <button
-            v-for="sect in onboardingClaimableSects"
-            :key="sect.id"
-            class="flow-option"
-            :disabled="isSubmittingOnboarding"
-            @click="claimSectFromFlow(sect.id)"
-          >
+        <div v-if="!onboardingReady && onboardingRecommendedStep === 'claim_sect'" class="start-flow__option-list">
+          <button v-for="sect in onboardingClaimableSects" :key="sect.id" class="flow-option"
+            :disabled="isSubmittingOnboarding" @click="claimSectFromFlow(sect.id)">
             <span class="flow-option__title">{{ sect.name }}</span>
             <span class="flow-option__meta">
               {{ t('ui.player_campaign_members', { count: sect.member_count }) }}
@@ -578,17 +523,10 @@ onMounted(() => {
           </button>
         </div>
 
-        <div
-          v-else-if="!onboardingReady && onboardingRecommendedStep === 'set_main_avatar'"
-          class="start-flow__option-list"
-        >
-          <button
-            v-for="avatar in onboardingMainAvatarCandidates"
-            :key="avatar.id"
-            class="flow-option"
-            :disabled="isSubmittingOnboarding"
-            @click="setMainAvatarFromFlow(avatar.id)"
-          >
+        <div v-else-if="!onboardingReady && onboardingRecommendedStep === 'set_main_avatar'"
+          class="start-flow__option-list">
+          <button v-for="avatar in onboardingMainAvatarCandidates" :key="avatar.id" class="flow-option"
+            :disabled="isSubmittingOnboarding" @click="setMainAvatarFromFlow(avatar.id)">
             <span class="flow-option__title">{{ avatar.name }}</span>
             <span class="flow-option__meta">
               {{ avatar.realm }} · {{ t('ui.player_campaign_age', { age: avatar.age }) }}
@@ -596,17 +534,10 @@ onMounted(() => {
           </button>
         </div>
 
-        <div
-          v-else-if="!onboardingReady && onboardingRecommendedStep === 'choose_opening'"
-          class="start-flow__option-list"
-        >
-          <button
-            v-for="choice in onboardingOpeningChoices"
-            :key="choice.id"
-            class="flow-option"
-            :disabled="isSubmittingOnboarding || !choice.can_select"
-            @click="chooseOpeningFromFlow(choice.id)"
-          >
+        <div v-else-if="!onboardingReady && onboardingRecommendedStep === 'choose_opening'"
+          class="start-flow__option-list">
+          <button v-for="choice in onboardingOpeningChoices" :key="choice.id" class="flow-option"
+            :disabled="isSubmittingOnboarding || !choice.can_select" @click="chooseOpeningFromFlow(choice.id)">
             <span class="flow-option__title">{{ playerOpeningChoiceTitle(t, choice.id) }}</span>
             <span class="flow-option__meta">{{ playerOpeningChoiceDesc(t, choice.id) }}</span>
             <span class="flow-option__meta">{{ playerOpeningChoiceEffect(t, choice.id) }}</span>
@@ -639,15 +570,9 @@ onMounted(() => {
       </div>
 
       <div class="start-flow__stack">
-        <n-button
-          type="primary"
-          size="large"
-          block
-          :disabled="!canEnterWorld"
-          @click="enterWorld"
-        >
+        <m-button type="primary" size="large" block :disabled="!canEnterWorld" @click="enterWorld">
           {{ t('ui.play_flow_enter_action') }}
-        </n-button>
+        </m-button>
         <div class="start-flow__hint">{{ flowHint }}</div>
       </div>
     </section>
@@ -841,6 +766,7 @@ onMounted(() => {
 }
 
 @media (max-width: 720px) {
+
   .start-flow__inline,
   .start-flow__inline--join {
     grid-template-columns: 1fr;

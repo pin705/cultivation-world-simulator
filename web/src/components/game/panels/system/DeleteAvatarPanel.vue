@@ -3,12 +3,11 @@ import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { avatarApi, type SimpleAvatarDTO } from '../../../../api'
 import { useWorldStore } from '../../../../stores/world'
-import { useMessage, NInput, NButton } from 'naive-ui'
+import { MMessage } from 'shuimo-ui'
 import searchIcon from '@/assets/icons/ui/lucide/search.svg'
 import trashIcon from '@/assets/icons/ui/lucide/trash-2.svg'
 
 const worldStore = useWorldStore()
-const message = useMessage()
 const { t } = useI18n()
 const loading = ref(false)
 
@@ -31,7 +30,7 @@ async function fetchAvatarList() {
   try {
     avatarList.value = await avatarApi.fetchAvatarList()
   } catch (e) {
-    message.error(t(uiKey('fetch_failed')))
+    MMessage.error(t(uiKey('fetch_failed')))
   } finally {
     loading.value = false
   }
@@ -39,17 +38,17 @@ async function fetchAvatarList() {
 
 async function handleDeleteAvatar(id: string, name: string) {
   if (!confirm(t(uiKey('delete_confirm'), { name }))) return
-  
+
   loading.value = true
   try {
     await avatarApi.deleteAvatar(id)
-    message.success(t(uiKey('delete_success')))
+    MMessage.success(t(uiKey('delete_success')))
     await Promise.all([
       fetchAvatarList(),
       worldStore.fetchState ? worldStore.fetchState() : Promise.resolve()
     ])
   } catch (e) {
-    message.error(t(uiKey('delete_failed')))
+    MMessage.error(t(uiKey('delete_failed')))
   } finally {
     loading.value = false
   }
@@ -63,30 +62,27 @@ onMounted(() => {
 <template>
   <div class="delete-panel">
     <div class="search-bar">
-      <n-input v-model:value="avatarSearch" :placeholder="t(uiKey('search_placeholder'))">
+      <m-input v-model:value="avatarSearch" :placeholder="t(uiKey('search_placeholder'))">
         <template #prefix>
           <span class="input-icon" :style="{ '--icon-url': `url(${searchIcon})` }" aria-hidden="true"></span>
         </template>
-      </n-input>
+      </m-input>
     </div>
     <div class="avatar-list">
       <div v-if="loading" class="loading">{{ t('common.loading') }}</div>
       <div v-else-if="filteredAvatars.length === 0" class="empty">{{ t(uiKey('empty')) }}</div>
-      <div 
-        v-for="avatar in filteredAvatars" 
-        :key="avatar.id"
-        class="avatar-item"
-      >
-         <div class="avatar-info">
-           <div class="name">{{ avatar.name }}</div>
-           <div class="details">
-              {{ avatar.gender }} | {{ avatar.age }} {{ t(uiKey('age_unit')) }} | {{ t('realms.' + avatar.realm) }} | {{ avatar.sect_name }}
-           </div>
-         </div>
-         <n-button type="error" size="small" @click="handleDeleteAvatar(avatar.id, avatar.name)">
-           <span class="button-icon" :style="{ '--icon-url': `url(${trashIcon})` }" aria-hidden="true"></span>
-           {{ t('save_load.delete') }}
-         </n-button>
+      <div v-for="avatar in filteredAvatars" :key="avatar.id" class="avatar-item">
+        <div class="avatar-info">
+          <div class="name">{{ avatar.name }}</div>
+          <div class="details">
+            {{ avatar.gender }} | {{ avatar.age }} {{ t(uiKey('age_unit')) }} | {{ t('realms.' + avatar.realm) }} | {{
+              avatar.sect_name }}
+          </div>
+        </div>
+        <m-button type="error" size="small" @click="handleDeleteAvatar(avatar.id, avatar.name)">
+          <span class="button-icon" :style="{ '--icon-url': `url(${trashIcon})` }" aria-hidden="true"></span>
+          {{ t('save_load.delete') }}
+        </m-button>
       </div>
     </div>
   </div>
@@ -103,7 +99,7 @@ onMounted(() => {
 }
 
 .search-bar {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 .loading {
@@ -143,9 +139,9 @@ onMounted(() => {
 }
 
 .avatar-info .details {
-    color: #888;
-    font-size: 0.85em;
-    margin-top: 0.3em;
+  color: #888;
+  font-size: 0.85em;
+  margin-top: 0.3em;
 }
 
 .input-icon,

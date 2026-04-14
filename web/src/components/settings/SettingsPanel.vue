@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { NSelect, NSlider, NSwitch } from 'naive-ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { localeRegistry } from '@/locales/registry'
@@ -30,15 +29,12 @@ const languageOptions = computed(() =>
     <div class="settings-form">
       <div class="setting-item">
         <div class="setting-label-group">
-          <span class="setting-icon language-badge-icon" :style="{ '--icon-url': `url(${languagesIcon})` }" aria-label="Language"></span>
+          <span class="setting-icon language-badge-icon" :style="{ '--icon-url': `url(${languagesIcon})` }"
+            aria-label="Language"></span>
           <span class="setting-label">{{ t('ui.language') }}</span>
         </div>
-        <n-select
-          v-model:value="settingStore.locale"
-          :options="languageOptions"
-          @update:value="settingStore.setLocale"
-          style="width: 240px"
-        />
+        <m-select v-model="settingStore.locale" :options="languageOptions" @update:value="settingStore.setLocale"
+          style="width: 240px" />
       </div>
 
       <div class="setting-item">
@@ -51,14 +47,8 @@ const languageOptions = computed(() =>
           <div class="volume-row">
             <span class="volume-label">{{ t('ui.bgm_volume') }}</span>
             <div class="slider-container">
-              <n-slider
-                v-model:value="settingStore.bgmVolume"
-                :min="0"
-                :max="1"
-                :step="0.05"
-                :tooltip="false"
-                @update:value="settingStore.setBgmVolume"
-              />
+              <m-slider v-model="settingStore.bgmVolume" :min="0" :max="1" :step="0.05"
+                @update:value="settingStore.setBgmVolume" />
             </div>
             <span class="volume-value">{{ Math.round(settingStore.bgmVolume * 100) }}%</span>
           </div>
@@ -66,14 +56,8 @@ const languageOptions = computed(() =>
           <div class="volume-row">
             <span class="volume-label">{{ t('ui.sfx_volume') }}</span>
             <div class="slider-container">
-              <n-slider
-                v-model:value="settingStore.sfxVolume"
-                :min="0"
-                :max="1"
-                :step="0.05"
-                :tooltip="false"
-                @update:value="settingStore.setSfxVolume"
-              />
+              <m-slider v-model="settingStore.sfxVolume" :min="0" :max="1" :step="0.05"
+                @update:value="settingStore.setSfxVolume" />
             </div>
             <span class="volume-value">{{ Math.round(settingStore.sfxVolume * 100) }}%</span>
           </div>
@@ -88,10 +72,7 @@ const languageOptions = computed(() =>
             <span class="setting-subtitle">{{ t('ui.auto_save_desc') }}</span>
           </div>
         </div>
-        <n-switch
-          v-model:value="settingStore.isAutoSave"
-          @update:value="settingStore.setAutoSave"
-        />
+        <m-switch v-model="settingStore.isAutoSave" @update:value="settingStore.setAutoSave" />
       </div>
     </div>
   </div>

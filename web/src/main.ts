@@ -7,8 +7,8 @@ import './style.css'
 import App from './App.vue'
 
 // Register shuimo-ui globally
-import ShuimoUI from 'shuimo-ui'
-import 'shuimo-ui/index.css'
+import { createMUI } from 'shuimo-ui'
+import 'shuimo-ui/global.css'
 
 const pinia = createPinia()
 // 全局点击拦截器，用于自动播放音效
@@ -58,7 +58,7 @@ const app = createApp(App)
 
 app.use(pinia)
 app.use(i18n)
-app.use(ShuimoUI)  // Register shuimo-ui globally
+app.use(createMUI())  // Register shuimo-ui globally
 app.directive('sound', vSound)
 
 // Must be called after pinia is installed because useAudio uses the store

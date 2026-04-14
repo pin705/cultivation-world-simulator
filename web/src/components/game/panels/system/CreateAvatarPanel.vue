@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { RelationType } from '@/constants/relations'
 import { avatarApi, type GameDataDTO, type CreateAvatarParams, type SimpleAvatarDTO } from '../../../../api'
 import { useWorldStore } from '../../../../stores/world'
-import { useMessage, NInput, NSelect, NSlider, NRadioGroup, NRadioButton, NForm, NFormItem, NButton } from 'naive-ui'
+import { MMessage } from 'shuimo-ui'
 import { getAvatarPortraitUrl } from '@/utils/assetUrls'
 import { formatEntityGrade } from '@/utils/cultivationText'
 
@@ -14,7 +14,6 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const worldStore = useWorldStore()
-const message = useMessage()
 const loading = ref(false)
 
 const GENDER_MALE = '男'
@@ -138,7 +137,7 @@ async function fetchData() {
     // 获取角色列表用于关系选择
     avatarList.value = await avatarApi.fetchAvatarList()
   } catch (e) {
-    message.error(t(uiKey('fetch_failed')))
+    MMessage.error(t(uiKey('fetch_failed')))
   } finally {
     loading.value = false
   }
@@ -166,11 +165,11 @@ async function handleCreateAvatar() {
     if (!payload.alignment) {
       payload.alignment = 'NEUTRAL'
     }
-    
+
     await avatarApi.createAvatar(payload)
-    message.success(t(uiKey('create_success')))
+    MMessage.success(t(uiKey('create_success')))
     await worldStore.fetchState?.()
-    
+
     // Reset form
     createForm.value = {
       surname: '',
@@ -188,10 +187,10 @@ async function handleCreateAvatar() {
       appearance: 7,
       relations: []
     }
-    
+
     emit('created')
   } catch (e) {
-    message.error(t(uiKey('create_failed'), { error: String(e) }))
+    MMessage.error(t(uiKey('create_failed'), { error: String(e) }))
   } finally {
     loading.value = false
   }
@@ -217,81 +216,78 @@ onMounted(() => {
     <div v-if="loading && !gameData" class="loading">{{ t(uiKey('loading')) }}</div>
     <div v-else class="create-layout">
       <div class="form-column">
-        <n-form label-placement="left" label-width="80">
-          <n-form-item :label="t(uiKey('labels.name'))">
+        <m-form label-placement="left" label-width="80">
+          <m-form-item :label="t(uiKey('labels.name'))">
             <div class="name-inputs">
-              <n-input v-model:value="createForm.surname" :placeholder="t(uiKey('placeholders.surname'))" style="width: 6em" />
-              <n-input v-model:value="createForm.given_name" :placeholder="t(uiKey('placeholders.given_name'))" style="flex: 1" />
+              <m-input v-model:value="createForm.surname" :placeholder="t(uiKey('placeholders.surname'))"
+                style="width: 6em" />
+              <m-input v-model:value="createForm.given_name" :placeholder="t(uiKey('placeholders.given_name'))"
+                style="flex: 1" />
             </div>
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.gender'))">
-            <n-radio-group v-model:value="createForm.gender">
-              <n-radio-button :value="GENDER_MALE" :label="t(uiKey('gender_labels.male'))" />
-              <n-radio-button :value="GENDER_FEMALE" :label="t(uiKey('gender_labels.female'))" />
-            </n-radio-group>
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.age'))">
-            <n-slider v-model:value="createForm.age" :min="16" :max="100" :step="1" />
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.gender'))">
+            <m-radio-group v-model:value="createForm.gender">
+              <m-radio :value="GENDER_MALE" :label="t(uiKey('gender_labels.male'))" />
+              <m-radio :value="GENDER_FEMALE" :label="t(uiKey('gender_labels.female'))" />
+            </m-radio-group>
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.age'))">
+            <m-slider v-model:value="createForm.age" :min="16" :max="100" :step="1" />
             <span style="margin-left: 0.8em; width: 4.8em">{{ createForm.age }} {{ t(uiKey('age_unit')) }}</span>
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.initial_realm'))">
-              <n-select v-model:value="createForm.level" :options="realmOptions" :placeholder="t(uiKey('placeholders.initial_realm'))" />
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.sect'))">
-            <n-select v-model:value="createForm.sect_id" :options="sectOptions" :placeholder="t(uiKey('placeholders.sect'))" clearable />
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.persona'))">
-            <n-select v-model:value="createForm.persona_ids" multiple :options="personaOptions" :placeholder="t(uiKey('placeholders.persona'))" clearable max-tag-count="responsive" />
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.alignment'))">
-            <n-select v-model:value="createForm.alignment" :options="alignmentOptions" :placeholder="t('ui.create_alignment_placeholder')" clearable />
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.appearance'))">
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.initial_realm'))">
+            <m-select v-model:value="createForm.level" :options="realmOptions"
+              :placeholder="t(uiKey('placeholders.initial_realm'))" />
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.sect'))">
+            <m-select v-model:value="createForm.sect_id" :options="sectOptions"
+              :placeholder="t(uiKey('placeholders.sect'))" clearable />
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.persona'))">
+            <m-select v-model:value="createForm.persona_ids" multiple :options="personaOptions"
+              :placeholder="t(uiKey('placeholders.persona'))" clearable max-tag-count="responsive" />
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.alignment'))">
+            <m-select v-model:value="createForm.alignment" :options="alignmentOptions"
+              :placeholder="t('ui.create_alignment_placeholder')" clearable />
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.appearance'))">
             <div class="appearance-slider">
-              <n-slider 
-                v-model:value="createForm.appearance" 
-                :min="1" 
-                :max="10" 
-                :step="1"
-                style="flex: 1; min-width: 0;"
-              />
+              <m-slider v-model:value="createForm.appearance" :min="1" :max="10" :step="1"
+                style="flex: 1; min-width: 0;" />
               <span>{{ createForm.appearance || 1 }}</span>
             </div>
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.technique'))">
-            <n-select v-model:value="createForm.technique_id" :options="techniqueOptions" :placeholder="t(uiKey('placeholders.technique'))" clearable />
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.weapon'))">
-            <n-select v-model:value="createForm.weapon_id" :options="weaponOptions" :placeholder="t(uiKey('placeholders.weapon'))" clearable />
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.auxiliary'))">
-            <n-select v-model:value="createForm.auxiliary_id" :options="auxiliaryOptions" :placeholder="t(uiKey('placeholders.auxiliary'))" clearable />
-          </n-form-item>
-          <n-form-item :label="t(uiKey('labels.relations'))">
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.technique'))">
+            <m-select v-model:value="createForm.technique_id" :options="techniqueOptions"
+              :placeholder="t(uiKey('placeholders.technique'))" clearable />
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.weapon'))">
+            <m-select v-model:value="createForm.weapon_id" :options="weaponOptions"
+              :placeholder="t(uiKey('placeholders.weapon'))" clearable />
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.auxiliary'))">
+            <m-select v-model:value="createForm.auxiliary_id" :options="auxiliaryOptions"
+              :placeholder="t(uiKey('placeholders.auxiliary'))" clearable />
+          </m-form-item>
+          <m-form-item :label="t(uiKey('labels.relations'))">
             <div class="relations-container">
               <div v-for="(rel, index) in createForm.relations" :key="index" class="relation-row">
-                <n-select 
-                  v-model:value="rel.target_id" 
-                  :options="avatarOptions" 
-                  :placeholder="t(uiKey('placeholders.avatar'))" 
-                  filterable 
-                  style="width: 12em"
-                />
-                <n-select 
-                  v-model:value="rel.relation" 
-                  :options="relationOptions" 
-                  :placeholder="t(uiKey('placeholders.relation'))" 
-                  style="width: 8em"
-                />
-                <n-button @click="removeRelation(index)" circle size="small" type="error">-</n-button>
+                <m-select v-model:value="rel.target_id" :options="avatarOptions"
+                  :placeholder="t(uiKey('placeholders.avatar'))" filterable style="width: 12em" />
+                <m-select v-model:value="rel.relation" :options="relationOptions"
+                  :placeholder="t(uiKey('placeholders.relation'))" style="width: 8em" />
+                <m-button @click="removeRelation(index)" circle size="small" type="error">-</m-button>
               </div>
-              <n-button @click="addRelation" size="small" dashed style="width: 100%">{{ t(uiKey('buttons.add_relation')) }}</n-button>
+              <m-button @click="addRelation" size="small" dashed style="width: 100%">{{ t(uiKey('buttons.add_relation'))
+                }}</m-button>
             </div>
-          </n-form-item>
+          </m-form-item>
           <div class="actions">
-            <n-button type="primary" @click="handleCreateAvatar" block :loading="loading">{{ t(uiKey('buttons.create')) }}</n-button>
+            <m-button type="primary" @click="handleCreateAvatar" block :loading="loading">{{ t(uiKey('buttons.create'))
+              }}</m-button>
           </div>
-        </n-form>
+        </m-form>
       </div>
       <div class="avatar-column">
         <div class="avatar-preview">
@@ -299,13 +295,8 @@ onMounted(() => {
           <div v-else class="no-avatar">{{ t(uiKey('avatar_placeholder')) }}</div>
         </div>
         <div class="avatar-grid">
-          <div 
-            v-for="id in availableAvatars" 
-            :key="id"
-            class="avatar-option"
-            :class="{ selected: createForm.pic_id === id }"
-            @click="createForm.pic_id = id"
-          >
+          <div v-for="id in availableAvatars" :key="id" class="avatar-option"
+            :class="{ selected: createForm.pic_id === id }" @click="createForm.pic_id = id">
             <img :src="getAvatarPortraitUrl(createForm.gender, id)" loading="lazy" />
           </div>
           <div v-if="availableAvatars.length === 0" class="no-avatars">{{ t(uiKey('no_avatars')) }}</div>
@@ -435,7 +426,7 @@ onMounted(() => {
   min-width: 0;
 }
 
-.appearance-slider :deep(.n-slider) {
+.appearance-slider :deep(.m-slider) {
   flex: 1;
   min-width: 0;
 }

@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { llmApi } from '@/api'
 import type { LLMConfigDTO } from '@/types/api'
-import { useMessage, useDialog } from 'naive-ui'
+import { MMessage, MConfirm } from 'shuimo-ui'
 import { useI18n } from 'vue-i18n'
 import xIcon from '@/assets/icons/ui/lucide/x.svg'
 
@@ -17,8 +17,6 @@ interface LlmPreset {
 }
 
 const { t } = useI18n()
-const message = useMessage()
-const dialog = useDialog()
 const loading = ref(false)
 const testing = ref(false)
 const showHelpModal = ref(false)
@@ -174,7 +172,7 @@ async function fetchConfig() {
       api_format: res.api_format || 'openai'
     }
   } catch (e) {
-    message.error(t('llm.fetch_failed'))
+    MMessage.error(t('llm.fetch_failed'))
   } finally {
     loading.value = false
   }
@@ -188,10 +186,10 @@ function applyPreset(preset: LlmPreset) {
   // Ollama doesn't require a real API key, auto-fill a placeholder.
   if ('isLocal' in preset && preset.isLocal) {
     config.value.api_key = 'ollama'
-    message.info(t('llm.preset_applied', { name: preset.name, extra: t('llm.preset_extra_local') }))
+    MMessage.info(t('llm.preset_applied', { name: preset.name, extra: t('llm.preset_extra_local') }))
   } else {
     config.value.api_key = ''
-    message.info(t('llm.preset_applied', { name: preset.name, extra: t('llm.preset_extra_key') }))
+    MMessage.info(t('llm.preset_applied', { name: preset.name, extra: t('llm.preset_extra_key') }))
   }
 }
 
@@ -201,7 +199,7 @@ const emit = defineEmits<{
 
 async function handleTestAndSave() {
   if (!config.value.base_url) {
-    message.warning(t('llm.base_url_required'))
+    MMessage.warning(t('llm.base_url_required'))
     return
   }
 
@@ -209,15 +207,15 @@ async function handleTestAndSave() {
   try {
     // 1. 测试连接
     await llmApi.testConnection(config.value)
-    message.success(t('llm.test_success'))
-    
+    MMessage.success(t('llm.test_success'))
+
     // 2. 保存配置
     await llmApi.saveConfig(config.value)
-    message.success(t('llm.save_success'))
+    MMessage.success(t('llm.save_success'))
     emit('config-saved')
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : t('llm.test_save_failed_title')
-    dialog.error({
+    MConfirm.error({
       title: t('llm.test_save_failed_title'),
       content: errorMsg,
       positiveText: t('common.confirm')
@@ -236,17 +234,12 @@ onMounted(() => {
   <div class="llm-panel">
     <div v-if="loading" class="loading">{{ t('llm.loading') }}</div>
     <div v-else class="config-form">
-      
+
       <!-- 预设按钮 -->
       <div class="section">
         <div class="section-title">{{ t('llm.sections.quick_fill') }}</div>
         <div class="preset-buttons">
-          <button 
-            v-for="preset in presets" 
-            :key="preset.name"
-            class="preset-btn"
-            @click="applyPreset(preset)"
-          >
+          <button v-for="preset in presets" :key="preset.name" class="preset-btn" @click="applyPreset(preset)">
             {{ preset.name }}
             <span v-if="preset.badge" :class="['badge', preset.badge]">{{ t(`llm.badges.${preset.badge}`) }}</span>
           </button>
@@ -256,45 +249,29 @@ onMounted(() => {
       <!-- 核心配置 -->
       <div class="section">
         <div class="section-title">{{ t('llm.sections.api_config') }}</div>
-        
+
         <div class="form-item">
           <div class="label-row">
             <label>{{ t('llm.labels.api_key') }}</label>
             <button class="help-btn" @click="showHelpModal = true">{{ t('llm.labels.what_is_api') }}</button>
           </div>
-          <input 
-            v-model="config.api_key" 
-            type="password" 
+          <input v-model="config.api_key" type="password"
             :placeholder="hasSavedApiKey ? t('ui.saved_secret_keep_empty') : t('llm.placeholders.api_key')"
-            class="input-field"
-          />
+            class="input-field" />
         </div>
 
         <div class="form-item">
           <label>{{ t('llm.labels.base_url') }}</label>
-          <input
-            v-model="config.base_url"
-            type="text"
-            :placeholder="t('llm.placeholders.base_url')"
-            class="input-field"
-          />
+          <input v-model="config.base_url" type="text" :placeholder="t('llm.placeholders.base_url')"
+            class="input-field" />
         </div>
 
         <div class="form-item">
           <label>{{ t('llm.labels.api_format') }}</label>
           <div class="format-options">
-            <label
-              v-for="opt in apiFormatOptions"
-              :key="opt.value"
-              class="format-radio"
-              :class="{ active: config.api_format === opt.value }"
-            >
-              <input
-                type="radio"
-                v-model="config.api_format"
-                :value="opt.value"
-                class="hidden-radio"
-              />
+            <label v-for="opt in apiFormatOptions" :key="opt.value" class="format-radio"
+              :class="{ active: config.api_format === opt.value }">
+              <input type="radio" v-model="config.api_format" :value="opt.value" class="hidden-radio" />
               <div class="radio-content">
                 <div class="radio-label">{{ opt.label }}</div>
                 <div class="radio-desc">{{ opt.desc }}</div>
@@ -306,41 +283,27 @@ onMounted(() => {
         <div class="form-item">
           <label>{{ t('llm.labels.max_concurrent_requests') }}</label>
           <div class="desc">{{ t('llm.descs.max_concurrent_requests') }}</div>
-          <input 
-            v-model.number="config.max_concurrent_requests" 
-            type="number" 
-            min="1"
-            max="50"
-            :placeholder="t('llm.placeholders.max_concurrent_requests')"
-            class="input-field"
-          />
+          <input v-model.number="config.max_concurrent_requests" type="number" min="1" max="50"
+            :placeholder="t('llm.placeholders.max_concurrent_requests')" class="input-field" />
         </div>
       </div>
 
       <!-- 模型配置 -->
       <div class="section">
         <div class="section-title">{{ t('llm.sections.model_selection') }}</div>
-        
+
         <div class="form-item">
           <label>{{ t('llm.labels.normal_model') }}</label>
           <div class="desc">{{ t('llm.descs.normal_model') }}</div>
-          <input 
-            v-model="config.model_name" 
-            type="text" 
-            :placeholder="t('llm.placeholders.normal_model')"
-            class="input-field"
-          />
+          <input v-model="config.model_name" type="text" :placeholder="t('llm.placeholders.normal_model')"
+            class="input-field" />
         </div>
 
         <div class="form-item">
           <label>{{ t('llm.labels.fast_model') }}</label>
           <div class="desc">{{ t('llm.descs.fast_model') }}</div>
-          <input 
-            v-model="config.fast_model_name" 
-            type="text" 
-            :placeholder="t('llm.placeholders.fast_model')"
-            class="input-field"
-          />
+          <input v-model="config.fast_model_name" type="text" :placeholder="t('llm.placeholders.fast_model')"
+            class="input-field" />
         </div>
       </div>
 
@@ -348,18 +311,9 @@ onMounted(() => {
       <div class="section">
         <div class="section-title">{{ t('llm.sections.run_mode') }}</div>
         <div class="mode-options horizontal">
-          <label 
-            v-for="opt in modeOptions" 
-            :key="opt.value"
-            class="mode-radio"
-            :class="{ active: config.mode === opt.value }"
-          >
-            <input 
-              type="radio" 
-              v-model="config.mode" 
-              :value="opt.value"
-              class="hidden-radio"
-            />
+          <label v-for="opt in modeOptions" :key="opt.value" class="mode-radio"
+            :class="{ active: config.mode === opt.value }">
+            <input type="radio" v-model="config.mode" :value="opt.value" class="hidden-radio" />
             <div class="radio-content">
               <div class="radio-label">{{ opt.label }}</div>
               <div class="radio-desc">{{ opt.desc }}</div>
@@ -371,18 +325,9 @@ onMounted(() => {
       <div class="section">
         <div class="section-title">{{ t('llm.sections.commercial_profile') }}</div>
         <div class="mode-options horizontal">
-          <label
-            v-for="opt in commercialProfileOptions"
-            :key="opt.value"
-            class="mode-radio"
-            :class="{ active: config.commercial_profile === opt.value }"
-          >
-            <input
-              type="radio"
-              v-model="config.commercial_profile"
-              :value="opt.value"
-              class="hidden-radio"
-            />
+          <label v-for="opt in commercialProfileOptions" :key="opt.value" class="mode-radio"
+            :class="{ active: config.commercial_profile === opt.value }">
+            <input type="radio" v-model="config.commercial_profile" :value="opt.value" class="hidden-radio" />
             <div class="radio-content">
               <div class="radio-label">{{ opt.label }}</div>
               <div class="radio-desc">{{ opt.desc }}</div>
@@ -393,11 +338,7 @@ onMounted(() => {
 
       <!-- 底部操作 -->
       <div class="action-bar">
-        <button 
-          class="save-btn" 
-          :disabled="testing"
-          @click="handleTestAndSave"
-        >
+        <button class="save-btn" :disabled="testing" @click="handleTestAndSave">
           {{ testing ? t('llm.actions.testing') : t('llm.actions.test_and_save') }}
         </button>
       </div>
@@ -413,7 +354,7 @@ onMounted(() => {
             <span class="close-icon" :style="{ '--icon-url': `url(${xIcon})` }" aria-hidden="true"></span>
           </button>
         </div>
-        
+
         <div class="modal-body">
           <div class="help-section">
             <h4>{{ t('llm.help.q1_title') }}</h4>
@@ -456,14 +397,15 @@ onMounted(() => {
           <div class="help-section">
             <h4>{{ t('llm.help.q4_title') }}</h4>
             <ul class="link-list">
-               <li><a href="https://platform.openai.com/" target="_blank">{{ t('llm.help_links.openai') }}</a></li>
-               <li><a href="https://bailian.console.aliyun.com/" target="_blank">{{ t('llm.help_links.qwen') }}</a></li>
-               <li><a href="https://platform.deepseek.com/" target="_blank">{{ t('llm.help_links.deepseek') }}</a></li>
-               <li><a href="https://platform.minimaxi.com/" target="_blank">{{ t('llm.help_links.minimax') }}</a></li>
-               <li><a href="https://longcat.chat/platform/docs/zh/" target="_blank">{{ t('llm.help_links.longcat') }}</a></li>
-               <li><a href="https://openrouter.ai/" target="_blank">{{ t('llm.help_links.openrouter') }}</a></li>
-               <li><a href="https://cloud.siliconflow.cn/" target="_blank">{{ t('llm.help_links.siliconflow') }}</a></li>
-               <li><a href="https://aistudio.google.com/" target="_blank">{{ t('llm.help_links.gemini') }}</a></li>
+              <li><a href="https://platform.openai.com/" target="_blank">{{ t('llm.help_links.openai') }}</a></li>
+              <li><a href="https://bailian.console.aliyun.com/" target="_blank">{{ t('llm.help_links.qwen') }}</a></li>
+              <li><a href="https://platform.deepseek.com/" target="_blank">{{ t('llm.help_links.deepseek') }}</a></li>
+              <li><a href="https://platform.minimaxi.com/" target="_blank">{{ t('llm.help_links.minimax') }}</a></li>
+              <li><a href="https://longcat.chat/platform/docs/zh/" target="_blank">{{ t('llm.help_links.longcat') }}</a>
+              </li>
+              <li><a href="https://openrouter.ai/" target="_blank">{{ t('llm.help_links.openrouter') }}</a></li>
+              <li><a href="https://cloud.siliconflow.cn/" target="_blank">{{ t('llm.help_links.siliconflow') }}</a></li>
+              <li><a href="https://aistudio.google.com/" target="_blank">{{ t('llm.help_links.gemini') }}</a></li>
             </ul>
           </div>
 
@@ -749,9 +691,10 @@ onMounted(() => {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 1.5em 3em rgba(0,0,0,0.7);
+  box-shadow: 0 1.5em 3em rgba(0, 0, 0, 0.7);
   overflow: hidden;
-  font-size: 1rem; /* 重置 modal 内部字体，避免过大，或者保留继承 */
+  font-size: 1rem;
+  /* 重置 modal 内部字体，避免过大，或者保留继承 */
 }
 
 .modal-header {

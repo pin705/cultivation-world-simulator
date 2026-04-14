@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import { NModal, NTable, NTag, NSpin } from 'naive-ui';
 import { useI18n } from 'vue-i18n';
 import { worldApi } from '@/api';
 import { SHARED_UI_COLORS, SYSTEM_PANEL_THEMES } from '@/constants/uiColors';
@@ -36,7 +35,6 @@ const loading = ref(false);
 const relations = ref<SectRelationDTO[]>([]);
 
 const sortedRelations = computed(() => {
-  // 敌对程度高（数值更低）的排在前面
   return [...relations.value].sort((a, b) => a.value - b.value);
 });
 
@@ -59,7 +57,6 @@ const formatDelta = (delta: number): string => {
   return `${delta}`;
 };
 
-/** 根据关系值返回多语言标签 key 后缀（与 i18n value_label_* 对应），极恶/极善阈值为 ±50 */
 const getValueLabelKey = (value: number): string => {
   if (value <= -50) return 'value_label_very_hostile';
   if (value < 0) return 'value_label_hostile';
@@ -142,73 +139,60 @@ watch(
 </script>
 
 <template>
-  <n-modal
-    :show="show"
-    @update:show="handleShowChange"
-    preset="card"
-    :title="t('game.sect_relations.title')"
-    style="width: 800px; max-height: 80vh; overflow-y: auto;"
-  >
-    <n-spin :show="loading">
+  <m-dialog :show="show" @update:show="handleShowChange" :title="t('game.sect_relations.title')"
+    style="width: 800px; max-height: 80vh; overflow-y: auto;">
+    <m-loading :show="loading">
       <div class="sect-relations-panel" :style="panelStyleVars">
-      <n-table :bordered="false" :single-line="false" size="small">
-        <thead>
-          <tr>
-            <th>{{ t('game.sect_relations.sect_a') }}</th>
-            <th>{{ t('game.sect_relations.sect_b') }}</th>
-            <th>{{ t('game.sect_relations.status') }}</th>
-            <th>{{ t('game.sect_relations.value') }}</th>
-            <th>{{ t('game.sect_relations.reasons') }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in sortedRelations" :key="`${item.sect_a_id}-${item.sect_b_id}`">
-            <td>
-              <a class="clickable-text" @click="openSectInfo(item.sect_a_id)">{{ item.sect_a_name }}</a>
-            </td>
-            <td>
-              <a class="clickable-text" @click="openSectInfo(item.sect_b_id)">{{ item.sect_b_name }}</a>
-            </td>
-            <td>
-              <span
-                :style="{ color: item.diplomacy_status === 'war' ? '#ff7875' : '#95de64', fontWeight: 500 }"
-              >
-                {{ resolveDiplomacyStatus(item) }}
-              </span>
-            </td>
-            <td>
-              <span :style="{ color: getValueColor(item.value), fontWeight: 500 }">
-                {{ item.value }}
-              </span>
-              <span class="value-label">{{ t(`game.sect_relations.${getValueLabelKey(item.value)}`) }}</span>
-            </td>
-            <td>
-              <n-tag
-                v-for="(reasonItem, index) in item.reason_breakdown"
-                :key="`${item.sect_a_id}-${item.sect_b_id}-${reasonItem.reason}-${index}`"
-                v-show="resolveReasonLabel(reasonItem)"
-                size="small"
-                :bordered="false"
-                style="margin-right: 4px; margin-bottom: 2px"
-                class="reason-tag"
-              >
-                <span class="reason-text">{{ resolveReasonLabel(reasonItem) }}</span>
-                <span class="delta-text" :style="{ color: getDeltaColor(reasonItem.delta) }">
-                  {{ formatDelta(reasonItem.delta) }}
+        <table class="shuimo-table">
+          <thead>
+            <tr>
+              <th>{{ t('game.sect_relations.sect_a') }}</th>
+              <th>{{ t('game.sect_relations.sect_b') }}</th>
+              <th>{{ t('game.sect_relations.status') }}</th>
+              <th>{{ t('game.sect_relations.value') }}</th>
+              <th>{{ t('game.sect_relations.reasons') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in sortedRelations" :key="`${item.sect_a_id}-${item.sect_b_id}`">
+              <td>
+                <a class="clickable-text" @click="openSectInfo(item.sect_a_id)">{{ item.sect_a_name }}</a>
+              </td>
+              <td>
+                <a class="clickable-text" @click="openSectInfo(item.sect_b_id)">{{ item.sect_b_name }}</a>
+              </td>
+              <td>
+                <span :style="{ color: item.diplomacy_status === 'war' ? '#ff7875' : '#95de64', fontWeight: 500 }">
+                  {{ resolveDiplomacyStatus(item) }}
                 </span>
-              </n-tag>
-            </td>
-          </tr>
-          <tr v-if="!sortedRelations.length">
-            <td colspan="5" class="empty-cell">
-              {{ t('game.sect_relations.empty') }}
-            </td>
-          </tr>
-        </tbody>
-      </n-table>
+              </td>
+              <td>
+                <span :style="{ color: getValueColor(item.value), fontWeight: 500 }">
+                  {{ item.value }}
+                </span>
+                <span class="value-label">{{ t(`game.sect_relations.${getValueLabelKey(item.value)}`) }}</span>
+              </td>
+              <td>
+                <span v-for="(reasonItem, index) in item.reason_breakdown"
+                  :key="`${item.sect_a_id}-${item.sect_b_id}-${reasonItem.reason}-${index}`"
+                  v-show="resolveReasonLabel(reasonItem)" class="reason-tag">
+                  <span class="reason-text">{{ resolveReasonLabel(reasonItem) }}</span>
+                  <span class="delta-text" :style="{ color: getDeltaColor(reasonItem.delta) }">
+                    {{ formatDelta(reasonItem.delta) }}
+                  </span>
+                </span>
+              </td>
+            </tr>
+            <tr v-if="!sortedRelations.length">
+              <td colspan="5" class="empty-cell">
+                {{ t('game.sect_relations.empty') }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </n-spin>
-  </n-modal>
+    </m-loading>
+  </m-dialog>
 </template>
 
 <style scoped>
@@ -224,8 +208,23 @@ watch(
   text-decoration: underline;
 }
 
-:deep(.n-table th) {
+.shuimo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.shuimo-table th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--panel-border);
   color: var(--panel-text-secondary);
+  font-weight: 600;
+}
+
+.shuimo-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--panel-border);
 }
 
 .value-label {
@@ -240,6 +239,11 @@ watch(
   align-items: center;
   gap: 6px;
   background: var(--panel-accent-soft);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 4px;
+  margin-bottom: 2px;
+  font-size: 12px;
 }
 
 .reason-text {
@@ -255,4 +259,3 @@ watch(
   color: var(--panel-empty);
 }
 </style>
-

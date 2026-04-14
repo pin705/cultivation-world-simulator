@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { NModal } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { useWorldInfo } from '@/composables/useWorldInfo'
 import bookOpenIcon from '@/assets/icons/ui/lucide/book-open.svg'
 
-defineProps<{
+const props = defineProps<{
   show: boolean
 }>()
 
@@ -21,13 +20,8 @@ function handleShowChange(value: boolean) {
 </script>
 
 <template>
-  <n-modal
-    :show="show"
-    @update:show="handleShowChange"
-    preset="card"
-    :title="t('game.status_bar.world_info.title')"
-    style="width: 820px; max-height: 80vh; overflow-y: auto;"
-  >
+  <m-dialog :show="show" @update:show="handleShowChange" :title="t('game.status_bar.world_info.title')"
+    style="width: 820px; max-height: 80vh; overflow-y: auto;">
     <div class="world-info-card">
       <div class="world-info-note">
         <span class="world-info-note-icon" :style="{ '--icon-url': `url(${bookOpenIcon})` }" aria-hidden="true"></span>
@@ -35,11 +29,7 @@ function handleShowChange(value: boolean) {
       </div>
 
       <div v-if="worldInfoEntries.length > 0" class="world-info-list">
-        <div
-          v-for="entry in worldInfoEntries"
-          :key="entry.id"
-          class="world-info-item"
-        >
+        <div v-for="entry in worldInfoEntries" :key="entry.id" class="world-info-item">
           <div class="world-info-item-title">{{ entry.title }}</div>
           <div class="world-info-item-desc">{{ entry.desc }}</div>
         </div>
@@ -49,7 +39,7 @@ function handleShowChange(value: boolean) {
         {{ worldInfoLoading ? t('common.loading') : t('game.status_bar.world_info.empty') }}
       </div>
     </div>
-  </n-modal>
+  </m-dialog>
 </template>
 
 <style scoped>

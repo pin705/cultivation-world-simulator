@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import { NConfigProvider, darkTheme, NMessageProvider, NDialogProvider } from 'naive-ui'
 import { systemApi } from './api/modules/system'
 import { avatarApi, worldApi } from './api'
 import { useI18n } from 'vue-i18n'
@@ -255,119 +254,108 @@ watch(sidebarWidth, width => {
 </script>
 
 <template>
-  <n-config-provider :theme="darkTheme">
-    <n-dialog-provider>
-      <n-message-provider>
-        <div v-if="scene === 'boot'" class="app-layout app-layout--shell"></div>
+  <div v-if="scene === 'boot'" class="app-layout app-layout--shell"></div>
 
-        <SplashLayer v-else-if="canRenderSplash" @action="handleSplashAction" />
+  <SplashLayer v-else-if="canRenderSplash" @action="handleSplashAction" />
 
-        <div v-else-if="scene === 'initializing'" class="app-layout app-layout--shell"></div>
+  <div v-else-if="scene === 'initializing'" class="app-layout app-layout--shell"></div>
 
-        <div v-else-if="canRenderGameShell" class="app-layout">
-          <StatusBar />
+  <div v-else-if="canRenderGameShell" class="app-layout">
+    <StatusBar />
 
-          <div class="main-content">
-            <div class="map-container">
-              <!-- 顶部控制栏 -->
-              <div class="top-controls">
-                <!-- 暂停/播放按钮 -->
-                <button class="control-btn pause-toggle" @click="toggleManualPause"
-                  :title="isManualPaused ? t('game.controls.resume') : t('game.controls.pause')">
-                  <span class="control-btn-icon"
-                    :style="{ '--icon-url': `url(${isManualPaused ? playIcon : pauseIcon})` }"
-                    aria-hidden="true"></span>
-                </button>
+    <div class="main-content">
+      <div class="map-container">
+        <!-- 顶部控制栏 -->
+        <div class="top-controls">
+          <!-- 暂停/播放按钮 -->
+          <button class="control-btn pause-toggle" @click="toggleManualPause"
+            :title="isManualPaused ? t('game.controls.resume') : t('game.controls.pause')">
+            <span class="control-btn-icon" :style="{ '--icon-url': `url(${isManualPaused ? playIcon : pauseIcon})` }"
+              aria-hidden="true"></span>
+          </button>
 
-                <!-- 菜单按钮 -->
-                <button class="control-btn menu-toggle" @click="openGameMenu()">
-                  <span class="control-btn-icon" :style="{ '--icon-url': `url(${menuIcon})` }"
-                    aria-hidden="true"></span>
-                </button>
-              </div>
+          <!-- 菜单按钮 -->
+          <button class="control-btn menu-toggle" @click="openGameMenu()">
+            <span class="control-btn-icon" :style="{ '--icon-url': `url(${menuIcon})` }" aria-hidden="true"></span>
+          </button>
+        </div>
 
-              <!-- 暂停状态提示 -->
-              <div v-if="isManualPaused" class="pause-indicator">
-                <div class="pause-text">{{ t('game.controls.paused') }}</div>
-              </div>
+        <!-- 暂停状态提示 -->
+        <div v-if="isManualPaused" class="pause-indicator">
+          <div class="pause-text">{{ t('game.controls.paused') }}</div>
+        </div>
 
-              <div v-if="onboardingOverlayVisible" class="player-onboarding-overlay">
-                <div class="player-onboarding-card">
-                  <div class="player-onboarding-header">
-                    <div class="player-onboarding-kicker">{{ t('ui.player_campaign_title') }}</div>
-                    <div class="player-onboarding-step">{{ onboardingStepLabel(onboardingRecommendedStep) }}</div>
-                  </div>
-                  <p class="player-onboarding-desc">{{ t('ui.player_campaign_desc') }}</p>
-
-                  <div v-if="onboardingRecommendedStep === 'claim_sect'" class="player-onboarding-options">
-                    <button v-for="sect in onboardingClaimableSects" :key="sect.id" class="player-onboarding-option"
-                      :disabled="isSubmittingOnboarding" @click="claimSectFromOverlay(sect.id)">
-                      <span class="player-onboarding-option-title">{{ sect.name }}</span>
-                      <span class="player-onboarding-option-meta">
-                        {{ t('ui.player_campaign_members', { count: sect.member_count }) }}
-                      </span>
-                    </button>
-                  </div>
-
-                  <div v-else-if="onboardingRecommendedStep === 'set_main_avatar'" class="player-onboarding-options">
-                    <button v-for="avatar in onboardingMainAvatarCandidates" :key="avatar.id"
-                      class="player-onboarding-option" :disabled="isSubmittingOnboarding"
-                      @click="setMainAvatarFromOverlay(avatar.id)">
-                      <span class="player-onboarding-option-title">{{ avatar.name }}</span>
-                      <span class="player-onboarding-option-meta">
-                        {{ avatar.realm }} · {{ t('ui.player_campaign_age', { age: avatar.age }) }}
-                      </span>
-                    </button>
-                  </div>
-
-                  <div v-else-if="onboardingRecommendedStep === 'choose_opening'" class="player-onboarding-options">
-                    <button v-for="choice in onboardingOpeningChoices" :key="choice.id" class="player-onboarding-option"
-                      :disabled="isSubmittingOnboarding || !choice.can_select"
-                      @click="chooseOpeningFromOverlay(choice.id)">
-                      <span class="player-onboarding-option-title">
-                        {{ playerOpeningChoiceTitle(t, choice.id) }}
-                      </span>
-                      <span class="player-onboarding-option-meta">
-                        {{ playerOpeningChoiceDesc(t, choice.id) }}
-                      </span>
-                    </button>
-                  </div>
-
-                  <div v-if="onboardingError" class="player-onboarding-error">
-                    {{ onboardingError }}
-                  </div>
-
-                  <div class="player-onboarding-actions">
-                    <button class="player-onboarding-link" :disabled="isSubmittingOnboarding"
-                      @click="openPlayerCampaignSetup">
-                      {{ t('ui.player_campaign_open_setup') }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <GameCanvas :sidebar-width="sidebarWidth" @avatarSelected="handleSelection"
-                @regionSelected="handleSelection" />
-              <InfoPanelContainer />
+        <div v-if="onboardingOverlayVisible" class="player-onboarding-overlay">
+          <div class="player-onboarding-card">
+            <div class="player-onboarding-header">
+              <div class="player-onboarding-kicker">{{ t('ui.player_campaign_title') }}</div>
+              <div class="player-onboarding-step">{{ onboardingStepLabel(onboardingRecommendedStep) }}</div>
             </div>
-            <div class="sidebar-resizer" :class="{ 'is-resizing': isResizing }" @mousedown="onResizerMouseDown"></div>
-            <aside class="sidebar" :style="{ width: sidebarWidth + 'px' }">
-              <EventPanel />
-            </aside>
+            <p class="player-onboarding-desc">{{ t('ui.player_campaign_desc') }}</p>
+
+            <div v-if="onboardingRecommendedStep === 'claim_sect'" class="player-onboarding-options">
+              <button v-for="sect in onboardingClaimableSects" :key="sect.id" class="player-onboarding-option"
+                :disabled="isSubmittingOnboarding" @click="claimSectFromOverlay(sect.id)">
+                <span class="player-onboarding-option-title">{{ sect.name }}</span>
+                <span class="player-onboarding-option-meta">
+                  {{ t('ui.player_campaign_members', { count: sect.member_count }) }}
+                </span>
+              </button>
+            </div>
+
+            <div v-else-if="onboardingRecommendedStep === 'set_main_avatar'" class="player-onboarding-options">
+              <button v-for="avatar in onboardingMainAvatarCandidates" :key="avatar.id" class="player-onboarding-option"
+                :disabled="isSubmittingOnboarding" @click="setMainAvatarFromOverlay(avatar.id)">
+                <span class="player-onboarding-option-title">{{ avatar.name }}</span>
+                <span class="player-onboarding-option-meta">
+                  {{ avatar.realm }} · {{ t('ui.player_campaign_age', { age: avatar.age }) }}
+                </span>
+              </button>
+            </div>
+
+            <div v-else-if="onboardingRecommendedStep === 'choose_opening'" class="player-onboarding-options">
+              <button v-for="choice in onboardingOpeningChoices" :key="choice.id" class="player-onboarding-option"
+                :disabled="isSubmittingOnboarding || !choice.can_select" @click="chooseOpeningFromOverlay(choice.id)">
+                <span class="player-onboarding-option-title">
+                  {{ playerOpeningChoiceTitle(t, choice.id) }}
+                </span>
+                <span class="player-onboarding-option-meta">
+                  {{ playerOpeningChoiceDesc(t, choice.id) }}
+                </span>
+              </button>
+            </div>
+
+            <div v-if="onboardingError" class="player-onboarding-error">
+              {{ onboardingError }}
+            </div>
+
+            <div class="player-onboarding-actions">
+              <button class="player-onboarding-link" :disabled="isSubmittingOnboarding"
+                @click="openPlayerCampaignSetup">
+                {{ t('ui.player_campaign_open_setup') }}
+              </button>
+            </div>
           </div>
         </div>
 
-        <SystemMenu :visible="showMenu" :default-tab="menuDefaultTab" :game-initialized="gameInitialized"
-          :closable="canCloseMenu" @close="handleMenuCloseWrapper" @llm-ready="handleLLMReady"
-          @return-to-main="handleReturnToMain" @exit-game="() => handleSplashAction('exit')" />
+        <GameCanvas :sidebar-width="sidebarWidth" @avatarSelected="handleSelection" @regionSelected="handleSelection" />
+        <InfoPanelContainer />
+      </div>
+      <div class="sidebar-resizer" :class="{ 'is-resizing': isResizing }" @mousedown="onResizerMouseDown"></div>
+      <aside class="sidebar" :style="{ width: sidebarWidth + 'px' }">
+        <EventPanel />
+      </aside>
+    </div>
+  </div>
 
-        <!-- Recap Overlay - 天机推演 -->
-        <RecapOverlay />
+  <SystemMenu :visible="showMenu" :default-tab="menuDefaultTab" :game-initialized="gameInitialized"
+    :closable="canCloseMenu" @close="handleMenuCloseWrapper" @llm-ready="handleLLMReady"
+    @return-to-main="handleReturnToMain" @exit-game="() => handleSplashAction('exit')" />
 
-        <LoadingOverlay v-if="showLoadingOverlay" :status="initStatus" />
-      </n-message-provider>
-    </n-dialog-provider>
-  </n-config-provider>
+  <!-- Recap Overlay - 天机推演 -->
+  <RecapOverlay />
+
+  <LoadingOverlay v-if="showLoadingOverlay" :status="initStatus" />
 </template>
 
 <style scoped>

@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue'
-import { NModal, NInput, NButton, NSpin, NTooltip } from 'naive-ui'
+import { MMessage } from 'shuimo-ui'
 import { systemApi } from '../../../../api'
 import type { SaveFileDTO } from '../../../../types/api'
 import { useWorldStore } from '../../../../stores/world'
 import { useUiStore } from '../../../../stores/ui'
-import { useMessage } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import plusIcon from '@/assets/icons/ui/lucide/plus.svg'
 import zapIcon from '@/assets/icons/ui/lucide/zap.svg'
@@ -29,7 +28,6 @@ const emit = defineEmits<{
 
 const worldStore = useWorldStore()
 const uiStore = useUiStore()
-const message = useMessage()
 const loading = ref(false)
 const saves = ref<SaveFileDTO[]>([])
 
@@ -57,7 +55,7 @@ async function fetchSaves() {
   try {
     saves.value = await systemApi.fetchSaves()
   } catch (e) {
-    message.error(t('save_load.fetch_failed'))
+    MMessage.error(t('save_load.fetch_failed'))
   } finally {
     loading.value = false
   }
@@ -74,10 +72,10 @@ async function handleQuickSave() {
   saving.value = true
   try {
     const res = await systemApi.saveGame()
-    message.success(t('save_load.save_success', { filename: res.filename }))
+    MMessage.success(t('save_load.save_success', { filename: res.filename }))
     await fetchSaves()
   } catch (e) {
-    message.error(t('save_load.save_failed'))
+    MMessage.error(t('save_load.save_failed'))
   } finally {
     saving.value = false
   }
@@ -91,12 +89,12 @@ async function handleSaveWithName() {
   try {
     const customName = saveName.value.trim() || undefined
     const res = await systemApi.saveGame(customName)
-    message.success(t('save_load.save_success', { filename: res.filename }))
+    MMessage.success(t('save_load.save_success', { filename: res.filename }))
     showSaveModal.value = false
     saveName.value = ''
     await fetchSaves()
   } catch (e) {
-    message.error(t('save_load.save_failed'))
+    MMessage.error(t('save_load.save_failed'))
   } finally {
     saving.value = false
   }
@@ -111,10 +109,10 @@ async function handleLoad(filename: string) {
     worldStore.reset()
     uiStore.clearSelection()
     await worldStore.initialize()
-    message.success(t('save_load.load_success'))
+    MMessage.success(t('save_load.load_success'))
     emit('close')
   } catch (e) {
-    message.error(t('save_load.load_failed'))
+    MMessage.error(t('save_load.load_failed'))
   } finally {
     loading.value = false
   }
@@ -126,10 +124,10 @@ async function handleDelete(filename: string) {
   loading.value = true
   try {
     await systemApi.deleteSave(filename)
-    message.success(t('save_load.delete_success'))
+    MMessage.success(t('save_load.delete_success'))
     await fetchSaves()
   } catch (e) {
-    message.error(t('save_load.delete_failed'))
+    MMessage.error(t('save_load.delete_failed'))
   } finally {
     loading.value = false
   }
@@ -167,7 +165,7 @@ onMounted(() => {
 <template>
   <div :class="mode === 'save' ? 'save-panel' : 'load-panel'">
     <div v-if="loading && saves.length === 0" class="loading">
-      <NSpin size="medium" />
+      <m-loading size="medium" />
       <span>{{ t('save_load.loading') }}</span>
     </div>
 
@@ -181,7 +179,7 @@ onMounted(() => {
         </div>
         <div class="quick-save-card" @click="handleQuickSave">
           <div class="icon">
-            <NSpin v-if="saving" size="small" />
+            <m-loading v-if="saving" size="small" />
             <span v-else class="icon-mask" :style="{ '--icon-url': `url(${zapIcon})` }" aria-hidden="true"></span>
           </div>
           <div>{{ t('save_load.quick_save') }}</div>
@@ -194,17 +192,14 @@ onMounted(() => {
     <div v-if="!loading && saves.length === 0" class="empty">{{ t('save_load.empty') }}</div>
 
     <div class="saves-list">
-      <div
-        v-for="save in saves"
-        :key="save.filename"
-        class="save-item"
-        @click="mode === 'load' ? handleLoad(save.filename) : null"
-      >
+      <div v-for="save in saves" :key="save.filename" class="save-item"
+        @click="mode === 'load' ? handleLoad(save.filename) : null">
         <div class="save-info">
           <div class="save-header">
             <span class="save-name">{{ getSaveDisplayName(save) }}</span>
             <span v-if="save.is_auto_save" class="auto-save-badge">
-              <span class="meta-icon auto-save-icon" :style="{ '--icon-url': `url(${saveIcon})` }" aria-hidden="true"></span>
+              <span class="meta-icon auto-save-icon" :style="{ '--icon-url': `url(${saveIcon})` }"
+                aria-hidden="true"></span>
               {{ t('ui.auto_save') }}
             </span>
           </div>
@@ -233,78 +228,56 @@ onMounted(() => {
           </div>
         </div>
         <div v-if="mode === 'load'" class="load-actions">
-           <NButton 
-             type="error" 
-             size="small" 
-             secondary 
-             @click.stop="handleDelete(save.filename)"
-           >
-             <span class="load-action-inner">
-               <span class="button-icon" :style="{ '--icon-url': `url(${trashIcon})` }" aria-hidden="true"></span>
-               <span>{{ t('save_load.delete') }}</span>
-             </span>
-           </NButton>
-           <NButton
-             size="small"
-             @click.stop="handleLoad(save.filename)"
-           >
-             <span class="load-action-inner">
-               <span class="button-icon" :style="{ '--icon-url': `url(${folderOpenIcon})` }" aria-hidden="true"></span>
-               <span>{{ t('save_load.load') }}</span>
-             </span>
-           </NButton>
+          <m-button type="error" size="small" secondary @click.stop="handleDelete(save.filename)">
+            <span class="load-action-inner">
+              <span class="button-icon" :style="{ '--icon-url': `url(${trashIcon})` }" aria-hidden="true"></span>
+              <span>{{ t('save_load.delete') }}</span>
+            </span>
+          </m-button>
+          <m-button size="small" @click.stop="handleLoad(save.filename)">
+            <span class="load-action-inner">
+              <span class="button-icon" :style="{ '--icon-url': `url(${folderOpenIcon})` }" aria-hidden="true"></span>
+              <span>{{ t('save_load.load') }}</span>
+            </span>
+          </m-button>
         </div>
       </div>
     </div>
 
     <!-- Save Modal -->
-    <NModal
-      v-model:show="showSaveModal"
-      preset="card"
-      :title="t('save_load.save_modal_title')"
-      style="width: 400px;"
-      :mask-closable="!saving"
-      :closable="!saving"
-    >
+    <m-dialog v-model:show="showSaveModal" :title="t('save_load.save_modal_title')" style="width: 400px;"
+      :mask-closable="!saving" :closable="!saving">
       <div class="save-modal-content">
         <p class="hint">{{ t('save_load.name_hint') }}</p>
-        <NInput
-          v-model:value="saveName"
-          :placeholder="t('save_load.name_placeholder')"
-          :status="nameError ? 'error' : undefined"
-          :disabled="saving"
-          @keyup.enter="handleSaveWithName"
-        />
+        <m-input v-model:value="saveName" :placeholder="t('save_load.name_placeholder')"
+          :status="nameError ? 'error' : undefined" :disabled="saving" @keyup.enter="handleSaveWithName" />
         <p v-if="nameError" class="error-text">{{ nameError }}</p>
         <p v-else class="tip-text">{{ t('save_load.name_tip') }}</p>
       </div>
       <template #footer>
         <div class="modal-footer">
-          <NButton :disabled="saving" @click="showSaveModal = false">
+          <m-button :disabled="saving" @click="showSaveModal = false">
             {{ t('common.cancel') }}
-          </NButton>
-          <NButton
-            type="primary"
-            :loading="saving"
-            :disabled="!!nameError"
-            @click="handleSaveWithName"
-          >
+          </m-button>
+          <m-button type="primary" :loading="saving" :disabled="!!nameError" @click="handleSaveWithName">
             {{ t('save_load.save_confirm') }}
-          </NButton>
+          </m-button>
         </div>
       </template>
-    </NModal>
+    </m-dialog>
   </div>
 </template>
 
 <style scoped>
-.save-panel, .load-panel {
+.save-panel,
+.load-panel {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.save-panel, .load-panel {
+.save-panel,
+.load-panel {
   align-items: center;
   padding-top: 2em;
 }
@@ -315,7 +288,8 @@ onMounted(() => {
   margin-bottom: 2em;
 }
 
-.new-save-card, .quick-save-card {
+.new-save-card,
+.quick-save-card {
   width: 12em;
   height: 9em;
   border: 2px dashed #444;
@@ -329,7 +303,8 @@ onMounted(() => {
   color: #888;
 }
 
-.new-save-card:hover, .quick-save-card:hover {
+.new-save-card:hover,
+.quick-save-card:hover {
   border-color: #666;
   background: #222;
   color: #fff;
@@ -344,7 +319,8 @@ onMounted(() => {
   background: #1a2a1a;
 }
 
-.new-save-card .icon, .quick-save-card .icon {
+.new-save-card .icon,
+.quick-save-card .icon {
   font-size: 2.5em;
   margin-bottom: 0.2em;
   width: 1em;
@@ -369,7 +345,8 @@ onMounted(() => {
   mask-size: contain;
 }
 
-.new-save-card .sub, .quick-save-card .sub {
+.new-save-card .sub,
+.quick-save-card .sub {
   font-size: 0.75em;
   color: #666;
   margin-top: 0.3em;

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { NModal, NList, NListItem, NTag, NEmpty, useMessage } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { useWorldStore } from '@/stores/world'
 import { PHENOMENON_RARITY_COLORS, STATUS_BAR_COLORS } from '@/constants/uiColors'
@@ -14,7 +13,6 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const store = useWorldStore()
-const message = useMessage()
 
 function getRarityColor(rarity: string) {
   return PHENOMENON_RARITY_COLORS[rarity] ?? STATUS_BAR_COLORS.neutral
@@ -27,42 +25,41 @@ function handleShowChange(value: boolean) {
 async function handleSelect(id: number, name: string) {
   try {
     await store.changePhenomenon(id)
-    message.success(t('game.status_bar.change_success', { name }))
     emit('update:show', false)
   } catch (e) {
-    message.error(t('common.error'))
+    console.error('Failed to change phenomenon:', e)
   }
 }
 </script>
 
 <template>
-  <n-modal
-    :show="show"
-    @update:show="handleShowChange"
-    preset="card"
-    :title="t('game.status_bar.selector_title')"
-    style="width: 700px; max-height: 80vh; overflow-y: auto;"
-  >
-    <n-list hoverable clickable>
-      <n-list-item v-for="p in store.phenomenaList" :key="p.id" @click="handleSelect(p.id, p.name)" v-sound:select>
-        <div class="list-item-content">
-          <div class="item-left">
-            <div class="item-name" :style="{ color: getRarityColor(p.rarity) }">
-              {{ p.name }}
-              <n-tag size="small" :bordered="false" :color="{ color: 'rgba(255,255,255,0.1)', textColor: getRarityColor(p.rarity) }">
-                {{ p.rarity }}
-              </n-tag>
+  <m-dialog :show="show" @update:show="handleShowChange" :title="t('game.status_bar.selector_title')"
+    style="width: 700px; max-height: 80vh; overflow-y: auto;">
+    <m-list :data="store.phenomenaList" hoverable clickable>
+      <template #default="{ item: p }">
+        <m-li @click="handleSelect(p.id, p.name)" v-sound:select>
+          <div class="list-item-content">
+            <div class="item-left">
+              <div class="item-name" :style="{ color: getRarityColor(p.rarity) }">
+                {{ p.name }}
+                <m-tag size="small" :bordered="false"
+                  :style="{ color: getRarityColor(p.rarity), background: 'rgba(255,255,255,0.1)' }">
+                  {{ p.rarity }}
+                </m-tag>
+              </div>
+              <div class="item-desc">{{ p.desc }}</div>
             </div>
-            <div class="item-desc">{{ p.desc }}</div>
+            <div class="item-right">
+              <div class="item-effect" v-if="p.effect_desc">{{ p.effect_desc }}</div>
+            </div>
           </div>
-          <div class="item-right">
-            <div class="item-effect" v-if="p.effect_desc">{{ p.effect_desc }}</div>
-          </div>
-        </div>
-      </n-list-item>
-      <n-empty v-if="store.phenomenaList.length === 0" :description="t('game.status_bar.empty_data')" />
-    </n-list>
-  </n-modal>
+        </m-li>
+      </template>
+    </m-list>
+    <div v-if="store.phenomenaList.length === 0" class="empty-state">
+      {{ t('game.status_bar.empty_data') }}
+    </div>
+  </m-dialog>
 </template>
 
 <style scoped>
@@ -94,5 +91,11 @@ async function handleSelect(id: number, name: string) {
   border-radius: 4px;
   display: inline-block;
   margin-top: 4px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #8ea9c8;
+  padding: 20px 0;
 }
 </style>

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { NPopover } from 'naive-ui'
-
 interface Props {
   label: string
   icon?: string
@@ -20,28 +18,19 @@ const emit = defineEmits(['trigger-click'])
   <div class="status-widget">
     <span class="divider">|</span>
 
-    <span
-      v-if="disablePopover"
-      class="widget-trigger"
-      :style="{ color: props.color }"
-      :title="props.label"
-      @click="emit('trigger-click')"
-      v-sound="'open'"
-    >
-      <span v-if="props.icon" class="widget-icon" :style="{ '--icon-url': `url(${props.icon})` }" aria-hidden="true"></span>
+    <span v-if="disablePopover" class="widget-trigger" :style="{ color: props.color }" :title="props.label"
+      @click="emit('trigger-click')" v-sound="'open'">
+      <span v-if="props.icon" class="widget-icon" :style="{ '--icon-url': `url(${props.icon})` }"
+        aria-hidden="true"></span>
       <span class="widget-label">{{ props.label }}</span>
     </span>
 
-    <n-popover v-else trigger="click" placement="bottom" style="max-width: 600px;">
+    <m-popover v-else trigger="click" placement="bottom" style="max-width: 600px;">
       <template #trigger>
-        <span
-          class="widget-trigger"
-          :style="{ color: props.color }"
-          :title="props.label"
-          @click="emit('trigger-click')"
-          v-sound="'open'"
-        >
-          <span v-if="props.icon" class="widget-icon" :style="{ '--icon-url': `url(${props.icon})` }" aria-hidden="true"></span>
+        <span class="widget-trigger" :style="{ color: props.color }" :title="props.label" @click="emit('trigger-click')"
+          v-sound="'open'">
+          <span v-if="props.icon" class="widget-icon" :style="{ '--icon-url': `url(${props.icon})` }"
+            aria-hidden="true"></span>
           <span class="widget-label">{{ props.label }}</span>
         </span>
       </template>
@@ -49,7 +38,7 @@ const emit = defineEmits(['trigger-click'])
       <div class="widget-content">
         <slot name="single"></slot>
       </div>
-    </n-popover>
+    </m-popover>
   </div>
 </template>
 

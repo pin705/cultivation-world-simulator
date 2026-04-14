@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import { NModal, NSpin, NTag } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { SHARED_UI_COLORS, SYSTEM_PANEL_THEMES } from '@/constants/uiColors'
 import { useDynastyStore } from '@/stores/dynasty'
@@ -65,14 +64,9 @@ watch(
 </script>
 
 <template>
-  <n-modal
-    :show="show"
-    @update:show="handleShowChange"
-    preset="card"
-    :title="t('game.dynasty.title')"
-    style="width: 760px; max-height: 80vh; overflow-y: auto;"
-  >
-    <n-spin :show="dynastyStore.isLoading">
+  <m-dialog :show="show" @update:show="handleShowChange" :title="t('game.dynasty.title')"
+    style="width: 760px; max-height: 80vh; overflow-y: auto;">
+    <m-loading :show="dynastyStore.isLoading">
       <div class="dynasty-overview" :style="panelStyleVars">
         <template v-if="hasOverview">
           <section class="hero-card">
@@ -80,20 +74,22 @@ watch(
               <div class="hero-title-wrap">
                 <span class="hero-icon" :style="{ '--icon-url': `url(${landmarkIcon})` }" aria-hidden="true"></span>
                 <div>
-                <div class="hero-title">{{ overview.title || overview.name }}</div>
-                <div class="hero-subtitle">{{ t('game.dynasty.royal_house') }}：{{ overview.royal_house_name || overview.royal_surname }}</div>
+                  <div class="hero-title">{{ overview.title || overview.name }}</div>
+                  <div class="hero-subtitle">{{ t('game.dynasty.royal_house') }}：{{ overview.royal_house_name ||
+                    overview.royal_surname }}</div>
                 </div>
               </div>
-              <n-tag size="small" :bordered="false" type="success">
+              <m-tag size="small" :bordered="false" type="success">
                 {{ t('game.dynasty.low_magic') }}
-              </n-tag>
+              </m-tag>
             </div>
             <div class="hero-desc">{{ overview.desc }}</div>
           </section>
 
-        <section class="section">
+          <section class="section">
             <div class="section-title">
-              <span class="section-title-icon" :style="{ '--icon-url': `url(${buildingIcon})` }" aria-hidden="true"></span>
+              <span class="section-title-icon" :style="{ '--icon-url': `url(${buildingIcon})` }"
+                aria-hidden="true"></span>
               {{ t('game.dynasty.summary.title') }}
             </div>
             <div class="info-grid">
@@ -116,7 +112,7 @@ watch(
             </div>
           </section>
 
-        <section class="section">
+          <section class="section">
             <div class="section-title">
               <span class="section-title-icon" :style="{ '--icon-url': `url(${crownIcon})` }" aria-hidden="true"></span>
               {{ t('game.dynasty.emperor.title') }}
@@ -144,7 +140,7 @@ watch(
             </div>
           </section>
 
-        <section class="section">
+          <section class="section">
             <div class="section-title">
               <span class="section-title-icon" :style="{ '--icon-url': `url(${scaleIcon})` }" aria-hidden="true"></span>
               {{ t('game.dynasty.effect') }}
@@ -165,26 +161,23 @@ watch(
           <section class="section">
             <div class="section-header">
               <div class="section-title">
-                <span class="section-title-icon" :style="{ '--icon-url': `url(${usersIcon})` }" aria-hidden="true"></span>
+                <span class="section-title-icon" :style="{ '--icon-url': `url(${usersIcon})` }"
+                  aria-hidden="true"></span>
                 {{ t('game.dynasty.officials.title') }}
               </div>
               <div class="section-meta">{{ t('game.dynasty.officials.count', { count: summary.officialCount }) }}</div>
             </div>
             <div v-if="officials.length" class="official-list">
-              <button
-                v-for="official in officials"
-                :key="official.id"
-                class="official-row"
-                type="button"
-                @click="jumpToAvatar(official.id)"
-              >
+              <button v-for="official in officials" :key="official.id" class="official-row" type="button"
+                @click="jumpToAvatar(official.id)">
                 <div class="official-main">
                   <div class="official-name">{{ official.name }}</div>
                   <div class="official-rank">{{ official.officialRankName }}</div>
                 </div>
                 <div class="official-side">
                   <div class="official-meta">
-                    {{ t('game.dynasty.officials.realm') }}：{{ formatCultivationText(official.realm, t) || t('common.none') }}
+                    {{ t('game.dynasty.officials.realm') }}：{{ formatCultivationText(official.realm, t) ||
+                      t('common.none') }}
                   </div>
                   <div class="official-meta">
                     {{ t('game.dynasty.officials.court_reputation') }}：{{ official.courtReputation }}
@@ -205,8 +198,8 @@ watch(
           {{ t('game.dynasty.empty') }}
         </div>
       </div>
-    </n-spin>
-  </n-modal>
+    </m-loading>
+  </m-dialog>
 </template>
 
 <style scoped>

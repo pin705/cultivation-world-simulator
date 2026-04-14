@@ -24,6 +24,10 @@ export interface RecapResponse {
   opportunities: OpportunitySection;
   /** 总结文本（可选） */
   summary_text?: string;
+  /** 上次已读 recap 的月份 (from backend) */
+  last_recap_month_stamp?: number;
+  /** 上次确认的月份 (from backend) */
+  last_acknowledge_month_stamp?: number;
 }
 
 /**

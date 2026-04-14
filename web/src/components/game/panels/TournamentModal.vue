@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { NModal, NSpin, NEmpty } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { worldApi } from '../../../api/modules/world'
 import type { RankingsDTO } from '@/types/api'
@@ -72,50 +71,52 @@ watch(() => props.show, (newVal) => {
 </script>
 
 <template>
-  <n-modal
-    :show="show"
-    @update:show="handleShowChange"
-    preset="card"
-    :title="t('game.ranking.tournament_title')"
-    style="width: 400px; max-height: 80vh; overflow-y: auto;"
-  >
-    <n-spin :show="loading">
+  <m-dialog :show="show" @update:show="handleShowChange" :title="t('game.ranking.tournament_title')"
+    style="width: 400px; max-height: 80vh; overflow-y: auto;">
+    <m-loading :show="loading">
       <div class="tournament-panel" :style="panelStyleVars">
         <div v-if="rankings.tournament">
-        <div class="next-time">
-          {{ t('game.ranking.tournament_next', { years: Math.max(0, rankings.tournament.next_year - worldStore.year) }) }}
+          <div class="next-time">
+            {{ t('game.ranking.tournament_next', {
+              years: Math.max(0, rankings.tournament.next_year - worldStore.year)
+            }) }}
+          </div>
+
+          <div class="winner-list">
+            <div class="winner-card">
+              <div class="winner-label">{{ t('game.ranking.heaven_first') }}</div>
+              <a v-if="rankings.tournament.heaven_first" class="clickable-text"
+                @click="openAvatarInfo(rankings.tournament.heaven_first.id)">
+                {{ rankings.tournament.heaven_first.name }}
+              </a>
+              <span v-else class="empty-inline">{{ t('game.ranking.empty') }}</span>
+            </div>
+
+            <div class="winner-card">
+              <div class="winner-label">{{ t('game.ranking.earth_first') }}</div>
+              <a v-if="rankings.tournament.earth_first" class="clickable-text"
+                @click="openAvatarInfo(rankings.tournament.earth_first.id)">
+                {{ rankings.tournament.earth_first.name }}
+              </a>
+              <span v-else class="empty-inline">{{ t('game.ranking.empty') }}</span>
+            </div>
+
+            <div class="winner-card">
+              <div class="winner-label">{{ t('game.ranking.human_first') }}</div>
+              <a v-if="rankings.tournament.human_first" class="clickable-text"
+                @click="openAvatarInfo(rankings.tournament.human_first.id)">
+                {{ rankings.tournament.human_first.name }}
+              </a>
+              <span v-else class="empty-inline">{{ t('game.ranking.empty') }}</span>
+            </div>
+          </div>
         </div>
-        
-        <div class="winner-list">
-          <div class="winner-card">
-            <div class="winner-label">{{ t('game.ranking.heaven_first') }}</div>
-            <a v-if="rankings.tournament.heaven_first" class="clickable-text" @click="openAvatarInfo(rankings.tournament.heaven_first.id)">
-              {{ rankings.tournament.heaven_first.name }}
-            </a>
-            <span v-else class="empty-inline">{{ t('game.ranking.empty') }}</span>
-          </div>
-          
-          <div class="winner-card">
-            <div class="winner-label">{{ t('game.ranking.earth_first') }}</div>
-            <a v-if="rankings.tournament.earth_first" class="clickable-text" @click="openAvatarInfo(rankings.tournament.earth_first.id)">
-              {{ rankings.tournament.earth_first.name }}
-            </a>
-            <span v-else class="empty-inline">{{ t('game.ranking.empty') }}</span>
-          </div>
-          
-          <div class="winner-card">
-            <div class="winner-label">{{ t('game.ranking.human_first') }}</div>
-            <a v-if="rankings.tournament.human_first" class="clickable-text" @click="openAvatarInfo(rankings.tournament.human_first.id)">
-              {{ rankings.tournament.human_first.name }}
-            </a>
-            <span v-else class="empty-inline">{{ t('game.ranking.empty') }}</span>
-          </div>
+        <div v-else class="empty-block">
+          {{ t('game.ranking.empty') }}
         </div>
       </div>
-      <n-empty v-else :description="t('game.ranking.empty')" class="empty-block" />
-      </div>
-    </n-spin>
-  </n-modal>
+    </m-loading>
+  </m-dialog>
 </template>
 
 <style scoped>
