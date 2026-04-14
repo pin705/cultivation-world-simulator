@@ -25,6 +25,7 @@ export interface ApiResponse<T> {
 export interface AuthSessionDTO {
   session_id: string;
   viewer_id: string;
+  previous_viewer_id?: string | null;
   auth_type: string;
   display_name: string;
   email?: string | null;
@@ -217,6 +218,12 @@ export interface ReleaseControlSeatParams {
 
 export interface UpdatePlayerProfileParams {
   display_name: string;
+  viewer_id?: string;
+}
+
+export interface TransferPlayerIdentityParams {
+  source_viewer_id: string;
+  preferred_display_name?: string;
   viewer_id?: string;
 }
 

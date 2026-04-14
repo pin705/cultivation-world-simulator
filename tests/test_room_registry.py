@@ -598,3 +598,57 @@ def test_runtime_room_registry_persists_room_player_state_across_registry_restar
     assert hydrate_target.loaded_active_controller_id == "seat_alpha"
     assert hydrate_target.loaded_player_profiles["viewer_owner"]["display_name"] == "Owner"
     assert hydrate_target.loaded_player_control_seats["seat_alpha"]["owned_sect_id"] == 7
+
+
+def test_runtime_room_registry_lists_persisted_rooms_after_restart(tmp_path):
+    store = RoomMetadataStore(db_path=tmp_path / "room_registry.sqlite3")
+    first = RuntimeRoomRegistry(metadata_store=store)
+    first.switch_active_room("guild_alpha", viewer_id="viewer_owner")
+
+    second = RuntimeRoomRegistry(metadata_store=store)
+
+    assert "guild_alpha" in second.list_room_ids()
+    assert second.has_room("guild_alpha") is True
+
+
+def test_runtime_room_registry_can_transfer_viewer_identity():
+    registry = RuntimeRoomRegistry()
+    registry.import_room_runtime_snapshot(
+        "guild_alpha",
+        {
+            "access_mode": "private",
+            "owner_viewer_id": "viewer_guest",
+            "member_viewer_ids": ["viewer_guest"],
+            "player_profiles": {
+                "viewer_guest": {
+                    "display_name": "Guest Pilot",
+                    "joined_month": 10,
+                    "last_seen_month": 18,
+                }
+            },
+            "player_control_seats": {
+                "seat_alpha": {
+                    "holder_id": "viewer_guest",
+                    "intervention_points": 2,
+                    "owned_sect_id": None,
+                    "main_avatar_id": None,
+                    "relation_intervention_cooldowns": {},
+                }
+            },
+        },
+    )
+
+    result = registry.transfer_viewer_identity(
+        source_viewer_id="viewer_guest",
+        target_viewer_id="viewer_account",
+        preferred_display_name="Account Pilot",
+    )
+    summary = registry.get_room_summary("guild_alpha", viewer_id="viewer_account")
+    snapshot = registry.export_room_runtime_snapshot("guild_alpha")
+
+    assert result["transferred_room_ids"] == ["guild_alpha"]
+    assert summary["owner_viewer_id"] == "viewer_account"
+    assert "viewer_account" in summary["member_viewer_ids"]
+    assert "viewer_guest" not in summary["member_viewer_ids"]
+    assert snapshot["player_profiles"]["viewer_account"]["display_name"] == "Account Pilot"
+    assert snapshot["player_control_seats"]["seat_alpha"]["holder_id"] == "viewer_account"

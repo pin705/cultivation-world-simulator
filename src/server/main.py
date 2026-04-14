@@ -526,6 +526,7 @@ run_set_main_avatar = command_handlers.run_set_main_avatar
 run_switch_control_seat = command_handlers.run_switch_control_seat
 run_release_control_seat = command_handlers.run_release_control_seat
 run_update_player_profile = command_handlers.run_update_player_profile
+run_transfer_player_identity = command_handlers.run_transfer_player_identity
 run_switch_world_room = command_handlers.run_switch_world_room
 run_update_world_room_access = command_handlers.run_update_world_room_access
 run_update_world_room_plan = command_handlers.run_update_world_room_plan
@@ -662,6 +663,7 @@ configure_routes_and_mounts(
     run_switch_control_seat=run_switch_control_seat,
     run_release_control_seat=run_release_control_seat,
     run_update_player_profile=run_update_player_profile,
+    run_transfer_player_identity=run_transfer_player_identity,
     run_switch_world_room=run_switch_world_room,
     run_update_world_room_access=run_update_world_room_access,
     run_update_world_room_plan=run_update_world_room_plan,

@@ -188,6 +188,66 @@ def test_v1_auth_login_reuses_registered_viewer_identity(tmp_path):
         main.player_auth_store = original_store
 
 
+def test_v1_auth_login_can_transfer_guest_room_identity_to_registered_account(tmp_path):
+    original = _reset_state()
+    original_store = main.player_auth_store
+    main.player_auth_store = PlayerAuthStore(db_path=tmp_path / "player_auth.sqlite3")
+    try:
+        client = TestClient(main.app)
+        register_response = client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": "pilot@example.com",
+                "password": "Password123",
+                "display_name": "Pilot",
+                "preferred_viewer_id": "viewer_pilot",
+            },
+        )
+        assert register_response.status_code == 200
+
+        client.post("/api/v1/auth/session/logout")
+        bootstrap_response = client.post(
+            "/api/v1/auth/guest/bootstrap",
+            json={"preferred_viewer_id": "viewer_guest"},
+        )
+        assert bootstrap_response.status_code == 200
+        room_response = client.post(
+            "/api/v1/command/world-room/switch",
+            json={"room_id": "guild_alpha"},
+        )
+        assert room_response.status_code == 200
+        assert room_response.json()["data"]["active_room_summary"]["owner_viewer_id"] == "viewer_guest"
+
+        login_response = client.post(
+            "/api/v1/auth/login",
+            json={
+                "email": "pilot@example.com",
+                "password": "Password123",
+            },
+        )
+        assert login_response.status_code == 200
+        login_payload = login_response.json()["data"]["session"]
+        assert login_payload["viewer_id"] == "viewer_pilot"
+        assert login_payload["previous_viewer_id"] == "viewer_guest"
+
+        transfer_response = client.post(
+            "/api/v1/command/player/transfer-identity",
+            json={"source_viewer_id": "viewer_guest"},
+        )
+        assert transfer_response.status_code == 200
+        transfer_payload = transfer_response.json()["data"]
+        assert "guild_alpha" in transfer_payload["transferred_room_ids"]
+        assert transfer_payload["active_room_summary"]["owner_viewer_id"] == "viewer_pilot"
+        assert "viewer_pilot" in transfer_payload["active_room_summary"]["member_viewer_ids"]
+        assert "viewer_guest" not in transfer_payload["active_room_summary"]["member_viewer_ids"]
+    finally:
+        main.room_registry.reset_to_default_only()
+        main.game_instance.clear()
+        main.game_instance.update(original)
+        main.player_auth_store.close()
+        main.player_auth_store = original_store
+
+
 def test_v1_world_room_switch_uses_cookie_session_when_viewer_id_missing(tmp_path):
     original = _reset_state()
     original_store = main.player_auth_store

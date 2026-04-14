@@ -8,6 +8,7 @@ import type {
   SwitchControlSeatParams,
   ReleaseControlSeatParams,
   UpdatePlayerProfileParams,
+  TransferPlayerIdentityParams,
   SwitchWorldRoomParams,
   UpdateWorldRoomAccessParams,
   UpdateWorldRoomPlanParams,
@@ -74,6 +75,13 @@ export const systemApi = {
   updatePlayerProfile(params: UpdatePlayerProfileParams) {
     return httpClient.post<{ status: string; message: string; profile: InitStatusDTO['viewer_profile'] }>(
       '/api/v1/command/player/update-profile',
+      getViewerIdentityPayload(params),
+    );
+  },
+
+  transferPlayerIdentity(params: TransferPlayerIdentityParams) {
+    return httpClient.post<{ status: string; message: string; transferred_room_ids: string[]; conflicted_room_ids: string[]; skipped_room_ids: string[] }>(
+      '/api/v1/command/player/transfer-identity',
       getViewerIdentityPayload(params),
     );
   },

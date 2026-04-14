@@ -521,8 +521,10 @@ class SQLitePlayerAuthStore:
                 payload = self._fetch_session_locked(existing["session_id"]) or existing
                 payload["is_new_session"] = False
                 payload["is_new_player"] = False
+                payload["previous_viewer_id"] = None
                 return payload
 
+            previous_viewer_id = existing["viewer_id"] if existing is not None else None
             if existing is not None:
                 self._conn.execute("DELETE FROM auth_sessions WHERE session_id = ?", (existing["session_id"],))
 
@@ -542,6 +544,7 @@ class SQLitePlayerAuthStore:
                 raise RuntimeError("Failed to load authenticated session")
             payload["is_new_session"] = True
             payload["is_new_player"] = False
+            payload["previous_viewer_id"] = previous_viewer_id
             return payload
 
     def close(self) -> None:
@@ -994,8 +997,10 @@ class PostgresPlayerAuthStore:
                 payload = self._fetch_session_locked(existing["session_id"]) or existing
                 payload["is_new_session"] = False
                 payload["is_new_player"] = False
+                payload["previous_viewer_id"] = None
                 return payload
 
+            previous_viewer_id = existing["viewer_id"] if existing is not None else None
             if existing is not None:
                 with self._conn.cursor() as cursor:
                     cursor.execute("DELETE FROM auth_sessions WHERE session_id = %s", (existing["session_id"],))
@@ -1017,6 +1022,7 @@ class PostgresPlayerAuthStore:
                 raise RuntimeError("Failed to load authenticated session")
             payload["is_new_session"] = True
             payload["is_new_player"] = False
+            payload["previous_viewer_id"] = previous_viewer_id
             return payload
 
     def close(self) -> None:

@@ -266,6 +266,49 @@ def join_world_room_by_invite(
     }
 
 
+async def transfer_player_identity(
+    *,
+    room_registry,
+    runtime,
+    source_viewer_id: str,
+    viewer_id: str | None,
+    preferred_display_name: str | None = None,
+) -> dict[str, object]:
+    normalized_source = _normalize_viewer_id(source_viewer_id)
+    normalized_target = _normalize_viewer_id(viewer_id)
+    if not normalized_source:
+        raise HTTPException(status_code=400, detail="source_viewer_id is required")
+    if not normalized_target:
+        raise HTTPException(status_code=400, detail="viewer_id is required")
+
+    try:
+        result = room_registry.transfer_viewer_identity(
+            source_viewer_id=normalized_source,
+            target_viewer_id=normalized_target,
+            preferred_display_name=preferred_display_name,
+        )
+    except Exception as exc:
+        _handle_room_registry_error(exc)
+
+    active_runtime = runtime
+    for room_id in list(result.get("transferred_room_ids", []) or []):
+        loaded_runtime = getattr(room_registry, "get_loaded_runtime", lambda _room_id: None)(room_id)
+        if loaded_runtime is None or loaded_runtime.get("world") is None:
+            continue
+        if loaded_runtime is active_runtime:
+            getattr(room_registry, "hydrate_runtime_player_state")(room_id)
+            continue
+        await loaded_runtime.run_mutation(getattr(room_registry, "hydrate_runtime_player_state"), room_id)
+
+    active_room_id = room_registry.get_active_room_id()
+    return {
+        "status": "ok",
+        "message": "Player identity transferred",
+        **result,
+        **_build_room_payload(room_registry=room_registry, room_id=active_room_id, viewer_id=normalized_target),
+    }
+
+
 def create_world_room_payment_order(
     *,
     room_registry,

@@ -59,6 +59,12 @@ class UpdatePlayerProfileRequest(BaseModel):
     display_name: str
 
 
+class TransferPlayerIdentityRequest(BaseModel):
+    source_viewer_id: str
+    preferred_display_name: Optional[str] = None
+    viewer_id: Optional[str] = None
+
+
 class SwitchWorldRoomRequest(BaseModel):
     room_id: str
     viewer_id: Optional[str] = None
@@ -232,6 +238,7 @@ def create_public_command_router(
     run_switch_control_seat: Callable[[BaseModel], object],
     run_release_control_seat: Callable[[BaseModel], object],
     run_update_player_profile: Callable[[BaseModel], object],
+    run_transfer_player_identity: Callable[[BaseModel], object],
     run_switch_world_room: Callable[[BaseModel], object],
     run_update_world_room_access: Callable[[BaseModel], object],
     run_update_world_room_plan: Callable[[BaseModel], object],
@@ -367,6 +374,14 @@ def create_public_command_router(
     async def update_player_profile_v1(request: Request, req: UpdatePlayerProfileRequest):
         return ok_response(
             await run_update_player_profile(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
+
+    @router.post("/api/v1/command/player/transfer-identity")
+    async def transfer_player_identity_v1(request: Request, req: TransferPlayerIdentityRequest):
+        return ok_response(
+            await run_transfer_player_identity(
                 _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
             )
         )

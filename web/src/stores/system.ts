@@ -137,9 +137,21 @@ export const useSystemStore = defineStore('system', () => {
 
   async function loginPasswordSession(email: string, password: string) {
     try {
+      const previousViewerId = viewerId.value;
       const res = await authApi.loginPasswordSession({ email, password });
       applyAuthSession(res.session ?? null);
       authBootstrapped.value = true;
+      const transferSourceViewerId = (
+        res.session?.previous_viewer_id?.trim()
+        || (previousViewerId !== viewerId.value ? previousViewerId : '')
+      );
+      if (transferSourceViewerId && transferSourceViewerId !== viewerId.value) {
+        await systemApi.transferPlayerIdentity({
+          source_viewer_id: transferSourceViewerId,
+          preferred_display_name: res.session?.display_name?.trim() || undefined,
+          viewer_id: viewerId.value,
+        });
+      }
       await normalizeRoomAfterIdentityChange();
       return res.session ?? null;
     } catch (e) {

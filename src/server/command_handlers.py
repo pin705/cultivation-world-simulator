@@ -21,6 +21,7 @@ from src.server.services.world_room_control import (
     rotate_world_room_invite,
     settle_world_room_payment,
     switch_active_world_room,
+    transfer_player_identity,
     update_world_room_access,
     update_world_room_entitlement,
     update_world_room_plan,
@@ -309,6 +310,17 @@ def create_command_handlers(
             auth_store.update_player_display_name(req.viewer_id, req.display_name)
         return result
 
+    async def run_transfer_player_identity(req) -> dict:
+        current_runtime = _runtime()
+        return await current_runtime.run_mutation(
+            transfer_player_identity,
+            room_registry=room_registry,
+            runtime=current_runtime,
+            source_viewer_id=req.source_viewer_id,
+            viewer_id=req.viewer_id,
+            preferred_display_name=getattr(req, "preferred_display_name", None),
+        )
+
     async def run_switch_world_room(req) -> dict:
         current_runtime = _runtime()
         return await current_runtime.run_mutation(
@@ -535,6 +547,7 @@ def create_command_handlers(
         run_switch_control_seat=run_switch_control_seat,
         run_release_control_seat=run_release_control_seat,
         run_update_player_profile=run_update_player_profile,
+        run_transfer_player_identity=run_transfer_player_identity,
         run_switch_world_room=run_switch_world_room,
         run_update_world_room_access=run_update_world_room_access,
         run_update_world_room_plan=run_update_world_room_plan,

@@ -74,6 +74,9 @@ class RuntimeRoomRegistry:
             else DEFAULT_ROOM_ACCESS_MODE
         )
 
+    def _list_known_room_ids(self) -> list[str]:
+        return sorted(set(self._room_metadata.keys()) | set(self._rooms.keys()))
+
     def _normalize_player_profile_state(
         self,
         viewer_id: str,
@@ -816,7 +819,7 @@ class RuntimeRoomRegistry:
         self._on_room_created = callback
 
     def list_room_ids(self) -> list[str]:
-        return list(self._rooms.keys())
+        return self._list_known_room_ids()
 
     def get_room_id_for_runtime(self, target_runtime: GameSessionRuntime) -> str | None:
         for room_id, runtime in self._rooms.items():
@@ -824,8 +827,11 @@ class RuntimeRoomRegistry:
                 return room_id
         return None
 
+    def get_loaded_runtime(self, room_id: str | None = None) -> GameSessionRuntime | None:
+        return self._rooms.get(self._normalize_room_id(room_id or self._active_room_id))
+
     def has_room(self, room_id: str | None) -> bool:
-        return self._normalize_room_id(room_id) in self._rooms
+        return self._normalize_room_id(room_id) in self._list_known_room_ids()
 
     def ensure_room_metadata(
         self,
@@ -1452,6 +1458,145 @@ class RuntimeRoomRegistry:
         self._set_room_metadata(resolved_room_id, metadata)
         self.switch_active_room(resolved_room_id, viewer_id=normalized_viewer_id)
         return self.get_room_summary(resolved_room_id, viewer_id=normalized_viewer_id)
+
+    def transfer_viewer_identity(
+        self,
+        *,
+        source_viewer_id: str,
+        target_viewer_id: str,
+        preferred_display_name: str | None = None,
+    ) -> dict[str, Any]:
+        normalized_source = self._normalize_viewer_id(source_viewer_id)
+        normalized_target = self._normalize_viewer_id(target_viewer_id)
+        normalized_display_name = " ".join(str(preferred_display_name or "").split()).strip()
+        if not normalized_source:
+            raise ValueError("source_viewer_id is required")
+        if not normalized_target:
+            raise ValueError("target_viewer_id is required")
+        if normalized_source == normalized_target:
+            return {
+                "source_viewer_id": normalized_source,
+                "target_viewer_id": normalized_target,
+                "transferred_room_ids": [],
+                "conflicted_room_ids": [],
+                "skipped_room_ids": [],
+            }
+
+        transferred_room_ids: list[str] = []
+        conflicted_room_ids: list[str] = []
+        skipped_room_ids: list[str] = []
+        for room_id in self._list_known_room_ids():
+            metadata = self.ensure_room_metadata(room_id)
+            members = {
+                member_id
+                for member_id in list(metadata.get("member_viewer_ids", []) or [])
+                if self._normalize_viewer_id(member_id)
+            }
+            profiles = self._normalize_player_profiles_metadata(
+                metadata.get("player_profiles", {}) or {}
+            )
+            seats = self._normalize_player_control_seats_metadata(
+                metadata.get("player_control_seats", {}) or {}
+            )
+            source_seat_ids = [
+                controller_id
+                for controller_id, seat in seats.items()
+                if seat.get("holder_id") == normalized_source
+            ]
+            target_seat_ids = [
+                controller_id
+                for controller_id, seat in seats.items()
+                if seat.get("holder_id") == normalized_target
+            ]
+            source_present = bool(
+                metadata.get("owner_viewer_id") == normalized_source
+                or normalized_source in members
+                or normalized_source in profiles
+                or source_seat_ids
+            )
+            if not source_present:
+                continue
+
+            changed = False
+            if metadata.get("owner_viewer_id") == normalized_source:
+                metadata["owner_viewer_id"] = normalized_target
+                members.add(normalized_target)
+                changed = True
+
+            if normalized_source in members:
+                members.discard(normalized_source)
+                members.add(normalized_target)
+                changed = True
+            metadata["member_viewer_ids"] = sorted(members)
+
+            source_profile = profiles.pop(normalized_source, None)
+            target_profile = profiles.get(normalized_target)
+            if source_profile is not None or target_profile is not None or normalized_display_name:
+                merged_profile: dict[str, Any] = {}
+                if isinstance(source_profile, dict):
+                    merged_profile.update(source_profile)
+                if isinstance(target_profile, dict):
+                    if target_profile.get("display_name"):
+                        merged_profile["display_name"] = target_profile.get("display_name")
+                    joined_candidates = [
+                        value
+                        for value in [
+                            source_profile.get("joined_month") if isinstance(source_profile, dict) else None,
+                            target_profile.get("joined_month"),
+                        ]
+                        if value is not None
+                    ]
+                    if joined_candidates:
+                        merged_profile["joined_month"] = min(int(value) for value in joined_candidates)
+                    last_seen_candidates = [
+                        value
+                        for value in [
+                            source_profile.get("last_seen_month") if isinstance(source_profile, dict) else None,
+                            target_profile.get("last_seen_month"),
+                        ]
+                        if value is not None
+                    ]
+                    if last_seen_candidates:
+                        merged_profile["last_seen_month"] = max(int(value) for value in last_seen_candidates)
+                if normalized_display_name:
+                    merged_profile["display_name"] = normalized_display_name
+                profiles[normalized_target] = self._normalize_player_profile_state(
+                    normalized_target,
+                    merged_profile,
+                )
+                metadata["player_profiles"] = profiles
+                changed = True
+
+            if source_seat_ids:
+                if target_seat_ids:
+                    for controller_id in source_seat_ids:
+                        seat = dict(seats.get(controller_id) or {})
+                        seat["holder_id"] = None
+                        seats[controller_id] = self._normalize_player_control_state(seat)
+                    conflicted_room_ids.append(room_id)
+                    changed = True
+                else:
+                    for controller_id in source_seat_ids:
+                        seat = dict(seats.get(controller_id) or {})
+                        seat["holder_id"] = normalized_target
+                        seats[controller_id] = self._normalize_player_control_state(seat)
+                    changed = True
+                metadata["player_control_seats"] = seats
+
+            if not changed:
+                skipped_room_ids.append(room_id)
+                continue
+
+            self._set_room_metadata(room_id, metadata, sync_runtime=False)
+            transferred_room_ids.append(room_id)
+
+        return {
+            "source_viewer_id": normalized_source,
+            "target_viewer_id": normalized_target,
+            "transferred_room_ids": transferred_room_ids,
+            "conflicted_room_ids": conflicted_room_ids,
+            "skipped_room_ids": skipped_room_ids,
+        }
 
     def get_room_summary(self, room_id: str, *, viewer_id: str | None = None) -> dict[str, Any]:
         resolved_room_id = self._normalize_room_id(room_id)
