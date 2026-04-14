@@ -601,7 +601,7 @@ class EventStorage:
                     eo.observer_avatar_id, eo.subject_avatar_id, eo.relation_type, eo.id AS observation_id
                 FROM events e
                 JOIN event_observations eo ON e.id = eo.event_id AND eo.observer_avatar_id = ?
-                WHERE e.is_major = FALSE OR e.is_story = TRUE
+                WHERE (e.is_major = FALSE OR e.is_story = TRUE)
                 ORDER BY e.month_stamp DESC, e.rowid DESC
                 LIMIT ?
                 """
@@ -625,6 +625,163 @@ class EventStorage:
                 limit,
                 query,
                 params,
+            )
+            return []
+
+    # ============================================================
+    # Recap-oriented query methods (added for online business)
+    # ============================================================
+
+    def get_events_by_month(self, month_stamp: int) -> list["Event"]:
+        """
+        获取指定月份的所有事件。
+
+        Args:
+            month_stamp: 月份戳记
+
+        Returns:
+            该月份的事件列表（按 rowid 正序，即插入顺序）
+        """
+        if self._conn is None:
+            return []
+
+        query = """
+                SELECT DISTINCT
+                    e.rowid, e.id, e.month_stamp, e.content, e.is_major, e.is_story,
+                    e.event_type, e.render_key, e.render_params, e.created_at
+                FROM events e
+                WHERE e.month_stamp = ?
+                ORDER BY e.rowid ASC
+                """
+        params = (month_stamp,)
+        try:
+            with self._db_lock:
+                rows = self._conn.execute(query, params).fetchall()
+                return self._build_events_from_rows(rows)
+        except Exception as e:
+            self._logger.exception(
+                "Failed to query events by month: %s | month_stamp=%r",
+                e,
+                month_stamp,
+            )
+            return []
+
+    def get_events_in_range(self, from_month: int, to_month: int) -> list["Event"]:
+        """
+        获取月份范围内的事件。
+
+        Args:
+            from_month: 起始月份（包含）
+            to_month: 结束月份（包含）
+
+        Returns:
+            事件列表（按 month_stamp 和 rowid 正序）
+        """
+        if self._conn is None:
+            return []
+
+        query = """
+                SELECT DISTINCT
+                    e.rowid, e.id, e.month_stamp, e.content, e.is_major, e.is_story,
+                    e.event_type, e.render_key, e.render_params, e.created_at
+                FROM events e
+                WHERE e.month_stamp >= ? AND e.month_stamp <= ?
+                ORDER BY e.month_stamp ASC, e.rowid ASC
+                """
+        params = (from_month, to_month)
+        try:
+            with self._db_lock:
+                rows = self._conn.execute(query, params).fetchall()
+                return self._build_events_from_rows(rows)
+        except Exception as e:
+            self._logger.exception(
+                "Failed to query events in range: %s | from=%r to=%r",
+                e,
+                from_month,
+                to_month,
+            )
+            return []
+
+    def get_events_for_sect_in_range(
+        self, sect_id: int, from_month: int, to_month: int
+    ) -> list["Event"]:
+        """
+        获取指定宗门在月份范围内的事件。
+
+        Args:
+            sect_id: 宗门 ID
+            from_month: 起始月份（包含）
+            to_month: 结束月份（包含）
+
+        Returns:
+            事件列表（按 month_stamp 和 rowid 正序）
+        """
+        if self._conn is None:
+            return []
+
+        query = """
+                SELECT DISTINCT
+                    e.rowid, e.id, e.month_stamp, e.content, e.is_major, e.is_story,
+                    e.event_type, e.render_key, e.render_params, e.created_at
+                FROM events e
+                JOIN event_sects es ON e.id = es.event_id AND es.sect_id = ?
+                WHERE e.month_stamp >= ? AND e.month_stamp <= ?
+                ORDER BY e.month_stamp ASC, e.rowid ASC
+                """
+        params = (sect_id, from_month, to_month)
+        try:
+            with self._db_lock:
+                rows = self._conn.execute(query, params).fetchall()
+                return self._build_events_from_rows(rows)
+        except Exception as e:
+            self._logger.exception(
+                "Failed to query sect events in range: %s | sect=%r from=%r to=%r",
+                e,
+                sect_id,
+                from_month,
+                to_month,
+            )
+            return []
+
+    def get_events_for_avatars_in_range(
+        self, avatar_ids: list[str], from_month: int, to_month: int
+    ) -> list["Event"]:
+        """
+        获取指定角色列表在月份范围内的事件。
+
+        Args:
+            avatar_ids: 角色 ID 列表
+            from_month: 起始月份（包含）
+            to_month: 结束月份（包含）
+
+        Returns:
+            事件列表（按 month_stamp 和 rowid 正序）
+        """
+        if self._conn is None or not avatar_ids:
+            return []
+
+        placeholders = ",".join("?" for _ in avatar_ids)
+        query = f"""
+                SELECT DISTINCT
+                    e.rowid, e.id, e.month_stamp, e.content, e.is_major, e.is_story,
+                    e.event_type, e.render_key, e.render_params, e.created_at
+                FROM events e
+                JOIN event_avatars ea ON e.id = ea.event_id AND ea.avatar_id IN ({placeholders})
+                WHERE e.month_stamp >= ? AND e.month_stamp <= ?
+                ORDER BY e.month_stamp ASC, e.rowid ASC
+                """
+        params = avatar_ids + [from_month, to_month]
+        try:
+            with self._db_lock:
+                rows = self._conn.execute(query, params).fetchall()
+                return self._build_events_from_rows(rows)
+        except Exception as e:
+            self._logger.exception(
+                "Failed to query avatar events in range: %s | avatars=%r from=%r to=%r",
+                e,
+                avatar_ids,
+                from_month,
+                to_month,
             )
             return []
 

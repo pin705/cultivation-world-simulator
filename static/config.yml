@@ -372,3 +372,29 @@ df:
 
 play:
   base_benefit_probability: 0.05
+
+recap:
+  # Recap-first gameplay loop configuration
+  # See: docs/specs/online-implementation-status.md
+  
+  # Whether recap-first mode is enabled (Phase 1: informational only)
+  enabled: true
+  
+  # Default action points per cycle (can be overridden by world plan)
+  action_points_per_cycle: 3
+  
+  # How many months of events to include in recap by default
+  default_recap_months: 3
+  
+  # Maximum months to scan for recap (performance guard)
+  max_recap_months: 12
+  
+  # Whether to generate LLM summary text (premium feature)
+  # Phase 1: false (use rule-based summary)
+  # Phase 2+: true for story_rich worlds, false for standard
+  generate_llm_summary: false
+  
+  # Event classification thresholds
+  major_event_min_count: 1  # At least N events to show "major changes"
+  routine_event_summary_threshold: 5  # Group events if > N of same type
+

@@ -226,6 +226,14 @@ class LoadGameRequest(BaseModel):
     filename: str
 
 
+class AcknowledgeRecapRequest(BaseModel):
+    viewer_id: Optional[str] = None
+
+
+class SpendActionPointRequest(BaseModel):
+    viewer_id: Optional[str] = None
+
+
 def create_public_command_router(
     *,
     run_start_game: Callable[[BaseModel], object],
@@ -271,6 +279,8 @@ def create_public_command_router(
     run_save_game: Callable[..., dict],
     run_delete_save: Callable[..., dict],
     run_load_game: Callable[..., object],
+    run_acknowledge_recap: Callable[[BaseModel], object],  # NEW: recap acknowledgment
+    run_spend_action_point: Callable[[BaseModel], object],  # NEW: action point spending
     resolve_viewer_id: Callable[[Request, str | None], str | None] | None = None,
 ) -> APIRouter:
     router = APIRouter()
@@ -580,5 +590,22 @@ def create_public_command_router(
     @router.post("/api/v1/command/game/load")
     async def api_load_game_v1(req: LoadGameRequest):
         return ok_response(await run_load_game(filename=req.filename))
+
+    # NEW: Recap command endpoints
+    @router.post("/api/v1/command/recap/acknowledge")
+    async def acknowledge_recap_v1(request: Request, req: AcknowledgeRecapRequest):
+        resolved_viewer_id = _resolve_request_viewer_id(request, req.viewer_id)
+        if not resolved_viewer_id:
+            return ok_response({"error": "viewer_id is required"})
+        payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
+        return ok_response(await run_acknowledge_recap(payload))
+
+    @router.post("/api/v1/command/recap/spend-action-point")
+    async def spend_action_point_v1(request: Request, req: SpendActionPointRequest):
+        resolved_viewer_id = _resolve_request_viewer_id(request, req.viewer_id)
+        if not resolved_viewer_id:
+            return ok_response({"error": "viewer_id is required"})
+        payload = req.model_copy(update={"viewer_id": resolved_viewer_id})
+        return ok_response(await run_spend_action_point(payload))
 
     return router
