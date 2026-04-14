@@ -225,6 +225,44 @@ def test_runtime_room_registry_marks_active_room_for_renewal_when_deadline_is_cl
     assert summary["billing_renewal_stage"] == "soon"
 
 
+def test_runtime_room_registry_emits_billing_notice_once_per_stage():
+    registry = RuntimeRoomRegistry()
+    registry.switch_active_room("guild_alpha", viewer_id="viewer_owner")
+    registry.import_room_runtime_snapshot(
+        "guild_alpha",
+        {
+            "access_mode": "private",
+            "owner_viewer_id": "viewer_owner",
+            "member_viewer_ids": ["viewer_owner"],
+            "plan_id": "story_rich_private",
+            "entitled_plan_id": "story_rich_private",
+            "billing_status": "active",
+            "billing_period_end_at": "2026-04-20T00:00:00+00:00",
+        },
+    )
+
+    registry._utc_now = lambda: datetime(2026, 4, 14, tzinfo=timezone.utc)
+    first = registry.collect_room_billing_notifications("guild_alpha")
+    second = registry.collect_room_billing_notifications("guild_alpha")
+
+    assert len(first) == 1
+    assert first[0]["room_id"] == "guild_alpha"
+    assert first[0]["render_key"] == "ui.control_room_billing_toast_soon"
+    assert first[0]["render_params"]["days"] == 6
+    assert first[0]["render_params"]["date"] == "2026-04-20"
+    assert second == []
+
+    registry._utc_now = lambda: datetime(2026, 4, 18, tzinfo=timezone.utc)
+    urgent = registry.collect_room_billing_notifications("guild_alpha")
+    repeated_urgent = registry.collect_room_billing_notifications("guild_alpha")
+
+    assert len(urgent) == 1
+    assert urgent[0]["render_key"] == "ui.control_room_billing_toast_urgent"
+    assert urgent[0]["level"] == "warning"
+    assert urgent[0]["render_params"]["days"] == 2
+    assert repeated_urgent == []
+
+
 def test_runtime_room_registry_expires_trial_room_after_trial_deadline():
     registry = RuntimeRoomRegistry()
     registry.switch_active_room("guild_alpha", viewer_id="viewer_owner")

@@ -34,7 +34,12 @@ function handleTickMessage(payload: TickPayloadDTO, deps: SocketRouterDeps) {
 
 function handleToastMessage(data: ToastSocketMessage, deps: SocketRouterDeps) {
   if (!isActiveRoomMessage(data, deps)) return
-  const { level, message: msg } = data
+  const localized =
+    data.render_key != null
+      ? String(translate(data.render_key, data.render_params ?? {}))
+      : ''
+  const { level } = data
+  const msg = localized || data.message
   if (level === 'error') message.error(msg)
   else if (level === 'warning') message.warning(msg)
   else if (level === 'success') message.success(msg)

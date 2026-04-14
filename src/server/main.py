@@ -390,6 +390,7 @@ async def game_loop():
         should_trigger_auto_save=lambda world: should_trigger_auto_save(world=world),
         trigger_auto_save=trigger_auto_save,
         build_auto_save_toast=build_auto_save_toast,
+        collect_room_notifications=room_registry.collect_room_billing_notifications,
         get_logger=get_logger,
     )
 

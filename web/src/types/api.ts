@@ -709,6 +709,7 @@ export interface AvatarOverviewResponseDTO {
 
 export type ToastLevel = 'error' | 'warning' | 'success' | 'info' | string;
 export type AppLanguage = AppLocale | string;
+export type ToastRenderParam = string | number | boolean | null;
 
 export interface ToastSocketMessage {
   type: 'toast';
@@ -716,6 +717,8 @@ export interface ToastSocketMessage {
   level: ToastLevel;
   message: string;
   language?: AppLanguage;
+  render_key?: string;
+  render_params?: Record<string, ToastRenderParam>;
 }
 
 export interface LLMConfigRequiredSocketMessage {

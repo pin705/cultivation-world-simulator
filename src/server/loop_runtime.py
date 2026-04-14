@@ -126,6 +126,7 @@ async def run_game_loop_forever(
     should_trigger_auto_save: Callable[[Any], tuple[bool, int, int]],
     trigger_auto_save,
     build_auto_save_toast: Callable[[str], dict[str, Any]],
+    collect_room_notifications: Callable[[str], list[dict[str, Any]]] | None,
     get_logger,
 ) -> None:
     """Run the background simulation loop forever for all active room runtimes."""
@@ -158,6 +159,10 @@ async def run_game_loop_forever(
                     await asyncio.to_thread(trigger_auto_save, world, sim)
                     await manager.broadcast(build_auto_save_toast(room_id))
                     print(f"[Auto-Save] Auto save completed for room {room_id}.")
+
+                if callable(collect_room_notifications):
+                    for notification in collect_room_notifications(room_id):
+                        await manager.broadcast(notification)
         except Exception as exc:
             print(f"Game loop error: {exc}")
             get_logger().logger.error(f"Game loop error: {exc}", exc_info=True)

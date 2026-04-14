@@ -1,9 +1,13 @@
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
+
+import pytest
 
 from src.server.loop_runtime import (
     build_auto_save_toast,
     build_avatar_updates,
     build_tick_state,
+    run_game_loop_forever,
     should_trigger_auto_save,
 )
 
@@ -108,3 +112,79 @@ def test_build_auto_save_toast_has_stable_contract():
     assert toast["level"] == "info"
     assert isinstance(toast["message"], str)
     assert toast["room_id"] == "guild_alpha"
+
+
+@pytest.mark.asyncio
+async def test_run_game_loop_forever_broadcasts_room_notifications_after_tick():
+    manager = SimpleNamespace(broadcast=AsyncMock())
+    sim = SimpleNamespace(step=lambda: None)
+    world = SimpleNamespace(
+        month_stamp=SimpleNamespace(
+            get_year=lambda: 120,
+            get_month=lambda: SimpleNamespace(value=6),
+        ),
+    )
+    runtime = SimpleNamespace(
+        get=lambda key, default=None: {
+            "is_paused": False,
+            "init_status": "ready",
+            "sim": sim,
+            "world": world,
+            "room_commercial_profile": "story_rich",
+        }.get(key, default),
+        run_mutation=AsyncMock(return_value=["evt"]),
+    )
+
+    sleep_calls = {"count": 0}
+
+    async def fake_sleep(_seconds: float):
+        if sleep_calls["count"] >= 1:
+            raise RuntimeError("stop-loop")
+        sleep_calls["count"] += 1
+
+    import asyncio
+
+    original_sleep = asyncio.sleep
+    asyncio.sleep = fake_sleep
+    try:
+        try:
+            await run_game_loop_forever(
+                get_runtime_contexts=lambda: [("guild_alpha", runtime)],
+                manager=manager,
+                build_avatar_updates=lambda _world: [{"id": "a"}],
+                build_tick_state=lambda avatar_updates, events, runtime_world, room_id: {
+                    "type": "tick",
+                    "room_id": room_id,
+                    "avatars": avatar_updates,
+                    "events": events,
+                    "year": runtime_world.month_stamp.get_year(),
+                    "month": runtime_world.month_stamp.get_month().value,
+                },
+                should_trigger_auto_save=lambda _world: (False, 120, 6),
+                trigger_auto_save=lambda _world, _sim: None,
+                build_auto_save_toast=build_auto_save_toast,
+                collect_room_notifications=lambda room_id: [
+                    {
+                        "type": "toast",
+                        "room_id": room_id,
+                        "level": "warning",
+                        "message": "renew",
+                        "render_key": "ui.control_room_billing_toast_urgent",
+                        "render_params": {"roomId": room_id, "days": 2, "date": "2026-04-20"},
+                    }
+                ],
+                get_logger=lambda: SimpleNamespace(logger=SimpleNamespace(error=lambda *args, **kwargs: None)),
+            )
+        except RuntimeError as exc:
+            assert str(exc) == "stop-loop"
+    finally:
+        asyncio.sleep = original_sleep
+
+    assert manager.broadcast.await_count == 2
+    tick_payload = manager.broadcast.await_args_list[0].args[0]
+    toast_payload = manager.broadcast.await_args_list[1].args[0]
+    assert tick_payload["type"] == "tick"
+    assert tick_payload["room_id"] == "guild_alpha"
+    assert toast_payload["type"] == "toast"
+    assert toast_payload["room_id"] == "guild_alpha"
+    assert toast_payload["render_key"] == "ui.control_room_billing_toast_urgent"

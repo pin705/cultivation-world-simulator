@@ -505,6 +505,7 @@ class RuntimeRoomRegistry:
         last_payment_amount_vnd: int | None = None,
         last_payment_confirmed_at: str | None = None,
         payment_events: list[dict[str, Any]] | None = None,
+        last_billing_notice_key: str | None = None,
     ) -> dict[str, Any]:
         normalized_room_id = self._normalize_room_id(room_id)
         normalized_owner = self._normalize_viewer_id(owner_viewer_id) or None
@@ -586,6 +587,7 @@ class RuntimeRoomRegistry:
                 for item in list(payment_events or [])
                 if isinstance(item, dict)
             ][-30:],
+            "last_billing_notice_key": str(last_billing_notice_key or "").strip() or None,
         }
 
     def _normalize_room_metadata(
@@ -612,6 +614,7 @@ class RuntimeRoomRegistry:
             last_payment_amount_vnd=data.get("last_payment_amount_vnd"),
             last_payment_confirmed_at=data.get("last_payment_confirmed_at"),
             payment_events=list(data.get("payment_events", []) or []),
+            last_billing_notice_key=data.get("last_billing_notice_key"),
         )
 
     def _generate_room_invite_code(self, *, exclude_room_id: str | None = None) -> str:
@@ -719,6 +722,7 @@ class RuntimeRoomRegistry:
                 for item in list(metadata.get("payment_events", []) or [])
                 if isinstance(item, dict)
             ],
+            "last_billing_notice_key": metadata.get("last_billing_notice_key"),
         }
 
     def import_room_runtime_snapshot(self, room_id: str, snapshot: dict[str, Any] | None) -> dict[str, Any]:
@@ -743,12 +747,102 @@ class RuntimeRoomRegistry:
                 "last_payment_amount_vnd": snapshot_dict.get("last_payment_amount_vnd"),
                 "last_payment_confirmed_at": snapshot_dict.get("last_payment_confirmed_at"),
                 "payment_events": list(snapshot_dict.get("payment_events", []) or []),
+                "last_billing_notice_key": snapshot_dict.get("last_billing_notice_key"),
             },
         )
         self._room_metadata[resolved_room_id] = normalized
         self.ensure_room(resolved_room_id)
         self._sync_runtime_room_metadata(resolved_room_id)
         return dict(normalized)
+
+    def _format_billing_notice_date(self, value: str | None) -> str:
+        parsed = self._parse_datetime(value)
+        if parsed is None:
+            return ""
+        return parsed.date().isoformat()
+
+    def collect_room_billing_notifications(self, room_id: str) -> list[dict[str, Any]]:
+        resolved_room_id = self._normalize_room_id(room_id)
+        metadata = self.ensure_room_metadata(resolved_room_id)
+        has_owner = metadata.get("owner_viewer_id") is not None
+        effective_metadata = self._resolve_effective_room_plan_metadata(resolved_room_id, metadata)
+        effective_offer = self._resolve_room_plan_offer_metadata(
+            resolved_room_id,
+            plan_id=effective_metadata.get("plan_id"),
+            has_owner=has_owner,
+        )
+        billing_view = self._build_room_billing_view(
+            effective_metadata=effective_metadata,
+            effective_offer=effective_offer,
+        )
+
+        render_key: str | None = None
+        level = "info"
+        fallback_message = ""
+        billing_status = self._normalize_room_billing_status(effective_metadata.get("billing_status"))
+        renewal_stage = str(billing_view.get("billing_renewal_stage") or "").strip() or None
+        if has_owner and bool(effective_offer.get("sellable")):
+            if billing_status == "expired":
+                render_key = "ui.control_room_billing_toast_expired"
+                level = "error"
+                fallback_message = f"Room {resolved_room_id} billing expired. Renew to restore the paid plan."
+            elif billing_status == "grace":
+                render_key = "ui.control_room_billing_toast_grace"
+                level = "warning"
+                fallback_message = f"Room {resolved_room_id} is in billing grace period. Renew now to avoid downgrade."
+            elif bool(billing_view.get("billing_renewal_recommended")) and renewal_stage == "urgent":
+                render_key = "ui.control_room_billing_toast_urgent"
+                level = "warning"
+                fallback_message = f"Room {resolved_room_id} billing renewal is urgent."
+            elif bool(billing_view.get("billing_renewal_recommended")) and renewal_stage == "soon":
+                render_key = "ui.control_room_billing_toast_soon"
+                level = "info"
+                fallback_message = f"Room {resolved_room_id} billing renewal is due soon."
+
+        next_notice_key: str | None = None
+        if render_key:
+            next_notice_key = ":".join(
+                [
+                    render_key,
+                    billing_status,
+                    renewal_stage or "",
+                    str(billing_view.get("billing_deadline_at") or ""),
+                    str(billing_view.get("billing_days_remaining") or ""),
+                ]
+            )
+
+        previous_notice_key = str(metadata.get("last_billing_notice_key") or "").strip() or None
+        if next_notice_key is None:
+            if previous_notice_key is not None:
+                metadata["last_billing_notice_key"] = None
+                self._room_metadata[resolved_room_id] = self._normalize_room_metadata(
+                    resolved_room_id,
+                    metadata,
+                )
+            return []
+
+        if next_notice_key == previous_notice_key:
+            return []
+
+        metadata["last_billing_notice_key"] = next_notice_key
+        self._room_metadata[resolved_room_id] = self._normalize_room_metadata(
+            resolved_room_id,
+            metadata,
+        )
+        return [
+            {
+                "type": "toast",
+                "room_id": resolved_room_id,
+                "level": level,
+                "message": fallback_message,
+                "render_key": render_key,
+                "render_params": {
+                    "roomId": resolved_room_id,
+                    "days": billing_view.get("billing_days_remaining"),
+                    "date": self._format_billing_notice_date(billing_view.get("billing_deadline_at")),
+                },
+            }
+        ]
 
     def has_room_access(self, room_id: str, viewer_id: str | None = None) -> bool:
         metadata = self.ensure_room_metadata(room_id)

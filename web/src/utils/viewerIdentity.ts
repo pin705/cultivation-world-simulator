@@ -22,7 +22,9 @@ export function loadOrCreateViewerId() {
   return created;
 }
 
-export function getViewerIdentityPayload<T extends Record<string, unknown>>(payload: T) {
+export function getViewerIdentityPayload<T extends object>(
+  payload: T,
+): T & { viewer_id: string } {
   return {
     ...payload,
     viewer_id: loadOrCreateViewerId(),
