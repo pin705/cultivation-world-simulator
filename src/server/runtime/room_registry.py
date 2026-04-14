@@ -138,11 +138,18 @@ class RuntimeRoomRegistry:
                 relation_cooldowns[normalized_key] = int(value)
             except (TypeError, ValueError):
                 continue
+        opening_choice_id = str(payload.get("opening_choice_id") or "").strip() or None
+        try:
+            opening_choice_applied_month = int(payload.get("opening_choice_applied_month", -1))
+        except (TypeError, ValueError):
+            opening_choice_applied_month = -1
         return {
             "holder_id": self._normalize_viewer_id(payload.get("holder_id")) or None,
             "intervention_points": max(0, intervention_points),
             "owned_sect_id": owned_sect_id,
             "main_avatar_id": str(payload.get("main_avatar_id") or "").strip() or None,
+            "opening_choice_id": opening_choice_id,
+            "opening_choice_applied_month": opening_choice_applied_month if opening_choice_id else -1,
             "relation_intervention_cooldowns": relation_cooldowns,
         }
 

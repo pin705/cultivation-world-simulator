@@ -29,6 +29,11 @@ import { useSidebarResize } from './composables/useSidebarResize'
 import { useAppShell } from './composables/useAppShell'
 import { useSystemMenuFlow } from './composables/useSystemMenuFlow'
 import { logError } from './utils/appError'
+import {
+  playerCampaignStepLabel,
+  playerOpeningChoiceDesc,
+  playerOpeningChoiceTitle,
+} from './utils/playerCampaign'
 
 // Stores
 import { useUiStore } from './stores/ui'
@@ -130,15 +135,12 @@ const onboardingClaimableSects = computed(() => (
 const onboardingMainAvatarCandidates = computed(() => (
   (playerOnboarding.value?.main_avatar_candidates || []).slice(0, 3)
 ))
+const onboardingOpeningChoices = computed(() => (
+  (playerOnboarding.value?.opening_choices || []).slice(0, 3)
+))
 
 function onboardingStepLabel(step: string) {
-  if (step === 'set_main_avatar') {
-    return t('ui.player_campaign_step_main_avatar')
-  }
-  if (step === 'ready') {
-    return t('ui.player_campaign_step_ready')
-  }
-  return t('ui.player_campaign_step_claim_sect')
+  return playerCampaignStepLabel(t, step)
 }
 
 function openPlayerCampaignSetup() {
@@ -174,6 +176,22 @@ async function setMainAvatarFromOverlay(avatarId: string) {
   } catch (e) {
     logError('App.setMainAvatarFromOverlay', e)
     onboardingError.value = t('ui.player_campaign_main_avatar_failed')
+  } finally {
+    isSubmittingOnboarding.value = false
+  }
+}
+
+async function chooseOpeningFromOverlay(choiceId: string) {
+  isSubmittingOnboarding.value = true
+  onboardingError.value = ''
+  try {
+    const result = await systemStore.choosePlayerOpening(choiceId)
+    if (!result) {
+      onboardingError.value = t('ui.player_campaign_opening_failed')
+    }
+  } catch (e) {
+    logError('App.chooseOpeningFromOverlay', e)
+    onboardingError.value = t('ui.player_campaign_opening_failed')
   } finally {
     isSubmittingOnboarding.value = false
   }
@@ -308,6 +326,26 @@ watch(sidebarWidth, width => {
                       <span class="player-onboarding-option-title">{{ avatar.name }}</span>
                       <span class="player-onboarding-option-meta">
                         {{ avatar.realm }} · {{ t('ui.player_campaign_age', { age: avatar.age }) }}
+                      </span>
+                    </button>
+                  </div>
+
+                  <div
+                    v-else-if="onboardingRecommendedStep === 'choose_opening'"
+                    class="player-onboarding-options"
+                  >
+                    <button
+                      v-for="choice in onboardingOpeningChoices"
+                      :key="choice.id"
+                      class="player-onboarding-option"
+                      :disabled="isSubmittingOnboarding || !choice.can_select"
+                      @click="chooseOpeningFromOverlay(choice.id)"
+                    >
+                      <span class="player-onboarding-option-title">
+                        {{ playerOpeningChoiceTitle(t, choice.id) }}
+                      </span>
+                      <span class="player-onboarding-option-meta">
+                        {{ playerOpeningChoiceDesc(t, choice.id) }}
                       </span>
                     </button>
                   </div>

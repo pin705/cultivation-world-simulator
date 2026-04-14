@@ -523,6 +523,7 @@ run_grant_avatar_support = command_handlers.run_grant_avatar_support
 run_appoint_avatar_seed = command_handlers.run_appoint_avatar_seed
 run_claim_sect = command_handlers.run_claim_sect
 run_set_main_avatar = command_handlers.run_set_main_avatar
+run_choose_player_opening = command_handlers.run_choose_player_opening
 run_switch_control_seat = command_handlers.run_switch_control_seat
 run_release_control_seat = command_handlers.run_release_control_seat
 run_update_player_profile = command_handlers.run_update_player_profile
@@ -660,6 +661,7 @@ configure_routes_and_mounts(
     run_appoint_avatar_seed=run_appoint_avatar_seed,
     run_claim_sect=run_claim_sect,
     run_set_main_avatar=run_set_main_avatar,
+    run_choose_player_opening=run_choose_player_opening,
     run_switch_control_seat=run_switch_control_seat,
     run_release_control_seat=run_release_control_seat,
     run_update_player_profile=run_update_player_profile,

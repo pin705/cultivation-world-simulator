@@ -249,6 +249,19 @@ export const useSystemStore = defineStore('system', () => {
     }
   }
 
+  async function choosePlayerOpening(choiceId: string) {
+    try {
+      await systemApi.choosePlayerOpening({
+        choice_id: choiceId,
+        viewer_id: viewerId.value,
+      });
+      return await fetchInitStatus();
+    } catch (e) {
+      logError('SystemStore choose player opening', e);
+      return null;
+    }
+  }
+
   async function updateWorldRoomAccess(roomId: string, accessMode: 'open' | 'private') {
     try {
       await systemApi.updateWorldRoomAccess({
@@ -457,6 +470,7 @@ export const useSystemStore = defineStore('system', () => {
     switchControlSeat,
     releaseControlSeat,
     updatePlayerProfile,
+    choosePlayerOpening,
     switchWorldRoom,
     joinWorldRoomByInvite,
     updateWorldRoomAccess,

@@ -3,7 +3,29 @@ from __future__ import annotations
 from fastapi import HTTPException
 
 from src.classes.event import Event
+from src.classes.sect_effect.consts import EXTRA_INCOME_PER_TILE
 from src.i18n import t
+
+PLAYER_OPENING_TREASURY_STOCKPILE = "treasury_stockpile"
+PLAYER_OPENING_FAVORED_DISCIPLE = "favored_disciple"
+PLAYER_OPENING_PROSPEROUS_DOMAIN = "prosperous_domain"
+
+PLAYER_OPENING_CHOICES: dict[str, dict[str, int | str]] = {
+    PLAYER_OPENING_TREASURY_STOCKPILE: {
+        "sect_magic_stone": 1200,
+        "avatar_magic_stone": 240,
+    },
+    PLAYER_OPENING_FAVORED_DISCIPLE: {
+        "avatar_magic_stone": 180,
+        "avatar_contribution": 160,
+        "seed_duration_months": 48,
+    },
+    PLAYER_OPENING_PROSPEROUS_DOMAIN: {
+        "extra_income_per_tile": 4,
+        "effect_duration_months": 36,
+        "war_weariness_delta": -12,
+    },
+}
 
 
 def _get_world(runtime):
@@ -162,6 +184,106 @@ def set_player_main_avatar(runtime, *, avatar_id: str, viewer_id: str | None = N
         "status": "ok",
         "message": "Main disciple set" if changed else "Main disciple unchanged",
         "main_avatar_id": str(avatar.id),
+    }
+
+
+def choose_player_opening(
+    runtime,
+    *,
+    choice_id: str,
+    viewer_id: str | None = None,
+) -> dict[str, str]:
+    world = _get_world(runtime)
+    activate_viewer_control_seat(world, viewer_id=viewer_id)
+
+    normalized_choice_id = str(choice_id or "").strip()
+    if normalized_choice_id not in PLAYER_OPENING_CHOICES:
+        raise HTTPException(status_code=400, detail="Unknown opening choice")
+
+    owned_sect_id = getattr(world, "get_player_owned_sect_id", lambda: None)()
+    if owned_sect_id is None:
+        raise HTTPException(status_code=409, detail="Claim a sect before choosing an opening")
+
+    main_avatar_id = getattr(world, "get_player_main_avatar_id", lambda: None)()
+    if not main_avatar_id:
+        raise HTTPException(status_code=409, detail="Set a main disciple before choosing an opening")
+
+    current_opening_choice_id = getattr(world, "get_player_opening_choice_id", lambda: None)()
+    if current_opening_choice_id == normalized_choice_id:
+        return {
+            "status": "ok",
+            "message": "Opening choice unchanged",
+            "opening_choice_id": normalized_choice_id,
+        }
+    if current_opening_choice_id is not None and current_opening_choice_id != normalized_choice_id:
+        raise HTTPException(status_code=409, detail="Opening choice already locked for this campaign")
+
+    sect = _get_runtime_sect(world, sect_id=int(owned_sect_id))
+    avatar = _get_runtime_avatar(world, avatar_id=str(main_avatar_id))
+    require_player_owned_avatar(world, avatar=avatar)
+    require_player_main_avatar(world, avatar=avatar)
+
+    current_month = int(getattr(world, "month_stamp", 0) or 0)
+    opening_config = PLAYER_OPENING_CHOICES[normalized_choice_id]
+    event_content = ""
+    if normalized_choice_id == PLAYER_OPENING_TREASURY_STOCKPILE:
+        sect_gain = int(opening_config.get("sect_magic_stone", 0) or 0)
+        avatar_gain = int(opening_config.get("avatar_magic_stone", 0) or 0)
+        sect.magic_stone += sect_gain
+        avatar.magic_stone += avatar_gain
+        event_content = t(
+            "The player opened the campaign by filling the treasury of {sect_name} and granting {avatar_name} extra spirit stones.",
+            sect_name=sect.name,
+            avatar_name=avatar.name,
+        )
+    elif normalized_choice_id == PLAYER_OPENING_FAVORED_DISCIPLE:
+        avatar_gain = int(opening_config.get("avatar_magic_stone", 0) or 0)
+        contribution_gain = int(opening_config.get("avatar_contribution", 0) or 0)
+        seed_duration = int(opening_config.get("seed_duration_months", 48) or 48)
+        avatar.magic_stone += avatar_gain
+        avatar.add_sect_contribution(contribution_gain)
+        avatar.player_seed_updated_month = current_month
+        avatar.player_seed_until_month = current_month + seed_duration
+        event_content = t(
+            "The player opened the campaign by elevating {avatar_name} into a favored disciple of {sect_name}.",
+            avatar_name=avatar.name,
+            sect_name=sect.name,
+        )
+    else:
+        extra_income_per_tile = int(opening_config.get("extra_income_per_tile", 0) or 0)
+        effect_duration = int(opening_config.get("effect_duration_months", 36) or 36)
+        war_weariness_delta = int(opening_config.get("war_weariness_delta", 0) or 0)
+        sect.add_temporary_sect_effect(
+            effects={EXTRA_INCOME_PER_TILE: extra_income_per_tile},
+            start_month=current_month,
+            duration=effect_duration,
+            source="player_opening_prosperous_domain",
+        )
+        sect.change_war_weariness(war_weariness_delta)
+        event_content = t(
+            "The player opened the campaign by blessing the domain of {sect_name} with extra prosperity.",
+            sect_name=sect.name,
+        )
+
+    getattr(world, "set_player_opening_choice")(normalized_choice_id, applied_month=current_month)
+    world.refresh_player_control_bindings()
+
+    if getattr(world, "event_manager", None) is not None:
+        world.event_manager.add_event(
+            Event(
+                world.month_stamp,
+                event_content,
+                related_avatars=[str(avatar.id)],
+                related_sects=[int(getattr(sect, "id", 0))],
+                is_major=False,
+                event_type="player_choose_opening",
+            )
+        )
+
+    return {
+        "status": "ok",
+        "message": "Opening choice selected",
+        "opening_choice_id": normalized_choice_id,
     }
 
 

@@ -44,6 +44,11 @@ class SetMainAvatarRequest(BaseModel):
     viewer_id: Optional[str] = None
 
 
+class ChoosePlayerOpeningRequest(BaseModel):
+    choice_id: str
+    viewer_id: Optional[str] = None
+
+
 class SwitchControlSeatRequest(BaseModel):
     controller_id: str
     viewer_id: Optional[str] = None
@@ -235,6 +240,7 @@ def create_public_command_router(
     run_appoint_avatar_seed: Callable[[BaseModel], object],
     run_claim_sect: Callable[[BaseModel], object],
     run_set_main_avatar: Callable[[BaseModel], object],
+    run_choose_player_opening: Callable[[BaseModel], object],
     run_switch_control_seat: Callable[[BaseModel], object],
     run_release_control_seat: Callable[[BaseModel], object],
     run_update_player_profile: Callable[[BaseModel], object],
@@ -350,6 +356,14 @@ def create_public_command_router(
     async def set_main_avatar_v1(request: Request, req: SetMainAvatarRequest):
         return ok_response(
             await run_set_main_avatar(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
+
+    @router.post("/api/v1/command/player/choose-opening")
+    async def choose_player_opening_v1(request: Request, req: ChoosePlayerOpeningRequest):
+        return ok_response(
+            await run_choose_player_opening(
                 _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
             )
         )

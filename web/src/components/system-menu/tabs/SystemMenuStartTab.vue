@@ -9,6 +9,12 @@ import { avatarApi, worldApi } from '@/api'
 import { useSocketStore } from '@/stores/socket'
 import { useSystemStore } from '@/stores/system'
 import { logError } from '@/utils/appError'
+import {
+  playerCampaignStepLabel,
+  playerOpeningChoiceDesc,
+  playerOpeningChoiceEffect,
+  playerOpeningChoiceTitle,
+} from '@/utils/playerCampaign'
 
 const props = defineProps<{
   gameInitialized: boolean
@@ -108,8 +114,15 @@ const onboardingReady = computed(() => Boolean(onboardingState.value?.ready))
 const onboardingRecommendedStep = computed(() => onboardingState.value?.recommended_step || 'claim_sect')
 const onboardingClaimableSects = computed(() => onboardingState.value?.claimable_sects || [])
 const onboardingMainAvatarCandidates = computed(() => onboardingState.value?.main_avatar_candidates || [])
+const onboardingOpeningChoices = computed(() => onboardingState.value?.opening_choices || [])
 const currentSectName = computed(() => onboardingState.value?.owned_sect_name?.trim() || t('ui.player_campaign_unclaimed'))
 const currentMainAvatarName = computed(() => onboardingState.value?.main_avatar_name?.trim() || t('ui.player_campaign_unselected'))
+const currentOpeningChoiceLabel = computed(() => {
+  const choiceId = onboardingState.value?.opening_choice_id?.trim()
+  return choiceId
+    ? playerOpeningChoiceTitle(t, choiceId)
+    : t('ui.player_campaign_opening_empty')
+})
 
 const canEnterWorld = computed(() => (
   props.gameInitialized
@@ -125,9 +138,13 @@ const flowHint = computed(() => {
     return t('ui.play_flow_world_waiting')
   }
   if (!onboardingReady.value) {
-    return onboardingRecommendedStep.value === 'set_main_avatar'
-      ? t('ui.player_campaign_main_avatar_title')
-      : t('ui.player_campaign_claim_title')
+    if (onboardingRecommendedStep.value === 'set_main_avatar') {
+      return t('ui.player_campaign_main_avatar_title')
+    }
+    if (onboardingRecommendedStep.value === 'choose_opening') {
+      return t('ui.player_campaign_opening_title')
+    }
+    return t('ui.player_campaign_claim_title')
   }
   return t('ui.play_flow_enter_hint')
 })
@@ -146,13 +163,7 @@ function formatRoomPlan(planId: string) {
 }
 
 function onboardingStepLabel(step: string) {
-  if (step === 'ready') {
-    return t('ui.player_campaign_step_ready')
-  }
-  if (step === 'set_main_avatar') {
-    return t('ui.player_campaign_step_main_avatar')
-  }
-  return t('ui.player_campaign_step_claim_sect')
+  return playerCampaignStepLabel(t, step)
 }
 
 async function submitAuth() {
@@ -291,6 +302,26 @@ async function setMainAvatarFromFlow(avatarId: string) {
   } catch (error) {
     logError('SystemMenuStartTab.setMainAvatarFromFlow', error)
     onboardingError.value = t('ui.player_campaign_main_avatar_failed')
+  } finally {
+    isSubmittingOnboarding.value = false
+  }
+}
+
+async function chooseOpeningFromFlow(choiceId: string) {
+  if (isSubmittingOnboarding.value) {
+    return
+  }
+
+  isSubmittingOnboarding.value = true
+  onboardingError.value = ''
+  try {
+    const result = await systemStore.choosePlayerOpening(choiceId)
+    if (!result) {
+      onboardingError.value = t('ui.player_campaign_opening_failed')
+    }
+  } catch (error) {
+    logError('SystemMenuStartTab.chooseOpeningFromFlow', error)
+    onboardingError.value = t('ui.player_campaign_opening_failed')
   } finally {
     isSubmittingOnboarding.value = false
   }
@@ -517,6 +548,7 @@ onMounted(() => {
         <div class="start-flow__meta">
           <span>{{ t('ui.player_campaign_current_sect') }} {{ currentSectName }}</span>
           <span>{{ t('ui.player_campaign_current_main_avatar') }} {{ currentMainAvatarName }}</span>
+          <span>{{ t('ui.player_campaign_current_opening') }} {{ currentOpeningChoiceLabel }}</span>
         </div>
 
         <div class="start-flow__hint">
@@ -562,6 +594,29 @@ onMounted(() => {
               {{ avatar.realm }} · {{ t('ui.player_campaign_age', { age: avatar.age }) }}
             </span>
           </button>
+        </div>
+
+        <div
+          v-else-if="!onboardingReady && onboardingRecommendedStep === 'choose_opening'"
+          class="start-flow__option-list"
+        >
+          <button
+            v-for="choice in onboardingOpeningChoices"
+            :key="choice.id"
+            class="flow-option"
+            :disabled="isSubmittingOnboarding || !choice.can_select"
+            @click="chooseOpeningFromFlow(choice.id)"
+          >
+            <span class="flow-option__title">{{ playerOpeningChoiceTitle(t, choice.id) }}</span>
+            <span class="flow-option__meta">{{ playerOpeningChoiceDesc(t, choice.id) }}</span>
+            <span class="flow-option__meta">{{ playerOpeningChoiceEffect(t, choice.id) }}</span>
+            <span v-if="choice.is_selected" class="flow-option__meta">
+              {{ t('ui.player_campaign_opening_selected') }}
+            </span>
+          </button>
+          <div v-if="!onboardingOpeningChoices.length" class="start-flow__hint">
+            {{ t('ui.player_campaign_opening_empty') }}
+          </div>
         </div>
 
         <div v-else class="start-flow__hint">

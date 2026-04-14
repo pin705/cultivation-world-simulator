@@ -5,6 +5,7 @@ from types import SimpleNamespace
 from src.config import RunConfig, get_settings_service
 from src.i18n import t
 from src.server.services.player_control import (
+    choose_player_opening,
     claim_player_sect,
     release_player_control_seat,
     set_player_main_avatar,
@@ -269,6 +270,17 @@ def create_command_handlers(
             set_player_main_avatar,
             runtime,
             avatar_id=req.avatar_id,
+            viewer_id=req.viewer_id,
+        )
+        _persist_runtime_player_state(runtime)
+        return result
+
+    async def run_choose_player_opening(req) -> dict:
+        runtime = _runtime()
+        result = await runtime.run_mutation(
+            choose_player_opening,
+            runtime,
+            choice_id=req.choice_id,
             viewer_id=req.viewer_id,
         )
         _persist_runtime_player_state(runtime)
@@ -544,6 +556,7 @@ def create_command_handlers(
         run_appoint_avatar_seed=run_appoint_avatar_seed,
         run_claim_sect=run_claim_sect,
         run_set_main_avatar=run_set_main_avatar,
+        run_choose_player_opening=run_choose_player_opening,
         run_switch_control_seat=run_switch_control_seat,
         run_release_control_seat=run_release_control_seat,
         run_update_player_profile=run_update_player_profile,

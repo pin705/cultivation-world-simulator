@@ -6,6 +6,7 @@ from typing import Any, Callable
 from fastapi import Query
 
 from src.server.services.public_api_contract import raise_public_error
+from src.server.services.player_control import PLAYER_OPENING_CHOICES
 
 
 def _normalize_viewer_id(viewer_id: str | None) -> str | None:
@@ -48,8 +49,11 @@ def _build_player_onboarding_summary(world, *, viewer_id: str | None) -> dict[st
     owned_sect_name = None
     main_avatar_id = None
     main_avatar_name = None
+    opening_choice_id = None
+    opening_choice_applied_month = None
     claimable_sects: list[dict[str, Any]] = []
     main_avatar_candidates: list[dict[str, Any]] = []
+    opening_choices: list[dict[str, Any]] = []
 
     with _viewer_runtime_scope(world, normalized_viewer_id):
         intervention_points = int(getattr(world, "player_intervention_points", 0) or 0)
@@ -58,6 +62,12 @@ def _build_player_onboarding_summary(world, *, viewer_id: str | None) -> dict[st
         )
         owned_sect_id = getattr(world, "get_player_owned_sect_id", lambda: None)()
         main_avatar_id = getattr(world, "get_player_main_avatar_id", lambda: None)()
+        opening_choice_id = getattr(world, "get_player_opening_choice_id", lambda: None)()
+        opening_choice_applied_month = getattr(
+            world,
+            "get_player_opening_choice_applied_month",
+            lambda: -1,
+        )()
 
         active_sects = list(getattr(world, "existed_sects", []) or [])
         sect_member_counts: dict[int, int] = {}
@@ -133,6 +143,16 @@ def _build_player_onboarding_summary(world, *, viewer_id: str | None) -> dict[st
                     }
                 )
 
+        can_choose_opening = owned_sect_id is not None and bool(main_avatar_id)
+        for choice_id in PLAYER_OPENING_CHOICES.keys():
+            opening_choices.append(
+                {
+                    "id": str(choice_id),
+                    "is_selected": opening_choice_id == str(choice_id),
+                    "can_select": bool(can_choose_opening and opening_choice_id in (None, str(choice_id))),
+                }
+            )
+
     if main_avatar_id and main_avatar_name is None:
         main_avatar = getattr(getattr(world, "avatar_manager", None), "avatars", {}).get(str(main_avatar_id))
         if main_avatar is not None:
@@ -143,6 +163,8 @@ def _build_player_onboarding_summary(world, *, viewer_id: str | None) -> dict[st
         recommended_step = "claim_sect"
     elif main_avatar_id is None:
         recommended_step = "set_main_avatar"
+    elif opening_choice_id is None:
+        recommended_step = "choose_opening"
 
     return {
         "viewer_id": normalized_viewer_id,
@@ -152,12 +174,19 @@ def _build_player_onboarding_summary(world, *, viewer_id: str | None) -> dict[st
         "owned_sect_name": owned_sect_name,
         "main_avatar_id": str(main_avatar_id) if main_avatar_id else None,
         "main_avatar_name": main_avatar_name,
+        "opening_choice_id": str(opening_choice_id) if opening_choice_id else None,
+        "opening_choice_applied_month": (
+            int(opening_choice_applied_month)
+            if opening_choice_id and opening_choice_applied_month is not None
+            else None
+        ),
         "intervention_points": intervention_points,
         "intervention_points_max": intervention_points_max,
         "recommended_step": recommended_step,
         "ready": recommended_step == "ready",
         "claimable_sects": claimable_sects,
         "main_avatar_candidates": main_avatar_candidates,
+        "opening_choices": opening_choices,
     }
 
 

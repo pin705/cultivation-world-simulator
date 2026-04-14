@@ -206,6 +206,11 @@ export interface ClaimSectParams {
   sect_id: number;
 }
 
+export interface ChoosePlayerOpeningParams {
+  choice_id: string;
+  viewer_id?: string;
+}
+
 export interface SwitchControlSeatParams {
   controller_id: string;
   viewer_id: string;
@@ -458,6 +463,12 @@ export interface PlayerOnboardingAvatarDTO {
   is_current: boolean;
 }
 
+export interface PlayerOnboardingOpeningChoiceDTO {
+  id: string;
+  is_selected: boolean;
+  can_select: boolean;
+}
+
 export interface PlayerOnboardingDTO {
   viewer_id: string;
   viewer_display_name?: string;
@@ -466,12 +477,15 @@ export interface PlayerOnboardingDTO {
   owned_sect_name?: string | null;
   main_avatar_id?: string | null;
   main_avatar_name?: string | null;
+  opening_choice_id?: string | null;
+  opening_choice_applied_month?: number | null;
   intervention_points: number;
   intervention_points_max: number;
-  recommended_step: 'claim_sect' | 'set_main_avatar' | 'ready';
+  recommended_step: 'claim_sect' | 'set_main_avatar' | 'choose_opening' | 'ready';
   ready: boolean;
   claimable_sects: PlayerOnboardingSectDTO[];
   main_avatar_candidates: PlayerOnboardingAvatarDTO[];
+  opening_choices: PlayerOnboardingOpeningChoiceDTO[];
 }
 
 export interface InitStatusDTO {

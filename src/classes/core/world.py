@@ -69,6 +69,8 @@ class World():
     player_profiles: dict[str, dict[str, Any]] = field(default_factory=dict)
     player_owned_sect_id: Optional[int] = None
     player_main_avatar_id: Optional[str] = None
+    player_opening_choice_id: Optional[str] = None
+    player_opening_choice_applied_month: int = -1
     player_relation_intervention_cooldowns: dict[str, int] = field(default_factory=dict)
     sect_relation_modifiers: list[dict[str, Any]] = field(default_factory=list)
     sect_wars: list[dict[str, Any]] = field(default_factory=list)
@@ -479,6 +481,8 @@ class World():
             "holder_id": None,
             "owned_sect_id": None,
             "main_avatar_id": None,
+            "opening_choice_id": None,
+            "opening_choice_applied_month": -1,
             "relation_intervention_cooldowns": {},
         }
 
@@ -534,6 +538,20 @@ class World():
             ):
                 main_avatar_id = None
         normalized["main_avatar_id"] = main_avatar_id
+        opening_choice_id = str(normalized.get("opening_choice_id", "") or "").strip() or None
+        try:
+            opening_choice_applied_month = int(
+                normalized.get("opening_choice_applied_month", -1)
+            )
+        except (TypeError, ValueError):
+            opening_choice_applied_month = -1
+        if owned_sect_id is None:
+            opening_choice_id = None
+            opening_choice_applied_month = -1
+        normalized["opening_choice_id"] = opening_choice_id
+        normalized["opening_choice_applied_month"] = (
+            opening_choice_applied_month if opening_choice_id else -1
+        )
         normalized["relation_intervention_cooldowns"] = dict(
             normalized.get("relation_intervention_cooldowns", {}) or {}
         )
@@ -718,6 +736,8 @@ class World():
                 "holder_id": None,
                 "owned_sect_id": self.get_player_owned_sect_id(),
                 "main_avatar_id": self.get_player_main_avatar_id(),
+                "opening_choice_id": self.get_player_opening_choice_id(),
+                "opening_choice_applied_month": self.get_player_opening_choice_applied_month(),
                 "relation_intervention_cooldowns": dict(
                     getattr(self, "player_relation_intervention_cooldowns", {}) or {}
                 ),
@@ -746,6 +766,8 @@ class World():
                 "holder_id": self.get_player_control_seat_holder(cid),
                 "owned_sect_id": self.get_player_owned_sect_id(),
                 "main_avatar_id": self.get_player_main_avatar_id(),
+                "opening_choice_id": self.get_player_opening_choice_id(),
+                "opening_choice_applied_month": self.get_player_opening_choice_applied_month(),
                 "relation_intervention_cooldowns": dict(
                     getattr(self, "player_relation_intervention_cooldowns", {}) or {}
                 ),
@@ -812,6 +834,7 @@ class World():
                 ).get("display_name", ""),
                 "owned_sect_id": self.ensure_player_control_seat(controller_id).get("owned_sect_id"),
                 "main_avatar_id": self.ensure_player_control_seat(controller_id).get("main_avatar_id"),
+                "opening_choice_id": self.ensure_player_control_seat(controller_id).get("opening_choice_id"),
                 "is_active": controller_id == self.get_active_controller_id(),
             }
             for controller_id in self.list_player_control_seat_ids()
@@ -829,6 +852,10 @@ class World():
         self.player_intervention_points = int(state.get("intervention_points", 0) or 0)
         self.player_owned_sect_id = state.get("owned_sect_id")
         self.player_main_avatar_id = state.get("main_avatar_id")
+        self.player_opening_choice_id = state.get("opening_choice_id")
+        self.player_opening_choice_applied_month = int(
+            state.get("opening_choice_applied_month", -1)
+        )
         self.player_relation_intervention_cooldowns = dict(
             state.get("relation_intervention_cooldowns", {}) or {}
         )
@@ -860,6 +887,19 @@ class World():
         value = str(getattr(self, "player_main_avatar_id", "") or "").strip()
         return value or None
 
+    def get_player_opening_choice_id(self) -> Optional[str]:
+        value = str(getattr(self, "player_opening_choice_id", "") or "").strip()
+        return value or None
+
+    def get_player_opening_choice_applied_month(self) -> int:
+        try:
+            return int(getattr(self, "player_opening_choice_applied_month", -1))
+        except (TypeError, ValueError):
+            return -1
+
+    def has_player_opening_choice(self) -> bool:
+        return self.get_player_opening_choice_id() is not None
+
     def has_player_owned_sect(self) -> bool:
         return self.get_player_owned_sect_id() is not None
 
@@ -880,14 +920,39 @@ class World():
         if sect_id is None:
             self.player_owned_sect_id = None
             self.player_main_avatar_id = None
+            self.player_opening_choice_id = None
+            self.player_opening_choice_applied_month = -1
             self.sync_active_player_control_seat()
             return
-        self.player_owned_sect_id = int(sect_id)
+        new_sect_id = int(sect_id)
+        if self.get_player_owned_sect_id() != new_sect_id:
+            self.player_opening_choice_id = None
+            self.player_opening_choice_applied_month = -1
+        self.player_owned_sect_id = new_sect_id
         self.sync_active_player_control_seat()
 
     def set_player_main_avatar(self, avatar_id: str | None) -> None:
         normalized = str(avatar_id or "").strip()
         self.player_main_avatar_id = normalized or None
+        self.sync_active_player_control_seat()
+
+    def set_player_opening_choice(
+        self,
+        choice_id: str | None,
+        *,
+        applied_month: int | None = None,
+    ) -> None:
+        normalized_choice_id = str(choice_id or "").strip() or None
+        self.player_opening_choice_id = normalized_choice_id
+        if normalized_choice_id is None:
+            self.player_opening_choice_applied_month = -1
+        else:
+            try:
+                self.player_opening_choice_applied_month = int(
+                    self.month_stamp if applied_month is None else applied_month
+                )
+            except (TypeError, ValueError):
+                self.player_opening_choice_applied_month = int(self.month_stamp)
         self.sync_active_player_control_seat()
 
     def is_avatar_in_player_owned_sect(self, avatar: Optional["Avatar"]) -> bool:
@@ -909,6 +974,10 @@ class World():
         self.player_intervention_points = int(active_state.get("intervention_points", 0) or 0)
         self.player_owned_sect_id = active_state.get("owned_sect_id")
         self.player_main_avatar_id = active_state.get("main_avatar_id")
+        self.player_opening_choice_id = active_state.get("opening_choice_id")
+        self.player_opening_choice_applied_month = int(
+            active_state.get("opening_choice_applied_month", -1)
+        )
         self.player_relation_intervention_cooldowns = dict(
             active_state.get("relation_intervention_cooldowns", {}) or {}
         )

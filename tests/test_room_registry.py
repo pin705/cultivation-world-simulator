@@ -575,6 +575,8 @@ def test_runtime_room_registry_persists_room_player_state_across_registry_restar
                         "intervention_points": 2,
                         "owned_sect_id": 7,
                         "main_avatar_id": "avatar_1",
+                        "opening_choice_id": "favored_disciple",
+                        "opening_choice_applied_month": 12,
                         "relation_intervention_cooldowns": {"7:9": 22},
                     }
                 },
@@ -598,6 +600,8 @@ def test_runtime_room_registry_persists_room_player_state_across_registry_restar
     assert hydrate_target.loaded_active_controller_id == "seat_alpha"
     assert hydrate_target.loaded_player_profiles["viewer_owner"]["display_name"] == "Owner"
     assert hydrate_target.loaded_player_control_seats["seat_alpha"]["owned_sect_id"] == 7
+    assert hydrate_target.loaded_player_control_seats["seat_alpha"]["opening_choice_id"] == "favored_disciple"
+    assert hydrate_target.loaded_player_control_seats["seat_alpha"]["opening_choice_applied_month"] == 12
 
 
 def test_runtime_room_registry_lists_persisted_rooms_after_restart(tmp_path):

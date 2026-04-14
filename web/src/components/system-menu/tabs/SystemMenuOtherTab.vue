@@ -6,6 +6,12 @@ import { avatarApi, worldApi } from '@/api'
 import { useSystemStore } from '@/stores/system'
 import { useSocketStore } from '@/stores/socket'
 import { logError } from '@/utils/appError'
+import {
+  playerCampaignStepLabel,
+  playerOpeningChoiceDesc,
+  playerOpeningChoiceEffect,
+  playerOpeningChoiceTitle,
+} from '@/utils/playerCampaign'
 import houseIcon from '@/assets/icons/ui/lucide/house.svg'
 import logOutIcon from '@/assets/icons/ui/lucide/log-out.svg'
 import chevronRightIcon from '@/assets/icons/ui/lucide/chevron-right.svg'
@@ -309,6 +315,7 @@ const roomPlayerEntries = computed(() => playerProfiles.value || [])
 const onboardingState = computed(() => playerOnboarding.value)
 const onboardingClaimableSects = computed(() => onboardingState.value?.claimable_sects || [])
 const onboardingMainAvatarCandidates = computed(() => onboardingState.value?.main_avatar_candidates || [])
+const onboardingOpeningChoices = computed(() => onboardingState.value?.opening_choices || [])
 const onboardingRecommendedStep = computed(() => onboardingState.value?.recommended_step || 'claim_sect')
 const onboardingReady = computed(() => Boolean(onboardingState.value?.ready))
 const canRunOnboardingAction = computed(() => (
@@ -572,13 +579,7 @@ function playerMetaLabel(profile: {
 }
 
 function onboardingStepLabel(step: string) {
-  if (step === 'ready') {
-    return t('ui.player_campaign_step_ready')
-  }
-  if (step === 'set_main_avatar') {
-    return t('ui.player_campaign_step_main_avatar')
-  }
-  return t('ui.player_campaign_step_claim_sect')
+  return playerCampaignStepLabel(t, step)
 }
 
 function formatOnboardingSectMeta(sect: {
@@ -605,6 +606,20 @@ function formatOnboardingAvatarMeta(avatar: {
   ]
   if (avatar.is_current) {
     parts.push(t('ui.player_campaign_main_avatar_current'))
+  }
+  return parts.join(' · ')
+}
+
+function formatOnboardingOpeningMeta(choice: {
+  id: string
+  is_selected: boolean
+}) {
+  const parts = [
+    playerOpeningChoiceDesc(t, choice.id),
+    playerOpeningChoiceEffect(t, choice.id),
+  ]
+  if (choice.is_selected) {
+    parts.push(t('ui.player_campaign_opening_selected'))
   }
   return parts.join(' · ')
 }
@@ -638,6 +653,25 @@ async function setMainAvatarFromOnboarding(avatarId: string) {
   } catch (error) {
     logError('SystemMenuOtherTab.setMainAvatarFromOnboarding', error)
     onboardingError.value = t('ui.player_campaign_main_avatar_failed')
+  } finally {
+    isSubmittingOnboarding.value = false
+  }
+}
+
+async function chooseOpeningFromOnboarding(choiceId: string) {
+  if (!canRunOnboardingAction.value) {
+    return
+  }
+  isSubmittingOnboarding.value = true
+  onboardingError.value = ''
+  try {
+    const result = await systemStore.choosePlayerOpening(choiceId)
+    if (!result) {
+      onboardingError.value = t('ui.player_campaign_opening_failed')
+    }
+  } catch (error) {
+    logError('SystemMenuOtherTab.chooseOpeningFromOnboarding', error)
+    onboardingError.value = t('ui.player_campaign_opening_failed')
   } finally {
     isSubmittingOnboarding.value = false
   }
@@ -1187,6 +1221,14 @@ async function logoutPasswordAccount() {
             {{ onboardingState.main_avatar_name || t('ui.player_campaign_unselected') }}
           </span>
           <span>
+            {{ t('ui.player_campaign_current_opening') }}
+            {{
+              onboardingState.opening_choice_id
+                ? playerOpeningChoiceTitle(t, onboardingState.opening_choice_id)
+                : t('ui.player_campaign_opening_empty')
+            }}
+          </span>
+          <span>
             {{ t('ui.player_campaign_intervention_points', {
               current: onboardingState.intervention_points,
               max: onboardingState.intervention_points_max,
@@ -1242,6 +1284,31 @@ async function logoutPasswordAccount() {
             </div>
           </div>
           <div v-else class="seat-unavailable">{{ t('ui.player_campaign_main_avatar_empty') }}</div>
+        </div>
+
+        <div v-else-if="onboardingRecommendedStep === 'choose_opening'" class="player-roster">
+          <div class="player-roster-title">{{ t('ui.player_campaign_opening_title') }}</div>
+          <div v-if="onboardingOpeningChoices.length" class="player-roster-list">
+            <div
+              v-for="choice in onboardingOpeningChoices"
+              :key="choice.id"
+              class="player-roster-item"
+              :class="{ active: choice.is_selected }"
+            >
+              <div class="player-roster-name">{{ playerOpeningChoiceTitle(t, choice.id) }}</div>
+              <div class="player-roster-meta">{{ formatOnboardingOpeningMeta(choice) }}</div>
+              <button
+                type="button"
+                class="seat-create-btn"
+                :disabled="!canRunOnboardingAction || !choice.can_select"
+                @click="chooseOpeningFromOnboarding(choice.id)"
+                v-sound
+              >
+                {{ choice.is_selected ? t('ui.player_campaign_opening_selected') : t('ui.player_campaign_opening_action') }}
+              </button>
+            </div>
+          </div>
+          <div v-else class="seat-unavailable">{{ t('ui.player_campaign_opening_empty') }}</div>
         </div>
 
         <div v-else class="seat-unavailable">

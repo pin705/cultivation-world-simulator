@@ -4,6 +4,7 @@ import pytest
 
 from src.classes.core.sect import sects_by_id
 from src.server.services.player_control import (
+    choose_player_opening,
     claim_player_sect,
     release_player_control_seat,
     set_player_main_avatar,
@@ -177,3 +178,43 @@ def test_switch_player_control_seat_registers_profile(base_world):
     assert profile is not None
     assert profile["joined_month"] == int(base_world.month_stamp)
     assert base_world.get_player_profile_summary("viewer_b")["controller_id"] == "seat_b"
+
+
+def test_choose_player_opening_locks_opening_and_applies_treasury_support(base_world, dummy_avatar):
+    sect = list(sects_by_id.values())[0]
+    sect.magic_stone = 0
+    base_world.existed_sects = [sect]
+    base_world.sect_context.from_existed_sects(base_world.existed_sects)
+    dummy_avatar.join_sect(sect, MagicMock())
+    base_world.avatar_manager.register_avatar(dummy_avatar)
+    runtime = {"world": base_world}
+
+    claim_player_sect(runtime, sect_id=sect.id)
+    set_player_main_avatar(runtime, avatar_id=dummy_avatar.id)
+
+    result = choose_player_opening(runtime, choice_id="treasury_stockpile")
+
+    assert result["status"] == "ok"
+    assert base_world.get_player_opening_choice_id() == "treasury_stockpile"
+    assert sect.magic_stone == 1200
+    assert dummy_avatar.magic_stone.value == 240
+
+
+def test_choose_player_opening_prosperous_domain_adds_sect_effect(base_world, dummy_avatar):
+    sect = list(sects_by_id.values())[0]
+    sect.magic_stone = 0
+    sect.temporary_sect_effects = []
+    sect.war_weariness = 20
+    base_world.existed_sects = [sect]
+    base_world.sect_context.from_existed_sects(base_world.existed_sects)
+    dummy_avatar.join_sect(sect, MagicMock())
+    base_world.avatar_manager.register_avatar(dummy_avatar)
+    runtime = {"world": base_world}
+
+    claim_player_sect(runtime, sect_id=sect.id)
+    set_player_main_avatar(runtime, avatar_id=dummy_avatar.id)
+    choose_player_opening(runtime, choice_id="prosperous_domain")
+
+    assert base_world.get_player_opening_choice_id() == "prosperous_domain"
+    assert sect.get_extra_income_per_tile(int(base_world.month_stamp)) == 4.0
+    assert sect.war_weariness == 8

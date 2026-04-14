@@ -255,6 +255,8 @@ class PostgresRoomMetadataStore:
                             intervention_points INTEGER NOT NULL,
                             owned_sect_id INTEGER,
                             main_avatar_id TEXT,
+                            opening_choice_id TEXT,
+                            opening_choice_applied_month INTEGER,
                             relation_intervention_cooldowns_json TEXT NOT NULL,
                             updated_at TIMESTAMPTZ NOT NULL,
                             PRIMARY KEY (room_id, controller_id)
@@ -306,6 +308,18 @@ class PostgresRoomMetadataStore:
                         """
                         ALTER TABLE world_rooms
                         ADD COLUMN IF NOT EXISTS active_controller_id TEXT
+                        """
+                    )
+                    cursor.execute(
+                        """
+                        ALTER TABLE world_room_control_seats
+                        ADD COLUMN IF NOT EXISTS opening_choice_id TEXT
+                        """
+                    )
+                    cursor.execute(
+                        """
+                        ALTER TABLE world_room_control_seats
+                        ADD COLUMN IF NOT EXISTS opening_choice_applied_month INTEGER
                         """
                     )
                 finally:
@@ -406,6 +420,8 @@ class PostgresRoomMetadataStore:
                     intervention_points,
                     owned_sect_id,
                     main_avatar_id,
+                    opening_choice_id,
+                    opening_choice_applied_month,
                     relation_intervention_cooldowns_json
                 FROM world_room_control_seats
                 ORDER BY room_id ASC, controller_id ASC
@@ -461,6 +477,8 @@ class PostgresRoomMetadataStore:
             intervention_points,
             owned_sect_id,
             main_avatar_id,
+            opening_choice_id,
+            opening_choice_applied_month,
             relation_intervention_cooldowns_json,
         ) in control_seat_rows:
             normalized_room_id = str(room_id or "").strip()
@@ -472,6 +490,12 @@ class PostgresRoomMetadataStore:
                 "intervention_points": int(intervention_points or 0),
                 "owned_sect_id": int(owned_sect_id) if owned_sect_id is not None else None,
                 "main_avatar_id": str(main_avatar_id or "").strip() or None,
+                "opening_choice_id": str(opening_choice_id or "").strip() or None,
+                "opening_choice_applied_month": (
+                    int(opening_choice_applied_month)
+                    if opening_choice_applied_month is not None
+                    else -1
+                ),
                 "relation_intervention_cooldowns": _json_load_dict(
                     relation_intervention_cooldowns_json
                 ),
@@ -759,10 +783,12 @@ class PostgresRoomMetadataStore:
                             intervention_points,
                             owned_sect_id,
                             main_avatar_id,
+                            opening_choice_id,
+                            opening_choice_applied_month,
                             relation_intervention_cooldowns_json,
                             updated_at
                         )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         """,
                         [
                             (
@@ -774,6 +800,12 @@ class PostgresRoomMetadataStore:
                                 if seat.get("owned_sect_id") is not None
                                 else None,
                                 str(seat.get("main_avatar_id") or "").strip() or None,
+                                str(seat.get("opening_choice_id") or "").strip() or None,
+                                (
+                                    int(seat.get("opening_choice_applied_month", -1))
+                                    if str(seat.get("opening_choice_id") or "").strip()
+                                    else -1
+                                ),
                                 json.dumps(
                                     dict(seat.get("relation_intervention_cooldowns") or {}),
                                     ensure_ascii=False,
