@@ -22,6 +22,31 @@ export interface ApiResponse<T> {
   data?: T; // 有些接口直接把数据铺平在顶层，需根据实际情况调整
 }
 
+export interface AuthSessionDTO {
+  session_id: string;
+  viewer_id: string;
+  auth_type: string;
+  display_name: string;
+  created_at: string;
+  updated_at: string;
+  last_seen_at: string;
+  session_created_at: string;
+  session_updated_at: string;
+  session_last_seen_at: string;
+  user_agent: string;
+  is_new_session?: boolean;
+  is_new_player?: boolean;
+}
+
+export interface AuthSessionStateDTO {
+  authenticated: boolean;
+  session: AuthSessionDTO | null;
+  status?: string;
+  message?: string;
+}
+
+export interface AuthSessionBootstrapDTO extends AuthSessionStateDTO {}
+
 // --- 具体接口响应 ---
 
 export interface InitialStateDTO {

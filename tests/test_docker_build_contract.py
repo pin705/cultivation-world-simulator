@@ -160,6 +160,10 @@ def test_backend_compose_uses_persistent_data_root():
         "Backend service must define CWS_DATA_DIR so settings/secrets/saves/logs "
         "persist outside container writable layers."
     )
+    assert "CWS_APP_DATABASE_URL=postgresql://cultivation:cultivation@postgres:5432/cultivation" in backend_block, (
+        "Backend service must point runtime business state at PostgreSQL instead "
+        "of using only local in-container storage."
+    )
     assert "CWS_DISABLE_AUTO_SHUTDOWN=1" in backend_block, (
         "Backend Docker service must disable the desktop-style auto shutdown "
         "trigger when no websocket clients remain connected."
@@ -189,6 +193,18 @@ def test_backend_compose_contract_exposes_port_and_healthcheck():
     assert "interval:" in backend_block
     assert "timeout:" in backend_block
     assert "retries:" in backend_block
+    assert "postgres:" in backend_block
+    assert "condition: service_healthy" in backend_block
+
+
+def test_postgres_compose_contract_exists_for_runtime_business_state():
+    compose_text = get_compose_text()
+    postgres_block = get_service_block(compose_text, "postgres")
+
+    assert postgres_block, "Expected postgres service in docker-compose.yml"
+    assert "postgres:16-alpine" in postgres_block
+    assert "./docker-data/postgres:/var/lib/postgresql/data" in postgres_block
+    assert "pg_isready -U cultivation -d cultivation" in postgres_block
 
 
 def test_frontend_compose_contract_depends_on_backend_and_exposes_port():

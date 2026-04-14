@@ -11,8 +11,15 @@ def create_websocket_router(
     *,
     manager,
     runtime,
+    resolve_viewer_id: Callable[[WebSocket, str | None], str | None] | None = None,
 ) -> APIRouter:
     router = APIRouter()
+
+    def _resolve_socket_viewer_id(websocket: WebSocket, viewer_id: str | None) -> str | None:
+        if callable(resolve_viewer_id):
+            return resolve_viewer_id(websocket, viewer_id)
+        normalized = str(viewer_id or "").strip()
+        return normalized or None
 
     @router.websocket("/ws")
     async def websocket_endpoint(
@@ -21,7 +28,7 @@ def create_websocket_router(
         viewer_id: str | None = Query(default=None),
     ):
         normalized_room_id = str(room_id or "").strip() or DEFAULT_ROOM_ID
-        normalized_viewer_id = str(viewer_id or "").strip() or None
+        normalized_viewer_id = _resolve_socket_viewer_id(websocket, viewer_id)
         has_room = getattr(runtime, "has_room", None)
         if callable(has_room) and not has_room(normalized_room_id) and normalized_room_id != DEFAULT_ROOM_ID:
             await websocket.close(code=4404, reason="Room not found")

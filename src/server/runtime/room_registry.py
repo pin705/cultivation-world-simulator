@@ -6,6 +6,7 @@ from typing import Any, Callable
 
 from src.utils.config import CONFIG
 
+from .room_metadata_store import RoomMetadataStore
 from .session import DEFAULT_GAME_STATE, GameSessionRuntime
 
 DEFAULT_ROOM_ID = "main"
@@ -32,18 +33,27 @@ class RuntimeRoomRegistry:
         default_room_id: str = DEFAULT_ROOM_ID,
         default_runtime: GameSessionRuntime | None = None,
         on_room_created: Callable[[str, GameSessionRuntime], Any] | None = None,
+        metadata_store: RoomMetadataStore | None = None,
     ):
         self.default_room_id = self._normalize_room_id(default_room_id)
         self._on_room_created = on_room_created
+        self._metadata_store = metadata_store
 
         base_runtime = default_runtime or GameSessionRuntime(dict(DEFAULT_GAME_STATE))
         self._rooms: dict[str, GameSessionRuntime] = {
             self.default_room_id: base_runtime,
         }
-        self._room_metadata: dict[str, dict[str, Any]] = {
-            self.default_room_id: self._build_default_room_metadata(self.default_room_id),
-        }
+        persisted_metadata = self._metadata_store.load_all() if self._metadata_store is not None else {}
+        self._room_metadata: dict[str, dict[str, Any]] = {}
+        for room_id, metadata in persisted_metadata.items():
+            try:
+                self._room_metadata[room_id] = self._normalize_room_metadata(room_id, metadata)
+            except Exception:
+                continue
+        if self.default_room_id not in self._room_metadata:
+            self._room_metadata[self.default_room_id] = self._build_default_room_metadata(self.default_room_id)
         self._active_room_id = self.default_room_id
+        self._replace_persisted_metadata()
         self._sync_runtime_room_metadata(self.default_room_id)
 
     def _normalize_room_id(self, room_id: str | None) -> str:
@@ -636,6 +646,27 @@ class RuntimeRoomRegistry:
     def _build_room_runtime(self) -> GameSessionRuntime:
         return GameSessionRuntime(dict(DEFAULT_GAME_STATE))
 
+    def _replace_persisted_metadata(self) -> None:
+        if self._metadata_store is None:
+            return
+        self._metadata_store.replace_all(self._room_metadata)
+
+    def _set_room_metadata(
+        self,
+        room_id: str,
+        metadata: dict[str, Any],
+        *,
+        sync_runtime: bool = True,
+    ) -> dict[str, Any]:
+        resolved_room_id = self._normalize_room_id(room_id)
+        normalized = self._normalize_room_metadata(resolved_room_id, metadata)
+        self._room_metadata[resolved_room_id] = normalized
+        if self._metadata_store is not None:
+            self._metadata_store.save(resolved_room_id, normalized)
+        if sync_runtime:
+            self._sync_runtime_room_metadata(resolved_room_id)
+        return dict(normalized)
+
     def get_active_room_id(self) -> str:
         return self._active_room_id
 
@@ -662,8 +693,7 @@ class RuntimeRoomRegistry:
         if metadata is not None:
             normalized = self._normalize_room_metadata(resolved_room_id, metadata)
             normalized = self._refresh_room_billing_state(resolved_room_id, normalized)
-            self._room_metadata[resolved_room_id] = normalized
-            return dict(normalized)
+            return self._set_room_metadata(resolved_room_id, normalized)
 
         normalized_creator = self._normalize_viewer_id(created_by_viewer_id) or None
         if resolved_room_id == self.default_room_id:
@@ -685,9 +715,7 @@ class RuntimeRoomRegistry:
         ):
             normalized["invite_code"] = self._generate_room_invite_code(exclude_room_id=resolved_room_id)
         normalized = self._refresh_room_billing_state(resolved_room_id, normalized)
-        self._room_metadata[resolved_room_id] = normalized
-        self._sync_runtime_room_metadata(resolved_room_id)
-        return dict(normalized)
+        return self._set_room_metadata(resolved_room_id, normalized)
 
     def get_room_metadata(self, room_id: str) -> dict[str, Any]:
         return dict(self.ensure_room_metadata(room_id))
@@ -750,7 +778,7 @@ class RuntimeRoomRegistry:
                 "last_billing_notice_key": snapshot_dict.get("last_billing_notice_key"),
             },
         )
-        self._room_metadata[resolved_room_id] = normalized
+        self._set_room_metadata(resolved_room_id, normalized, sync_runtime=False)
         self.ensure_room(resolved_room_id)
         self._sync_runtime_room_metadata(resolved_room_id)
         return dict(normalized)
@@ -815,9 +843,10 @@ class RuntimeRoomRegistry:
         if next_notice_key is None:
             if previous_notice_key is not None:
                 metadata["last_billing_notice_key"] = None
-                self._room_metadata[resolved_room_id] = self._normalize_room_metadata(
+                self._set_room_metadata(
                     resolved_room_id,
                     metadata,
+                    sync_runtime=False,
                 )
             return []
 
@@ -825,9 +854,10 @@ class RuntimeRoomRegistry:
             return []
 
         metadata["last_billing_notice_key"] = next_notice_key
-        self._room_metadata[resolved_room_id] = self._normalize_room_metadata(
+        self._set_room_metadata(
             resolved_room_id,
             metadata,
+            sync_runtime=False,
         )
         return [
             {
@@ -874,9 +904,7 @@ class RuntimeRoomRegistry:
             members = set(metadata.get("member_viewer_ids", []) or [])
             members.add(normalized_viewer_id)
             metadata["member_viewer_ids"] = sorted(members)
-            self._room_metadata[self._normalize_room_id(room_id)] = self._normalize_room_metadata(room_id, metadata)
-            self._sync_runtime_room_metadata(room_id)
-            return dict(self._room_metadata[self._normalize_room_id(room_id)])
+            return self._set_room_metadata(room_id, metadata)
         if owner_viewer_id != normalized_viewer_id:
             raise PermissionError("Only the room owner can manage this room")
         return dict(metadata)
@@ -884,8 +912,7 @@ class RuntimeRoomRegistry:
     def set_room_access_mode(self, room_id: str, *, access_mode: str, viewer_id: str | None) -> dict[str, Any]:
         metadata = self._ensure_room_owner(room_id, viewer_id)
         metadata["access_mode"] = self._normalize_room_access_mode(access_mode)
-        self._room_metadata[self._normalize_room_id(room_id)] = self._normalize_room_metadata(room_id, metadata)
-        self._sync_runtime_room_metadata(room_id)
+        self._set_room_metadata(room_id, metadata)
         return self.get_room_summary(room_id, viewer_id=viewer_id)
 
     def _ensure_member_capacity(self, room_id: str, metadata: dict[str, Any], *, additional_members: int = 1) -> None:
@@ -926,8 +953,7 @@ class RuntimeRoomRegistry:
         metadata["plan_id"] = room_plan["plan_id"]
         metadata["commercial_profile"] = room_plan["commercial_profile"]
         metadata["member_limit"] = room_plan["member_limit"]
-        self._room_metadata[self._normalize_room_id(room_id)] = self._normalize_room_metadata(room_id, metadata)
-        self._sync_runtime_room_metadata(room_id)
+        self._set_room_metadata(room_id, metadata)
         return self.get_room_summary(room_id, viewer_id=viewer_id)
 
     def set_room_entitlement(
@@ -953,8 +979,7 @@ class RuntimeRoomRegistry:
         metadata["billing_status"] = normalized_status
         metadata["entitled_plan_id"] = normalized_entitled_plan_id
         self._ensure_effective_room_capacity(resolved_room_id, metadata)
-        self._room_metadata[resolved_room_id] = self._normalize_room_metadata(resolved_room_id, metadata)
-        self._sync_runtime_room_metadata(resolved_room_id)
+        self._set_room_metadata(resolved_room_id, metadata)
         return self.get_room_summary(resolved_room_id, viewer_id=viewer_id)
 
     def create_room_payment_order(
@@ -1000,8 +1025,7 @@ class RuntimeRoomRegistry:
             note=payment_order.get("transfer_note"),
             room_id=resolved_room_id,
         )
-        self._room_metadata[resolved_room_id] = self._normalize_room_metadata(resolved_room_id, metadata)
-        self._sync_runtime_room_metadata(resolved_room_id)
+        self._set_room_metadata(resolved_room_id, metadata)
         return {
             "room_summary": self.get_room_summary(resolved_room_id, viewer_id=viewer_id),
             "payment_order": payment_order,
@@ -1040,8 +1064,7 @@ class RuntimeRoomRegistry:
                     payment_ref=normalized_payment_ref,
                     room_id=resolved_room_id,
                 )
-                self._room_metadata[resolved_room_id] = self._normalize_room_metadata(resolved_room_id, metadata)
-                self._sync_runtime_room_metadata(resolved_room_id)
+                self._set_room_metadata(resolved_room_id, metadata)
                 return {
                     "room_summary": self.get_room_summary(resolved_room_id, viewer_id=viewer_id),
                     "payment_order": dict(metadata.get("last_paid_order") or {}),
@@ -1060,8 +1083,7 @@ class RuntimeRoomRegistry:
                 payment_ref=normalized_payment_ref,
                 room_id=resolved_room_id,
             )
-            self._room_metadata[resolved_room_id] = self._normalize_room_metadata(resolved_room_id, metadata)
-            self._sync_runtime_room_metadata(resolved_room_id)
+            self._set_room_metadata(resolved_room_id, metadata)
             return {
                 "room_summary": self.get_room_summary(resolved_room_id, viewer_id=viewer_id),
                 "payment_order": dict(metadata.get("last_paid_order") or pending_order),
@@ -1109,8 +1131,7 @@ class RuntimeRoomRegistry:
             target_plan_id=str(pending_order.get("target_plan_id") or ""),
             room_id=resolved_room_id,
         )
-        self._room_metadata[resolved_room_id] = self._normalize_room_metadata(resolved_room_id, metadata)
-        self._sync_runtime_room_metadata(resolved_room_id)
+        self._set_room_metadata(resolved_room_id, metadata)
         return {
             "room_summary": self.get_room_summary(resolved_room_id, viewer_id=viewer_id),
             "payment_order": paid_order,
@@ -1223,8 +1244,7 @@ class RuntimeRoomRegistry:
             self._ensure_member_capacity(room_id, metadata, additional_members=1)
         members.add(normalized_member_id)
         metadata["member_viewer_ids"] = sorted(members)
-        self._room_metadata[self._normalize_room_id(room_id)] = self._normalize_room_metadata(room_id, metadata)
-        self._sync_runtime_room_metadata(room_id)
+        self._set_room_metadata(room_id, metadata)
         return self.get_room_summary(room_id, viewer_id=viewer_id)
 
     def remove_room_member(self, room_id: str, *, member_viewer_id: str, viewer_id: str | None) -> dict[str, Any]:
@@ -1240,8 +1260,7 @@ class RuntimeRoomRegistry:
             if member_id != normalized_member_id
         }
         metadata["member_viewer_ids"] = sorted(members)
-        self._room_metadata[self._normalize_room_id(room_id)] = self._normalize_room_metadata(room_id, metadata)
-        self._sync_runtime_room_metadata(room_id)
+        self._set_room_metadata(room_id, metadata)
         return self.get_room_summary(room_id, viewer_id=viewer_id)
 
     def rotate_room_invite_code(self, room_id: str, *, viewer_id: str | None) -> dict[str, Any]:
@@ -1249,8 +1268,7 @@ class RuntimeRoomRegistry:
         metadata["invite_code"] = self._generate_room_invite_code(
             exclude_room_id=self._normalize_room_id(room_id)
         )
-        self._room_metadata[self._normalize_room_id(room_id)] = self._normalize_room_metadata(room_id, metadata)
-        self._sync_runtime_room_metadata(room_id)
+        self._set_room_metadata(room_id, metadata)
         return self.get_room_summary(room_id, viewer_id=viewer_id)
 
     def join_room_by_invite_code(
@@ -1278,8 +1296,7 @@ class RuntimeRoomRegistry:
             self._ensure_member_capacity(resolved_room_id, metadata, additional_members=1)
         members.add(normalized_viewer_id)
         metadata["member_viewer_ids"] = sorted(members)
-        self._room_metadata[resolved_room_id] = self._normalize_room_metadata(resolved_room_id, metadata)
-        self._sync_runtime_room_metadata(resolved_room_id)
+        self._set_room_metadata(resolved_room_id, metadata)
         self.switch_active_room(resolved_room_id, viewer_id=normalized_viewer_id)
         return self.get_room_summary(resolved_room_id, viewer_id=normalized_viewer_id)
 
@@ -1474,6 +1491,7 @@ class RuntimeRoomRegistry:
             self.default_room_id: self._build_default_room_metadata(self.default_room_id),
         }
         self._active_room_id = self.default_room_id
+        self._replace_persisted_metadata()
         self._sync_runtime_room_metadata(self.default_room_id)
 
     # Active runtime proxy helpers used by the current single-client app shell.

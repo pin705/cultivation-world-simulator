@@ -1,6 +1,20 @@
-version: '3.8'
-
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cultivation-postgres
+    environment:
+      - POSTGRES_DB=cultivation
+      - POSTGRES_USER=cultivation
+      - POSTGRES_PASSWORD=cultivation
+    volumes:
+      - ./docker-data/postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cultivation -d cultivation"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # 后端服务
   backend:
     build:
@@ -12,7 +26,11 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - CWS_DATA_DIR=/data
+      - CWS_APP_DATABASE_URL=postgresql://cultivation:cultivation@postgres:5432/cultivation
       - CWS_DISABLE_AUTO_SHUTDOWN=1
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8002/api/v1/query/runtime/status"]
@@ -39,4 +57,3 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-

@@ -4,6 +4,7 @@ import json
 from fastapi.testclient import TestClient
 
 from src.server import main
+from src.server.runtime import PlayerAuthStore
 from src.classes.age import Age
 from src.classes.alignment import Alignment
 from src.classes.core.avatar import Avatar, Gender
@@ -103,6 +104,89 @@ def test_v1_runtime_status_uses_ok_envelope():
         main.room_registry.reset_to_default_only()
         main.game_instance.clear()
         main.game_instance.update(original)
+
+
+def test_v1_guest_auth_bootstrap_sets_cookie_and_returns_session(tmp_path):
+    original_store = main.player_auth_store
+    main.player_auth_store = PlayerAuthStore(db_path=tmp_path / "player_auth.sqlite3")
+    try:
+        client = TestClient(main.app)
+        response = client.post(
+            "/api/v1/auth/guest/bootstrap",
+            json={"preferred_viewer_id": "viewer_test"},
+        )
+
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["ok"] is True
+        assert payload["data"]["authenticated"] is True
+        assert payload["data"]["session"]["viewer_id"] == "viewer_test"
+        assert client.cookies.get("cws_session_id")
+    finally:
+        main.player_auth_store.close()
+        main.player_auth_store = original_store
+
+
+def test_v1_world_room_switch_uses_cookie_session_when_viewer_id_missing(tmp_path):
+    original = _reset_state()
+    original_store = main.player_auth_store
+    main.player_auth_store = PlayerAuthStore(db_path=tmp_path / "player_auth.sqlite3")
+    try:
+        client = TestClient(main.app)
+        bootstrap = client.post(
+            "/api/v1/auth/guest/bootstrap",
+            json={"preferred_viewer_id": "viewer_cookie"},
+        )
+        assert bootstrap.status_code == 200
+
+        response = client.post(
+            "/api/v1/command/world-room/switch",
+            json={"room_id": "guild_alpha"},
+        )
+
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["ok"] is True
+        assert payload["data"]["active_room_summary"]["owner_viewer_id"] == "viewer_cookie"
+
+        status_response = client.get("/api/v1/query/runtime/status")
+        status_payload = status_response.json()
+        assert status_payload["data"]["active_room_summary"]["owner_viewer_id"] == "viewer_cookie"
+    finally:
+        main.room_registry.reset_to_default_only()
+        main.game_instance.clear()
+        main.game_instance.update(original)
+        main.player_auth_store.close()
+        main.player_auth_store = original_store
+
+
+def test_v1_world_room_switch_ignores_spoofed_viewer_id_when_cookie_session_exists(tmp_path):
+    original = _reset_state()
+    original_store = main.player_auth_store
+    main.player_auth_store = PlayerAuthStore(db_path=tmp_path / "player_auth.sqlite3")
+    try:
+        client = TestClient(main.app)
+        bootstrap = client.post(
+            "/api/v1/auth/guest/bootstrap",
+            json={"preferred_viewer_id": "viewer_cookie"},
+        )
+        assert bootstrap.status_code == 200
+
+        response = client.post(
+            "/api/v1/command/world-room/switch",
+            json={"room_id": "guild_alpha", "viewer_id": "viewer_intruder"},
+        )
+
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["data"]["active_room_summary"]["owner_viewer_id"] == "viewer_cookie"
+        assert payload["data"]["active_room_summary"]["owner_viewer_id"] != "viewer_intruder"
+    finally:
+        main.room_registry.reset_to_default_only()
+        main.game_instance.clear()
+        main.game_instance.update(original)
+        main.player_auth_store.close()
+        main.player_auth_store = original_store
 
 
 def test_v1_world_state_returns_structured_error_when_world_missing():

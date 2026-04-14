@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { systemApi } from '../api';
-import type { InitStatusDTO } from '../types/api';
+import { authApi, systemApi } from '../api';
+import type { AuthSessionDTO, InitStatusDTO } from '../types/api';
 import { logError } from '../utils/appError';
-import { loadOrCreateViewerId } from '../utils/viewerIdentity';
+import { loadOrCreateViewerId, storeViewerId } from '../utils/viewerIdentity';
 import { useWorldStore } from './world';
 
 export const useSystemStore = defineStore('system', () => {
@@ -13,9 +13,12 @@ export const useSystemStore = defineStore('system', () => {
   const isManualPaused = ref(true); // 用户手动暂停
   const isGameRunning = ref(false); // 游戏是否处于 Running 阶段 (Init Status ready)
   const viewerId = ref(loadOrCreateViewerId());
+  const authSession = ref<AuthSessionDTO | null>(null);
+  const authBootstrapped = ref(false);
 
   // 请求计数器，用于处理竞态条件。
   let fetchStatusRequestId = 0;
+  let bootstrapPromise: Promise<AuthSessionDTO | null> | null = null;
   
   // --- Getters ---
   const isLoading = computed(() => {
@@ -39,11 +42,44 @@ export const useSystemStore = defineStore('system', () => {
   const activeRoomSummary = computed(() => initStatus.value?.active_room_summary || null);
   const roomSummaries = computed(() => initStatus.value?.room_summaries || []);
 
+  async function ensureViewerSession() {
+    if (authBootstrapped.value) {
+      return authSession.value;
+    }
+    if (bootstrapPromise) {
+      return bootstrapPromise;
+    }
+
+    bootstrapPromise = (async () => {
+      try {
+        const res = await authApi.bootstrapGuestSession({
+          preferred_viewer_id: viewerId.value,
+        });
+        authSession.value = res.session ?? null;
+        if (res.session?.viewer_id) {
+          viewerId.value = res.session.viewer_id;
+          storeViewerId(res.session.viewer_id);
+        }
+        authBootstrapped.value = true;
+        return authSession.value;
+      } catch (e) {
+        authBootstrapped.value = true;
+        logError('SystemStore bootstrap guest session', e);
+        return null;
+      } finally {
+        bootstrapPromise = null;
+      }
+    })();
+
+    return bootstrapPromise;
+  }
+
   // --- Actions ---
   
   async function fetchInitStatus() {
     const currentRequestId = ++fetchStatusRequestId;
     try {
+      await ensureViewerSession();
       const res = await systemApi.fetchInitStatus(viewerId.value);
       
       // 只接受最新请求的响应。
@@ -329,6 +365,7 @@ export const useSystemStore = defineStore('system', () => {
     isManualPaused,
     isGameRunning,
     viewerId,
+    authSession,
     isLoading,
     isReady,
     activeRoomId,
@@ -341,6 +378,7 @@ export const useSystemStore = defineStore('system', () => {
     activeRoomSummary,
     roomSummaries,
     
+    ensureViewerSession,
     fetchInitStatus,
     switchControlSeat,
     releaseControlSeat,

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from src.server.runtime import RuntimeRoomRegistry
+from src.server.runtime import RoomMetadataStore, RuntimeRoomRegistry
 
 
 def test_runtime_room_registry_creates_private_custom_room_for_owner():
@@ -475,3 +475,43 @@ def test_runtime_room_registry_can_import_room_runtime_snapshot():
     assert summary["entitled_plan_id"] == "story_rich_private"
     assert runtime.get("room_plan_id") == "story_rich_private"
     assert runtime.get("room_commercial_profile") == "story_rich"
+
+
+def test_runtime_room_registry_persists_room_metadata_across_registry_restart(tmp_path):
+    store = RoomMetadataStore(db_path=tmp_path / "room_registry.sqlite3")
+    first = RuntimeRoomRegistry(metadata_store=store)
+    first.switch_active_room("guild_alpha", viewer_id="viewer_owner")
+    first.add_room_member("guild_alpha", member_viewer_id="viewer_guest", viewer_id="viewer_owner")
+    first.set_room_entitlement(
+        "guild_alpha",
+        billing_status="active",
+        entitled_plan_id="story_rich_private",
+        viewer_id="viewer_owner",
+    )
+    first.set_room_plan(
+        "guild_alpha",
+        plan_id="story_rich_private",
+        viewer_id="viewer_owner",
+    )
+
+    second = RuntimeRoomRegistry(metadata_store=store)
+    summary = second.get_room_summary("guild_alpha", viewer_id="viewer_owner")
+
+    assert summary["owner_viewer_id"] == "viewer_owner"
+    assert "viewer_guest" in summary["member_viewer_ids"]
+    assert summary["billing_status"] == "active"
+    assert summary["plan_id"] == "story_rich_private"
+    assert summary["commercial_profile"] == "story_rich"
+
+
+def test_runtime_room_registry_reset_clears_persisted_custom_rooms(tmp_path):
+    store = RoomMetadataStore(db_path=tmp_path / "room_registry.sqlite3")
+    first = RuntimeRoomRegistry(metadata_store=store)
+    first.switch_active_room("guild_alpha", viewer_id="viewer_owner")
+
+    first.reset_to_default_only()
+
+    second = RuntimeRoomRegistry(metadata_store=store)
+
+    assert second.has_room("guild_alpha") is False
+    assert second.list_room_ids() == ["main"]

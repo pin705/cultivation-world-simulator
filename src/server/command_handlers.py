@@ -31,6 +31,7 @@ def create_command_handlers(
     *,
     get_runtime,
     room_registry,
+    get_player_auth_store,
     manager,
     avatar_assets,
     assets_path: str,
@@ -270,12 +271,16 @@ def create_command_handlers(
 
     async def run_update_player_profile(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             update_player_profile,
             runtime,
             viewer_id=req.viewer_id,
             display_name=req.display_name,
         )
+        auth_store = get_player_auth_store()
+        if auth_store is not None and getattr(req, "viewer_id", None):
+            auth_store.update_player_display_name(req.viewer_id, req.display_name)
+        return result
 
     async def run_switch_world_room(req) -> dict:
         current_runtime = _runtime()

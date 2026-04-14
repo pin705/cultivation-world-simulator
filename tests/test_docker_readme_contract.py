@@ -18,3 +18,4 @@ def test_multilingual_readmes_document_docker_persistence_contract():
         content = readme_path.read_text(encoding="utf-8")
         assert "CWS_DATA_DIR=/data" in content, f"{readme_path} must mention CWS_DATA_DIR=/data"
         assert "./docker-data" in content, f"{readme_path} must mention ./docker-data mapping"
+        assert "PostgreSQL" in content, f"{readme_path} must mention PostgreSQL-backed runtime persistence"

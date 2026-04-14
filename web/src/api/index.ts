@@ -1,3 +1,4 @@
+export { authApi } from './modules/auth';
 // 导出子模块
 export { worldApi } from './modules/world';
 export { avatarApi, type HoverParams } from './modules/avatar';
@@ -23,5 +24,8 @@ export type {
   EventDTO,
   EventsResponseDTO,
   SectTerritoriesResponseDTO,
-  DynastyOverviewResponseDTO
+  DynastyOverviewResponseDTO,
+  AuthSessionDTO,
+  AuthSessionBootstrapDTO,
+  AuthSessionStateDTO,
 } from '../types/api';

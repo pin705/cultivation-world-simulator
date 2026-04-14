@@ -132,6 +132,7 @@ docker-compose up -d --build
 フロントエンド URL: `http://localhost:8123`
 
 バックエンドコンテナは `CWS_DATA_DIR=/data` を通じて、設定、秘密鍵、セーブデータ、ログなどのユーザーデータを永続化します。デフォルトではホスト側の `./docker-data` にマウントされているため、`docker compose down` 後に再度 `up` してもデータは保持されます。
+Docker 構成では `PostgreSQL` も起動し、オンライン world room や commerce の実行時状態を永続化します。データベースファイルはデフォルトでホスト側の `./docker-data/postgres` に保存されます。
 
 <details>
 <summary><b>LAN / モバイルアクセス設定（クリックで展開）</b></summary>

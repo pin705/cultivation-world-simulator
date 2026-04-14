@@ -133,6 +133,7 @@ docker-compose up -d --build
 Open the frontend: `http://localhost:8123`
 
 The backend container persists user data through `CWS_DATA_DIR=/data`, including settings, secrets, saves, and logs. By default this is mapped to host path `./docker-data`, so data remains after `docker compose down` followed by `up`.
+The Docker stack now also starts `PostgreSQL` for persistent online-world and commerce runtime state. The database files are stored under host path `./docker-data/postgres` by default.
 
 <details>
 <summary><b>LAN / Mobile Access Configuration (Click to expand)</b></summary>

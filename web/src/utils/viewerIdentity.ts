@@ -22,6 +22,14 @@ export function loadOrCreateViewerId() {
   return created;
 }
 
+export function storeViewerId(viewerId: string) {
+  const normalized = viewerId.trim();
+  if (!normalized || typeof window === 'undefined') {
+    return;
+  }
+  window.localStorage.setItem(VIEWER_ID_STORAGE_KEY, normalized);
+}
+
 export function getViewerIdentityPayload<T extends object>(
   payload: T,
 ): T & { viewer_id: string } {

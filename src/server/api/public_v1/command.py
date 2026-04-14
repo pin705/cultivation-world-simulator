@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Callable, Literal, Optional
 
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Header, Request
 from pydantic import BaseModel
 
 from src.config import RunConfig
@@ -46,16 +46,16 @@ class SetMainAvatarRequest(BaseModel):
 
 class SwitchControlSeatRequest(BaseModel):
     controller_id: str
-    viewer_id: str
+    viewer_id: Optional[str] = None
 
 
 class ReleaseControlSeatRequest(BaseModel):
     controller_id: str
-    viewer_id: str
+    viewer_id: Optional[str] = None
 
 
 class UpdatePlayerProfileRequest(BaseModel):
-    viewer_id: str
+    viewer_id: Optional[str] = None
     display_name: str
 
 
@@ -67,26 +67,26 @@ class SwitchWorldRoomRequest(BaseModel):
 class UpdateWorldRoomAccessRequest(BaseModel):
     room_id: str
     access_mode: Literal["open", "private"]
-    viewer_id: str
+    viewer_id: Optional[str] = None
 
 
 class UpdateWorldRoomPlanRequest(BaseModel):
     room_id: str
     plan_id: str
-    viewer_id: str
+    viewer_id: Optional[str] = None
 
 
 class UpdateWorldRoomEntitlementRequest(BaseModel):
     room_id: str
     billing_status: Literal["trial", "active", "grace", "expired"]
     entitled_plan_id: str
-    viewer_id: str
+    viewer_id: Optional[str] = None
 
 
 class CreateWorldRoomPaymentOrderRequest(BaseModel):
     room_id: str
     target_plan_id: str
-    viewer_id: str
+    viewer_id: Optional[str] = None
 
 
 class SettleWorldRoomPaymentRequest(BaseModel):
@@ -94,7 +94,7 @@ class SettleWorldRoomPaymentRequest(BaseModel):
     order_id: str
     payment_ref: Optional[str] = None
     amount_vnd: Optional[int] = None
-    viewer_id: str
+    viewer_id: Optional[str] = None
 
 
 class SePayWorldRoomWebhookRequest(BaseModel):
@@ -114,7 +114,7 @@ class SePayWorldRoomWebhookRequest(BaseModel):
 
 
 class ReconcileWorldRoomPaymentRequest(BaseModel):
-    viewer_id: str
+    viewer_id: Optional[str] = None
     transfer_note: str
     amount_vnd: Optional[int] = None
     payment_ref: Optional[str] = None
@@ -123,18 +123,18 @@ class ReconcileWorldRoomPaymentRequest(BaseModel):
 class UpdateWorldRoomMemberRequest(BaseModel):
     room_id: str
     member_viewer_id: str
-    viewer_id: str
+    viewer_id: Optional[str] = None
 
 
 class RotateWorldRoomInviteRequest(BaseModel):
     room_id: str
-    viewer_id: str
+    viewer_id: Optional[str] = None
 
 
 class JoinWorldRoomByInviteRequest(BaseModel):
     room_id: str
     invite_code: str
-    viewer_id: str
+    viewer_id: Optional[str] = None
 
 
 class SetSectDirectiveRequest(BaseModel):
@@ -258,8 +258,22 @@ def create_public_command_router(
     run_save_game: Callable[..., dict],
     run_delete_save: Callable[..., dict],
     run_load_game: Callable[..., object],
+    resolve_viewer_id: Callable[[Request, str | None], str | None] | None = None,
 ) -> APIRouter:
     router = APIRouter()
+
+    def _resolve_request_viewer_id(request: Request, viewer_id: str | None) -> str | None:
+        if callable(resolve_viewer_id):
+            return resolve_viewer_id(request, viewer_id)
+        normalized = str(viewer_id or "").strip()
+        return normalized or None
+
+    def _copy_request_with_viewer_id(req: BaseModel, viewer_id: str | None) -> BaseModel:
+        if hasattr(req, "model_copy"):
+            return req.model_copy(update={"viewer_id": viewer_id})
+        payload = req.dict()
+        payload["viewer_id"] = viewer_id
+        return req.__class__(**payload)
 
     @router.post("/api/v1/command/game/start")
     async def start_game_v1(req: GameStartRequest):
@@ -286,64 +300,124 @@ def create_public_command_router(
         return ok_response(await run_resume_game())
 
     @router.post("/api/v1/command/avatar/set-long-term-objective")
-    async def set_long_term_objective_v1(req: SetObjectiveRequest):
-        return ok_response(await run_set_long_term_objective(req))
+    async def set_long_term_objective_v1(request: Request, req: SetObjectiveRequest):
+        return ok_response(
+            await run_set_long_term_objective(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/avatar/clear-long-term-objective")
-    async def clear_long_term_objective_v1(req: ClearObjectiveRequest):
-        return ok_response(await run_clear_long_term_objective(req))
+    async def clear_long_term_objective_v1(request: Request, req: ClearObjectiveRequest):
+        return ok_response(
+            await run_clear_long_term_objective(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/avatar/grant-support")
-    async def grant_avatar_support_v1(req: GrantAvatarSupportRequest):
-        return ok_response(await run_grant_avatar_support(req))
+    async def grant_avatar_support_v1(request: Request, req: GrantAvatarSupportRequest):
+        return ok_response(
+            await run_grant_avatar_support(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/avatar/appoint-seed")
-    async def appoint_avatar_seed_v1(req: AppointAvatarSeedRequest):
-        return ok_response(await run_appoint_avatar_seed(req))
+    async def appoint_avatar_seed_v1(request: Request, req: AppointAvatarSeedRequest):
+        return ok_response(
+            await run_appoint_avatar_seed(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/player/claim-sect")
-    async def claim_sect_v1(req: ClaimSectRequest):
-        return ok_response(await run_claim_sect(req))
+    async def claim_sect_v1(request: Request, req: ClaimSectRequest):
+        return ok_response(
+            await run_claim_sect(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/player/set-main-avatar")
-    async def set_main_avatar_v1(req: SetMainAvatarRequest):
-        return ok_response(await run_set_main_avatar(req))
+    async def set_main_avatar_v1(request: Request, req: SetMainAvatarRequest):
+        return ok_response(
+            await run_set_main_avatar(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/player/switch-seat")
-    async def switch_control_seat_v1(req: SwitchControlSeatRequest):
-        return ok_response(await run_switch_control_seat(req))
+    async def switch_control_seat_v1(request: Request, req: SwitchControlSeatRequest):
+        return ok_response(
+            await run_switch_control_seat(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/player/release-seat")
-    async def release_control_seat_v1(req: ReleaseControlSeatRequest):
-        return ok_response(await run_release_control_seat(req))
+    async def release_control_seat_v1(request: Request, req: ReleaseControlSeatRequest):
+        return ok_response(
+            await run_release_control_seat(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/player/update-profile")
-    async def update_player_profile_v1(req: UpdatePlayerProfileRequest):
-        return ok_response(await run_update_player_profile(req))
+    async def update_player_profile_v1(request: Request, req: UpdatePlayerProfileRequest):
+        return ok_response(
+            await run_update_player_profile(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/world-room/switch")
-    async def switch_world_room_v1(req: SwitchWorldRoomRequest):
-        return ok_response(await run_switch_world_room(req))
+    async def switch_world_room_v1(request: Request, req: SwitchWorldRoomRequest):
+        return ok_response(
+            await run_switch_world_room(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/world-room/update-access")
-    async def update_world_room_access_v1(req: UpdateWorldRoomAccessRequest):
-        return ok_response(await run_update_world_room_access(req))
+    async def update_world_room_access_v1(request: Request, req: UpdateWorldRoomAccessRequest):
+        return ok_response(
+            await run_update_world_room_access(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/world-room/update-plan")
-    async def update_world_room_plan_v1(req: UpdateWorldRoomPlanRequest):
-        return ok_response(await run_update_world_room_plan(req))
+    async def update_world_room_plan_v1(request: Request, req: UpdateWorldRoomPlanRequest):
+        return ok_response(
+            await run_update_world_room_plan(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/world-room/update-entitlement")
-    async def update_world_room_entitlement_v1(req: UpdateWorldRoomEntitlementRequest):
-        return ok_response(await run_update_world_room_entitlement(req))
+    async def update_world_room_entitlement_v1(request: Request, req: UpdateWorldRoomEntitlementRequest):
+        return ok_response(
+            await run_update_world_room_entitlement(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/world-room/create-payment-order")
-    async def create_world_room_payment_order_v1(req: CreateWorldRoomPaymentOrderRequest):
-        return ok_response(await run_create_world_room_payment_order(req))
+    async def create_world_room_payment_order_v1(request: Request, req: CreateWorldRoomPaymentOrderRequest):
+        return ok_response(
+            await run_create_world_room_payment_order(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/world-room/settle-payment")
-    async def settle_world_room_payment_v1(req: SettleWorldRoomPaymentRequest):
-        return ok_response(await run_settle_world_room_payment(req))
+    async def settle_world_room_payment_v1(request: Request, req: SettleWorldRoomPaymentRequest):
+        return ok_response(
+            await run_settle_world_room_payment(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/webhooks/sepay/world-room-payment")
     async def sepay_world_room_payment_webhook_v1(
@@ -361,36 +435,68 @@ def create_public_command_router(
         )
 
     @router.post("/api/v1/command/world-room/reconcile-payment")
-    async def reconcile_world_room_payment_v1(req: ReconcileWorldRoomPaymentRequest):
-        return ok_response(await run_reconcile_world_room_payment(req))
+    async def reconcile_world_room_payment_v1(request: Request, req: ReconcileWorldRoomPaymentRequest):
+        return ok_response(
+            await run_reconcile_world_room_payment(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/world-room/add-member")
-    async def add_world_room_member_v1(req: UpdateWorldRoomMemberRequest):
-        return ok_response(await run_add_world_room_member(req))
+    async def add_world_room_member_v1(request: Request, req: UpdateWorldRoomMemberRequest):
+        return ok_response(
+            await run_add_world_room_member(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/world-room/remove-member")
-    async def remove_world_room_member_v1(req: UpdateWorldRoomMemberRequest):
-        return ok_response(await run_remove_world_room_member(req))
+    async def remove_world_room_member_v1(request: Request, req: UpdateWorldRoomMemberRequest):
+        return ok_response(
+            await run_remove_world_room_member(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/world-room/rotate-invite")
-    async def rotate_world_room_invite_v1(req: RotateWorldRoomInviteRequest):
-        return ok_response(await run_rotate_world_room_invite(req))
+    async def rotate_world_room_invite_v1(request: Request, req: RotateWorldRoomInviteRequest):
+        return ok_response(
+            await run_rotate_world_room_invite(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/world-room/join-by-invite")
-    async def join_world_room_by_invite_v1(req: JoinWorldRoomByInviteRequest):
-        return ok_response(await run_join_world_room_by_invite(req))
+    async def join_world_room_by_invite_v1(request: Request, req: JoinWorldRoomByInviteRequest):
+        return ok_response(
+            await run_join_world_room_by_invite(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/sect/set-directive")
-    async def set_sect_directive_v1(req: SetSectDirectiveRequest):
-        return ok_response(await run_set_sect_directive(req))
+    async def set_sect_directive_v1(request: Request, req: SetSectDirectiveRequest):
+        return ok_response(
+            await run_set_sect_directive(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/sect/clear-directive")
-    async def clear_sect_directive_v1(req: ClearSectDirectiveRequest):
-        return ok_response(await run_clear_sect_directive(req))
+    async def clear_sect_directive_v1(request: Request, req: ClearSectDirectiveRequest):
+        return ok_response(
+            await run_clear_sect_directive(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/sect/intervene-relation")
-    async def intervene_sect_relation_v1(req: InterveneSectRelationRequest):
-        return ok_response(await run_intervene_sect_relation(req))
+    async def intervene_sect_relation_v1(request: Request, req: InterveneSectRelationRequest):
+        return ok_response(
+            await run_intervene_sect_relation(
+                _copy_request_with_viewer_id(req, _resolve_request_viewer_id(request, req.viewer_id))
+            )
+        )
 
     @router.post("/api/v1/command/avatar/create")
     async def create_avatar_v1(req: CreateAvatarRequest):

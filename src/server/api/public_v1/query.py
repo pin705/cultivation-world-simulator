@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Callable
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 
 from src.server.services.public_api_contract import ok_response
 
@@ -29,12 +29,19 @@ def create_public_query_router(
     build_saves: Callable[[], dict],
     build_detail: Callable[..., dict],
     build_deceased_list: Callable[[], dict],
+    resolve_viewer_id: Callable[[Request, str | None], str | None] | None = None,
 ) -> APIRouter:
     router = APIRouter()
 
+    def _resolve_request_viewer_id(request: Request, viewer_id: str | None) -> str | None:
+        if callable(resolve_viewer_id):
+            return resolve_viewer_id(request, viewer_id)
+        normalized = str(viewer_id or "").strip()
+        return normalized or None
+
     @router.get("/api/v1/query/runtime/status")
-    def get_runtime_status_v1(viewer_id: str | None = Query(default=None)):
-        return ok_response(build_runtime_status(viewer_id=viewer_id))
+    def get_runtime_status_v1(request: Request, viewer_id: str | None = Query(default=None)):
+        return ok_response(build_runtime_status(viewer_id=_resolve_request_viewer_id(request, viewer_id)))
 
     @router.get("/api/v1/query/world/state")
     def get_world_state_v1():
@@ -124,11 +131,18 @@ def create_public_query_router(
 
     @router.get("/api/v1/query/detail")
     def get_detail_info_v1(
+        request: Request,
         target_type: str = Query(alias="type"),
         target_id: str = Query(alias="id"),
         viewer_id: str | None = Query(default=None),
     ):
-        return ok_response(build_detail(target_type=target_type, target_id=target_id, viewer_id=viewer_id))
+        return ok_response(
+            build_detail(
+                target_type=target_type,
+                target_id=target_id,
+                viewer_id=_resolve_request_viewer_id(request, viewer_id),
+            )
+        )
 
     @router.get("/api/v1/query/deceased")
     def get_deceased_list_v1():

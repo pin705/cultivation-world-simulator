@@ -20,7 +20,10 @@ export class ApiError extends Error {
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE}${path}`;
-  const response = await fetch(url, options);
+  const response = await fetch(url, {
+    credentials: 'include',
+    ...options,
+  });
 
   if (!response.ok) {
     // 尝试解析错误响应的 JSON
@@ -103,4 +106,3 @@ export const httpClient = {
     return request<T>(path, { method: 'DELETE' });
   }
 };
-

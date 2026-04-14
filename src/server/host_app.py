@@ -90,6 +90,11 @@ def create_app(*, lifespan) -> FastAPI:
 def configure_routes_and_mounts(
     *,
     app,
+    create_public_auth_router,
+    get_auth_store,
+    bootstrap_guest_auth_session,
+    get_authenticated_session,
+    logout_authenticated_session,
     create_websocket_router,
     manager,
     runtime,
@@ -126,6 +131,7 @@ def configure_routes_and_mounts(
     build_detail,
     build_deceased_list,
     create_public_command_router,
+    resolve_viewer_id,
     run_start_game,
     run_reinit_game,
     run_reset_game,
@@ -171,7 +177,13 @@ def configure_routes_and_mounts(
     web_dist_path: str,
     is_dev_mode: bool,
 ):
-    app.include_router(create_websocket_router(manager=manager, runtime=runtime))
+    app.include_router(
+        create_websocket_router(
+            manager=manager,
+            runtime=runtime,
+            resolve_viewer_id=resolve_viewer_id,
+        )
+    )
 
     app.include_router(
         create_settings_router(
@@ -185,6 +197,15 @@ def configure_routes_and_mounts(
             test_connectivity=test_connectivity,
             update_llm=update_llm,
             on_llm_updated=on_llm_updated,
+        )
+    )
+
+    app.include_router(
+        create_public_auth_router(
+            get_auth_store=get_auth_store,
+            bootstrap_guest_auth_session=bootstrap_guest_auth_session,
+            get_authenticated_session=get_authenticated_session,
+            logout_authenticated_session=logout_authenticated_session,
         )
     )
 
@@ -210,6 +231,7 @@ def configure_routes_and_mounts(
             build_saves=build_saves,
             build_detail=build_detail,
             build_deceased_list=build_deceased_list,
+            resolve_viewer_id=resolve_viewer_id,
         )
     )
 
@@ -256,6 +278,7 @@ def configure_routes_and_mounts(
             run_save_game=run_save_game,
             run_delete_save=run_delete_save,
             run_load_game=run_load_game,
+            resolve_viewer_id=resolve_viewer_id,
         )
     )
 

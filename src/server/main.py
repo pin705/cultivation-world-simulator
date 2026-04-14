@@ -80,6 +80,7 @@ from src.server.services.game_queries import (
 )
 from src.server.services.event_control import cleanup_events as cleanup_events_command
 from src.server.api.public_v1 import (
+    create_public_auth_router,
     create_public_command_router,
     create_public_query_router,
 )
@@ -116,9 +117,22 @@ from src.classes.language import language_manager
 from src.systems.sect_relations import compute_sect_relations
 from src.i18n import t
 from src.config import get_settings_service
+from src.config.data_paths import get_data_paths
 from src.i18n.locale_registry import uses_space_separated_names
 from src.utils.llm.config import LLMConfig
-from src.server.runtime import DEFAULT_GAME_STATE, GameSessionRuntime, RuntimeRoomRegistry
+from src.server.runtime import (
+    DEFAULT_GAME_STATE,
+    GameSessionRuntime,
+    RuntimeRoomRegistry,
+    build_player_auth_store,
+    build_room_metadata_store,
+)
+from src.server.services.auth_session import (
+    bootstrap_guest_auth_session,
+    get_authenticated_session,
+    logout_authenticated_session,
+    resolve_viewer_id_from_request,
+)
 from src.server.host_runtime import (
     ConnectionManager,
     EndpointFilter,
@@ -169,7 +183,15 @@ from src.server.serialization import (
 # 全局游戏实例
 game_instance = dict(DEFAULT_GAME_STATE)
 runtime = GameSessionRuntime(game_instance)
-room_registry = RuntimeRoomRegistry(default_runtime=runtime)
+player_auth_store = build_player_auth_store(
+    database_url=os.environ.get("CWS_APP_DATABASE_URL"),
+    sqlite_path=get_data_paths().root / "player_auth.sqlite3",
+)
+room_metadata_store = build_room_metadata_store(
+    database_url=os.environ.get("CWS_APP_DATABASE_URL"),
+    sqlite_path=get_data_paths().root / "room_registry.sqlite3",
+)
+room_registry = RuntimeRoomRegistry(default_runtime=runtime, metadata_store=room_metadata_store)
 
 # Cache for avatar IDs
 AVATAR_ASSETS = {
@@ -425,6 +447,7 @@ print(f"Web dist path: {WEB_DIST_PATH}")
 command_handlers = create_command_handlers(
     get_runtime=room_registry.get_runtime,
     room_registry=room_registry,
+    get_player_auth_store=lambda: player_auth_store,
     manager=manager,
     avatar_assets=AVATAR_ASSETS,
     assets_path=ASSETS_PATH,
@@ -564,8 +587,21 @@ def test_llm_connection(req) -> dict:
 
 handle_llm_updated = create_llm_updated_handler(runtime=room_registry, manager=manager)
 
+
+def resolve_request_viewer_id(request, explicit_viewer_id: str | None = None) -> str | None:
+    return resolve_viewer_id_from_request(
+        request=request,
+        explicit_viewer_id=explicit_viewer_id,
+        auth_store=player_auth_store,
+    )
+
 configure_routes_and_mounts(
     app=app,
+    create_public_auth_router=create_public_auth_router,
+    get_auth_store=lambda: player_auth_store,
+    bootstrap_guest_auth_session=bootstrap_guest_auth_session,
+    get_authenticated_session=get_authenticated_session,
+    logout_authenticated_session=logout_authenticated_session,
     create_websocket_router=create_websocket_router,
     manager=manager,
     runtime=room_registry,
@@ -602,6 +638,7 @@ configure_routes_and_mounts(
     build_detail=build_public_detail,
     build_deceased_list=build_public_deceased_list,
     create_public_command_router=create_public_command_router,
+    resolve_viewer_id=resolve_request_viewer_id,
     run_start_game=run_start_game,
     run_reinit_game=run_reinit_game,
     run_reset_game=run_reset_game,
