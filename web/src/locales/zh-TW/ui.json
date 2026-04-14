@@ -77,6 +77,7 @@
   "player_campaign_main_avatar_empty": "這個宗門暫時沒有可用的在世弟子。",
   "player_campaign_main_avatar_failed": "設定主弟子失敗",
   "player_campaign_ready_desc": "開局配置已完成。現在你可以帶著明確陣營去使用宗門指令、資源扶持和角色目標。",
+  "player_campaign_open_setup": "打開完整設定",
   "player_campaign_age": "{age} 歲",
   "player_campaign_power": "戰力 {value}",
   "player_identity_current": "目前身份：{id}",

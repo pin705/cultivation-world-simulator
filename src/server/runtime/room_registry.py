@@ -63,12 +63,99 @@ class RuntimeRoomRegistry:
     def _normalize_viewer_id(self, viewer_id: str | None) -> str:
         return str(viewer_id or "").strip()
 
+    def _normalize_controller_id(self, controller_id: str | None) -> str:
+        normalized = str(controller_id or "").strip()
+        return normalized or "local"
+
     def _normalize_room_access_mode(self, access_mode: str | None) -> str:
         return (
             PRIVATE_ROOM_ACCESS_MODE
             if str(access_mode or "").strip().lower() == PRIVATE_ROOM_ACCESS_MODE
             else DEFAULT_ROOM_ACCESS_MODE
         )
+
+    def _normalize_player_profile_state(
+        self,
+        viewer_id: str,
+        state: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        normalized_viewer_id = self._normalize_viewer_id(viewer_id)
+        if not normalized_viewer_id:
+            raise ValueError("viewer_id is required")
+        payload = dict(state or {})
+        display_name = " ".join(str(payload.get("display_name", "") or "").split())
+        default_month = 0
+        try:
+            joined_month = int(payload.get("joined_month", default_month) or default_month)
+        except (TypeError, ValueError):
+            joined_month = default_month
+        try:
+            last_seen_month = int(payload.get("last_seen_month", joined_month) or joined_month)
+        except (TypeError, ValueError):
+            last_seen_month = joined_month
+        return {
+            "viewer_id": normalized_viewer_id,
+            "display_name": display_name,
+            "joined_month": joined_month,
+            "last_seen_month": max(joined_month, last_seen_month),
+        }
+
+    def _normalize_player_profiles_metadata(
+        self,
+        profiles: dict[str, Any] | None,
+    ) -> dict[str, dict[str, Any]]:
+        normalized: dict[str, dict[str, Any]] = {}
+        for viewer_id, state in dict(profiles or {}).items():
+            normalized_viewer_id = self._normalize_viewer_id(viewer_id)
+            if not normalized_viewer_id:
+                continue
+            normalized[normalized_viewer_id] = self._normalize_player_profile_state(
+                normalized_viewer_id,
+                state if isinstance(state, dict) else {},
+            )
+        return normalized
+
+    def _normalize_player_control_state(self, state: dict[str, Any] | None = None) -> dict[str, Any]:
+        payload = dict(state or {})
+        try:
+            intervention_points = int(payload.get("intervention_points", 0) or 0)
+        except (TypeError, ValueError):
+            intervention_points = 0
+        owned_sect_id = payload.get("owned_sect_id")
+        try:
+            owned_sect_id = int(owned_sect_id) if owned_sect_id is not None else None
+        except (TypeError, ValueError):
+            owned_sect_id = None
+        relation_cooldowns: dict[str, int] = {}
+        for key, value in dict(payload.get("relation_intervention_cooldowns", {}) or {}).items():
+            normalized_key = str(key or "").strip()
+            if not normalized_key:
+                continue
+            try:
+                relation_cooldowns[normalized_key] = int(value)
+            except (TypeError, ValueError):
+                continue
+        return {
+            "holder_id": self._normalize_viewer_id(payload.get("holder_id")) or None,
+            "intervention_points": max(0, intervention_points),
+            "owned_sect_id": owned_sect_id,
+            "main_avatar_id": str(payload.get("main_avatar_id") or "").strip() or None,
+            "relation_intervention_cooldowns": relation_cooldowns,
+        }
+
+    def _normalize_player_control_seats_metadata(
+        self,
+        seats: dict[str, Any] | None,
+    ) -> dict[str, dict[str, Any]]:
+        normalized: dict[str, dict[str, Any]] = {}
+        for controller_id, state in dict(seats or {}).items():
+            cid = self._normalize_controller_id(controller_id)
+            normalized[cid] = self._normalize_player_control_state(
+                state if isinstance(state, dict) else {}
+            )
+        if not normalized:
+            normalized["local"] = self._normalize_player_control_state({})
+        return normalized
 
     def _get_config_entry(self, container: Any, key: str, default: Any = None) -> Any:
         if container is None:
@@ -495,12 +582,55 @@ class RuntimeRoomRegistry:
             }
         )
 
+    def capture_runtime_player_state(self, room_id: str | None = None) -> dict[str, Any] | None:
+        resolved_room_id = self._normalize_room_id(room_id or self._active_room_id)
+        runtime = self._rooms.get(resolved_room_id)
+        if runtime is None:
+            return None
+        world = runtime.get("world")
+        if world is None:
+            return None
+        metadata = self.ensure_room_metadata(resolved_room_id)
+        metadata["active_controller_id"] = self._normalize_controller_id(
+            getattr(world, "get_active_controller_id", lambda: "local")()
+        )
+        metadata["player_profiles"] = self._normalize_player_profiles_metadata(
+            getattr(world, "export_player_profiles", lambda: {})() or {}
+        )
+        metadata["player_control_seats"] = self._normalize_player_control_seats_metadata(
+            getattr(world, "export_player_control_seats", lambda: {})() or {}
+        )
+        return self._set_room_metadata(resolved_room_id, metadata, sync_runtime=False)
+
+    def hydrate_runtime_player_state(self, room_id: str | None = None) -> bool:
+        resolved_room_id = self._normalize_room_id(room_id or self._active_room_id)
+        runtime = self._rooms.get(resolved_room_id)
+        if runtime is None:
+            return False
+        world = runtime.get("world")
+        if world is None:
+            return False
+        metadata = self.ensure_room_metadata(resolved_room_id)
+        load_profiles = getattr(world, "load_player_profiles", None)
+        if callable(load_profiles):
+            load_profiles(dict(metadata.get("player_profiles", {}) or {}))
+        load_seats = getattr(world, "load_player_control_seats", None)
+        if callable(load_seats):
+            load_seats(
+                dict(metadata.get("player_control_seats", {}) or {}),
+                active_controller_id=metadata.get("active_controller_id"),
+            )
+        return True
+
     def _build_default_room_metadata(
         self,
         room_id: str,
         *,
         access_mode: str | None = None,
         owner_viewer_id: str | None = None,
+        active_controller_id: str | None = None,
+        player_profiles: dict[str, Any] | None = None,
+        player_control_seats: dict[str, Any] | None = None,
         member_viewer_ids: list[str] | None = None,
         invite_code: str | None = None,
         plan_id: str | None = None,
@@ -534,6 +664,9 @@ class RuntimeRoomRegistry:
         if normalized_owner and normalized_owner not in normalized_members:
             normalized_members.append(normalized_owner)
             normalized_members.sort()
+        normalized_player_profiles = self._normalize_player_profiles_metadata(player_profiles)
+        normalized_player_control_seats = self._normalize_player_control_seats_metadata(player_control_seats)
+        normalized_active_controller_id = self._normalize_controller_id(active_controller_id)
         room_plan = self._resolve_room_plan_metadata(
             normalized_room_id,
             plan_id=plan_id,
@@ -569,6 +702,9 @@ class RuntimeRoomRegistry:
             "id": normalized_room_id,
             "access_mode": normalized_access_mode,
             "owner_viewer_id": normalized_owner,
+            "active_controller_id": normalized_active_controller_id,
+            "player_profiles": normalized_player_profiles,
+            "player_control_seats": normalized_player_control_seats,
             "member_viewer_ids": normalized_members,
             "invite_code": normalized_invite_code,
             "plan_id": room_plan["plan_id"],
@@ -610,6 +746,9 @@ class RuntimeRoomRegistry:
             room_id,
             access_mode=data.get("access_mode"),
             owner_viewer_id=data.get("owner_viewer_id"),
+            active_controller_id=data.get("active_controller_id"),
+            player_profiles=data.get("player_profiles"),
+            player_control_seats=data.get("player_control_seats"),
             member_viewer_ids=list(data.get("member_viewer_ids", []) or []),
             invite_code=data.get("invite_code"),
             plan_id=data.get("plan_id"),
@@ -679,6 +818,12 @@ class RuntimeRoomRegistry:
     def list_room_ids(self) -> list[str]:
         return list(self._rooms.keys())
 
+    def get_room_id_for_runtime(self, target_runtime: GameSessionRuntime) -> str | None:
+        for room_id, runtime in self._rooms.items():
+            if runtime is target_runtime:
+                return room_id
+        return None
+
     def has_room(self, room_id: str | None) -> bool:
         return self._normalize_room_id(room_id) in self._rooms
 
@@ -722,12 +867,16 @@ class RuntimeRoomRegistry:
 
     def export_room_runtime_snapshot(self, room_id: str) -> dict[str, Any]:
         resolved_room_id = self._normalize_room_id(room_id)
+        self.capture_runtime_player_state(resolved_room_id)
         metadata = self.ensure_room_metadata(resolved_room_id)
         effective_metadata = self._resolve_effective_room_plan_metadata(resolved_room_id, metadata)
         return {
             "room_id": resolved_room_id,
             "access_mode": metadata.get("access_mode", DEFAULT_ROOM_ACCESS_MODE),
             "owner_viewer_id": metadata.get("owner_viewer_id"),
+            "active_controller_id": metadata.get("active_controller_id"),
+            "player_profiles": dict(metadata.get("player_profiles", {}) or {}),
+            "player_control_seats": dict(metadata.get("player_control_seats", {}) or {}),
             "member_viewer_ids": list(metadata.get("member_viewer_ids", []) or []),
             "invite_code": metadata.get("invite_code"),
             "plan_id": effective_metadata.get("requested_plan_id"),
@@ -761,6 +910,9 @@ class RuntimeRoomRegistry:
             {
                 "access_mode": snapshot_dict.get("access_mode"),
                 "owner_viewer_id": snapshot_dict.get("owner_viewer_id"),
+                "active_controller_id": snapshot_dict.get("active_controller_id"),
+                "player_profiles": dict(snapshot_dict.get("player_profiles", {}) or {}),
+                "player_control_seats": dict(snapshot_dict.get("player_control_seats", {}) or {}),
                 "member_viewer_ids": list(snapshot_dict.get("member_viewer_ids", []) or []),
                 "invite_code": snapshot_dict.get("invite_code"),
                 "plan_id": snapshot_dict.get("plan_id"),
@@ -781,6 +933,7 @@ class RuntimeRoomRegistry:
         self._set_room_metadata(resolved_room_id, normalized, sync_runtime=False)
         self.ensure_room(resolved_room_id)
         self._sync_runtime_room_metadata(resolved_room_id)
+        self.hydrate_runtime_player_state(resolved_room_id)
         return dict(normalized)
 
     def _format_billing_notice_date(self, value: str | None) -> str:

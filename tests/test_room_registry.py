@@ -3,6 +3,43 @@ from datetime import datetime, timezone
 from src.server.runtime import RoomMetadataStore, RuntimeRoomRegistry
 
 
+class DummyRoomPlayerStateWorld:
+    def __init__(
+        self,
+        *,
+        active_controller_id: str = "local",
+        player_profiles: dict[str, dict] | None = None,
+        player_control_seats: dict[str, dict] | None = None,
+    ) -> None:
+        self._active_controller_id = active_controller_id
+        self._player_profiles = dict(player_profiles or {})
+        self._player_control_seats = dict(player_control_seats or {})
+        self.loaded_player_profiles = None
+        self.loaded_player_control_seats = None
+        self.loaded_active_controller_id = None
+
+    def get_active_controller_id(self) -> str:
+        return self._active_controller_id
+
+    def export_player_profiles(self) -> dict[str, dict]:
+        return dict(self._player_profiles)
+
+    def export_player_control_seats(self) -> dict[str, dict]:
+        return dict(self._player_control_seats)
+
+    def load_player_profiles(self, profiles: dict[str, dict]) -> None:
+        self.loaded_player_profiles = dict(profiles)
+
+    def load_player_control_seats(
+        self,
+        seats: dict[str, dict],
+        *,
+        active_controller_id: str | None = None,
+    ) -> None:
+        self.loaded_player_control_seats = dict(seats)
+        self.loaded_active_controller_id = active_controller_id
+
+
 def test_runtime_room_registry_creates_private_custom_room_for_owner():
     registry = RuntimeRoomRegistry()
 
@@ -515,3 +552,49 @@ def test_runtime_room_registry_reset_clears_persisted_custom_rooms(tmp_path):
 
     assert second.has_room("guild_alpha") is False
     assert second.list_room_ids() == ["main"]
+
+
+def test_runtime_room_registry_persists_room_player_state_across_registry_restart(tmp_path):
+    store = RoomMetadataStore(db_path=tmp_path / "room_registry.sqlite3")
+    first = RuntimeRoomRegistry(metadata_store=store)
+    first_runtime = first.switch_active_room("guild_alpha", viewer_id="viewer_owner")
+    first_runtime.update(
+        {
+            "world": DummyRoomPlayerStateWorld(
+                active_controller_id="seat_alpha",
+                player_profiles={
+                    "viewer_owner": {
+                        "display_name": "Owner",
+                        "joined_month": 12,
+                        "last_seen_month": 15,
+                    }
+                },
+                player_control_seats={
+                    "seat_alpha": {
+                        "holder_id": "viewer_owner",
+                        "intervention_points": 2,
+                        "owned_sect_id": 7,
+                        "main_avatar_id": "avatar_1",
+                        "relation_intervention_cooldowns": {"7:9": 22},
+                    }
+                },
+            )
+        }
+    )
+
+    first.capture_runtime_player_state("guild_alpha")
+    snapshot = first.export_room_runtime_snapshot("guild_alpha")
+
+    assert snapshot["active_controller_id"] == "seat_alpha"
+    assert snapshot["player_profiles"]["viewer_owner"]["display_name"] == "Owner"
+    assert snapshot["player_control_seats"]["seat_alpha"]["holder_id"] == "viewer_owner"
+
+    second = RuntimeRoomRegistry(metadata_store=store)
+    second_runtime = second.switch_active_room("guild_alpha", viewer_id="viewer_owner")
+    hydrate_target = DummyRoomPlayerStateWorld()
+    second_runtime.update({"world": hydrate_target})
+
+    assert second.hydrate_runtime_player_state("guild_alpha") is True
+    assert hydrate_target.loaded_active_controller_id == "seat_alpha"
+    assert hydrate_target.loaded_player_profiles["viewer_owner"]["display_name"] == "Owner"
+    assert hydrate_target.loaded_player_control_seats["seat_alpha"]["owned_sect_id"] == 7

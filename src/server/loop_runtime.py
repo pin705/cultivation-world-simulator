@@ -127,6 +127,7 @@ async def run_game_loop_forever(
     trigger_auto_save,
     build_auto_save_toast: Callable[[str], dict[str, Any]],
     collect_room_notifications: Callable[[str], list[dict[str, Any]]] | None,
+    persist_room_runtime_state: Callable[[str], Any] | None,
     get_logger,
 ) -> None:
     """Run the background simulation loop forever for all active room runtimes."""
@@ -149,6 +150,8 @@ async def run_game_loop_forever(
 
                 with use_commercial_profile_override(runtime.get("room_commercial_profile")):
                     events = await runtime.run_mutation(sim.step)
+                if callable(persist_room_runtime_state):
+                    persist_room_runtime_state(room_id)
                 avatar_updates = build_avatar_updates(world)
                 state = build_tick_state(avatar_updates, events, world, room_id)
                 await manager.broadcast(state)

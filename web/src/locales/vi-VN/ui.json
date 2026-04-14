@@ -77,6 +77,7 @@
   "player_campaign_main_avatar_empty": "Tông môn này chưa có đệ tử sống nào khả dụng.",
   "player_campaign_main_avatar_failed": "Đặt đệ tử chủ lực thất bại",
   "player_campaign_ready_desc": "Phần khai cuộc đã xong. Giờ bạn có thể dùng chỉ thị tông môn, hỗ trợ và mục tiêu avatar với một vị thế phe phái rõ ràng.",
+  "player_campaign_open_setup": "Mở thiết lập đầy đủ",
   "player_campaign_age": "Tuổi {age}",
   "player_campaign_power": "Chiến lực {value}",
   "player_identity_current": "Danh tính hiện tại: {id}",

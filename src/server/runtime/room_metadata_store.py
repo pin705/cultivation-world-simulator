@@ -193,6 +193,7 @@ class PostgresRoomMetadataStore:
                             room_id TEXT PRIMARY KEY,
                             access_mode TEXT NOT NULL,
                             owner_viewer_id TEXT,
+                            active_controller_id TEXT,
                             invite_code TEXT,
                             plan_id TEXT NOT NULL,
                             entitled_plan_id TEXT,
@@ -228,6 +229,46 @@ class PostgresRoomMetadataStore:
                     )
                     cursor.execute(
                         """
+                        CREATE TABLE IF NOT EXISTS world_room_player_profiles (
+                            room_id TEXT NOT NULL REFERENCES world_rooms(room_id) ON DELETE CASCADE,
+                            viewer_id TEXT NOT NULL,
+                            display_name TEXT NOT NULL,
+                            joined_month INTEGER NOT NULL,
+                            last_seen_month INTEGER NOT NULL,
+                            updated_at TIMESTAMPTZ NOT NULL,
+                            PRIMARY KEY (room_id, viewer_id)
+                        )
+                        """
+                    )
+                    cursor.execute(
+                        """
+                        CREATE INDEX IF NOT EXISTS idx_world_room_player_profiles_room_id
+                        ON world_room_player_profiles(room_id)
+                        """
+                    )
+                    cursor.execute(
+                        """
+                        CREATE TABLE IF NOT EXISTS world_room_control_seats (
+                            room_id TEXT NOT NULL REFERENCES world_rooms(room_id) ON DELETE CASCADE,
+                            controller_id TEXT NOT NULL,
+                            holder_viewer_id TEXT,
+                            intervention_points INTEGER NOT NULL,
+                            owned_sect_id INTEGER,
+                            main_avatar_id TEXT,
+                            relation_intervention_cooldowns_json TEXT NOT NULL,
+                            updated_at TIMESTAMPTZ NOT NULL,
+                            PRIMARY KEY (room_id, controller_id)
+                        )
+                        """
+                    )
+                    cursor.execute(
+                        """
+                        CREATE INDEX IF NOT EXISTS idx_world_room_control_seats_room_id
+                        ON world_room_control_seats(room_id)
+                        """
+                    )
+                    cursor.execute(
+                        """
                         CREATE TABLE IF NOT EXISTS world_room_payment_events (
                             room_id TEXT NOT NULL REFERENCES world_rooms(room_id) ON DELETE CASCADE,
                             event_index INTEGER NOT NULL,
@@ -259,6 +300,12 @@ class PostgresRoomMetadataStore:
                             metadata_json TEXT NOT NULL,
                             updated_at TIMESTAMPTZ NOT NULL
                         )
+                        """
+                    )
+                    cursor.execute(
+                        """
+                        ALTER TABLE world_rooms
+                        ADD COLUMN IF NOT EXISTS active_controller_id TEXT
                         """
                     )
                 finally:
@@ -311,6 +358,7 @@ class PostgresRoomMetadataStore:
                     room_id,
                     access_mode,
                     owner_viewer_id,
+                    active_controller_id,
                     invite_code,
                     plan_id,
                     entitled_plan_id,
@@ -340,6 +388,34 @@ class PostgresRoomMetadataStore:
                 """
                 SELECT
                     room_id,
+                    viewer_id,
+                    display_name,
+                    joined_month,
+                    last_seen_month
+                FROM world_room_player_profiles
+                ORDER BY room_id ASC, viewer_id ASC
+                """
+            )
+            player_profile_rows = cursor.fetchall()
+            cursor.execute(
+                """
+                SELECT
+                    room_id,
+                    controller_id,
+                    holder_viewer_id,
+                    intervention_points,
+                    owned_sect_id,
+                    main_avatar_id,
+                    relation_intervention_cooldowns_json
+                FROM world_room_control_seats
+                ORDER BY room_id ASC, controller_id ASC
+                """
+            )
+            control_seat_rows = cursor.fetchall()
+            cursor.execute(
+                """
+                SELECT
+                    room_id,
                     event_json,
                     event_timestamp,
                     event_type,
@@ -363,6 +439,43 @@ class PostgresRoomMetadataStore:
             if not normalized_room_id or not normalized_viewer_id:
                 continue
             members_by_room.setdefault(normalized_room_id, []).append(normalized_viewer_id)
+
+        player_profiles_by_room: dict[str, dict[str, dict[str, Any]]] = {}
+        for room_id, viewer_id, display_name, joined_month, last_seen_month in player_profile_rows:
+            normalized_room_id = str(room_id or "").strip()
+            normalized_viewer_id = str(viewer_id or "").strip()
+            if not normalized_room_id or not normalized_viewer_id:
+                continue
+            player_profiles_by_room.setdefault(normalized_room_id, {})[normalized_viewer_id] = {
+                "viewer_id": normalized_viewer_id,
+                "display_name": str(display_name or "").strip(),
+                "joined_month": int(joined_month or 0),
+                "last_seen_month": int(last_seen_month or 0),
+            }
+
+        control_seats_by_room: dict[str, dict[str, dict[str, Any]]] = {}
+        for (
+            room_id,
+            controller_id,
+            holder_viewer_id,
+            intervention_points,
+            owned_sect_id,
+            main_avatar_id,
+            relation_intervention_cooldowns_json,
+        ) in control_seat_rows:
+            normalized_room_id = str(room_id or "").strip()
+            normalized_controller_id = str(controller_id or "").strip()
+            if not normalized_room_id or not normalized_controller_id:
+                continue
+            control_seats_by_room.setdefault(normalized_room_id, {})[normalized_controller_id] = {
+                "holder_id": str(holder_viewer_id or "").strip() or None,
+                "intervention_points": int(intervention_points or 0),
+                "owned_sect_id": int(owned_sect_id) if owned_sect_id is not None else None,
+                "main_avatar_id": str(main_avatar_id or "").strip() or None,
+                "relation_intervention_cooldowns": _json_load_dict(
+                    relation_intervention_cooldowns_json
+                ),
+            }
 
         events_by_room: dict[str, list[dict[str, Any]]] = {}
         for (
@@ -402,6 +515,7 @@ class PostgresRoomMetadataStore:
             room_id,
             access_mode,
             owner_viewer_id,
+            active_controller_id,
             invite_code,
             plan_id,
             entitled_plan_id,
@@ -423,7 +537,10 @@ class PostgresRoomMetadataStore:
                 "id": normalized_room_id,
                 "access_mode": str(access_mode or "").strip() or "open",
                 "owner_viewer_id": str(owner_viewer_id or "").strip() or None,
+                "active_controller_id": str(active_controller_id or "").strip() or None,
                 "member_viewer_ids": list(members_by_room.get(normalized_room_id, [])),
+                "player_profiles": dict(player_profiles_by_room.get(normalized_room_id, {})),
+                "player_control_seats": dict(control_seats_by_room.get(normalized_room_id, {})),
                 "invite_code": str(invite_code or "").strip() or None,
                 "plan_id": str(plan_id or "").strip() or None,
                 "entitled_plan_id": str(entitled_plan_id or "").strip() or None,
@@ -469,6 +586,7 @@ class PostgresRoomMetadataStore:
         payload = dict(metadata or {})
         access_mode = str(payload.get("access_mode") or "").strip() or "open"
         owner_viewer_id = str(payload.get("owner_viewer_id") or "").strip() or None
+        active_controller_id = str(payload.get("active_controller_id") or "").strip() or None
         invite_code = str(payload.get("invite_code") or "").strip() or None
         plan_id = str(payload.get("plan_id") or "").strip() or "standard_private"
         entitled_plan_id = str(payload.get("entitled_plan_id") or "").strip() or None
@@ -505,6 +623,16 @@ class PostgresRoomMetadataStore:
             for item in list(payload.get("member_viewer_ids", []) or [])
             if str(item or "").strip()
         ]
+        player_profiles = {
+            str(viewer_id or "").strip(): dict(profile or {})
+            for viewer_id, profile in dict(payload.get("player_profiles", {}) or {}).items()
+            if str(viewer_id or "").strip() and isinstance(profile, dict)
+        }
+        player_control_seats = {
+            str(controller_id or "").strip(): dict(seat or {})
+            for controller_id, seat in dict(payload.get("player_control_seats", {}) or {}).items()
+            if str(controller_id or "").strip() and isinstance(seat, dict)
+        }
         payment_events = [
             dict(item)
             for item in list(payload.get("payment_events", []) or [])
@@ -519,6 +647,7 @@ class PostgresRoomMetadataStore:
                         room_id,
                         access_mode,
                         owner_viewer_id,
+                        active_controller_id,
                         invite_code,
                         plan_id,
                         entitled_plan_id,
@@ -534,10 +663,11 @@ class PostgresRoomMetadataStore:
                         last_billing_notice_key,
                         updated_at
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT(room_id) DO UPDATE SET
                         access_mode = EXCLUDED.access_mode,
                         owner_viewer_id = EXCLUDED.owner_viewer_id,
+                        active_controller_id = EXCLUDED.active_controller_id,
                         invite_code = EXCLUDED.invite_code,
                         plan_id = EXCLUDED.plan_id,
                         entitled_plan_id = EXCLUDED.entitled_plan_id,
@@ -557,6 +687,7 @@ class PostgresRoomMetadataStore:
                         normalized_room_id,
                         access_mode,
                         owner_viewer_id,
+                        active_controller_id,
                         invite_code,
                         plan_id,
                         entitled_plan_id,
@@ -583,6 +714,74 @@ class PostgresRoomMetadataStore:
                         [
                             (normalized_room_id, viewer_id, now)
                             for viewer_id in member_viewer_ids
+                        ],
+                    )
+                cursor.execute(
+                    "DELETE FROM world_room_player_profiles WHERE room_id = %s",
+                    (normalized_room_id,),
+                )
+                if player_profiles:
+                    cursor.executemany(
+                        """
+                        INSERT INTO world_room_player_profiles (
+                            room_id,
+                            viewer_id,
+                            display_name,
+                            joined_month,
+                            last_seen_month,
+                            updated_at
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        """,
+                        [
+                            (
+                                normalized_room_id,
+                                viewer_id,
+                                str(profile.get("display_name") or "").strip(),
+                                int(profile.get("joined_month", 0) or 0),
+                                int(profile.get("last_seen_month", 0) or 0),
+                                now,
+                            )
+                            for viewer_id, profile in sorted(player_profiles.items())
+                        ],
+                    )
+                cursor.execute(
+                    "DELETE FROM world_room_control_seats WHERE room_id = %s",
+                    (normalized_room_id,),
+                )
+                if player_control_seats:
+                    cursor.executemany(
+                        """
+                        INSERT INTO world_room_control_seats (
+                            room_id,
+                            controller_id,
+                            holder_viewer_id,
+                            intervention_points,
+                            owned_sect_id,
+                            main_avatar_id,
+                            relation_intervention_cooldowns_json,
+                            updated_at
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        """,
+                        [
+                            (
+                                normalized_room_id,
+                                controller_id,
+                                str(seat.get("holder_id") or "").strip() or None,
+                                int(seat.get("intervention_points", 0) or 0),
+                                int(seat["owned_sect_id"])
+                                if seat.get("owned_sect_id") is not None
+                                else None,
+                                str(seat.get("main_avatar_id") or "").strip() or None,
+                                json.dumps(
+                                    dict(seat.get("relation_intervention_cooldowns") or {}),
+                                    ensure_ascii=False,
+                                    sort_keys=True,
+                                ),
+                                now,
+                            )
+                            for controller_id, seat in sorted(player_control_seats.items())
                         ],
                     )
                 cursor.execute("DELETE FROM world_room_payment_events WHERE room_id = %s", (normalized_room_id,))

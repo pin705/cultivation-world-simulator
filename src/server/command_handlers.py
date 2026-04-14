@@ -84,6 +84,16 @@ def create_command_handlers(
     def _runtime():
         return get_runtime()
 
+    def _persist_runtime_player_state(target_runtime) -> None:
+        if room_registry is None:
+            return
+        room_id = getattr(room_registry, "get_room_id_for_runtime", lambda _runtime: None)(target_runtime)
+        if room_id is None:
+            room_id = getattr(room_registry, "get_active_room_id", lambda: "main")()
+        capturer = getattr(room_registry, "capture_runtime_player_state", None)
+        if callable(capturer):
+            capturer(room_id)
+
     async def run_start_game(req) -> dict:
         runtime = _runtime()
         run_config = RunConfig(**model_to_dict(req))
@@ -196,7 +206,7 @@ def create_command_handlers(
 
     async def run_set_long_term_objective(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             set_long_term_objective_for_avatar,
             runtime,
             avatar_id=req.avatar_id,
@@ -204,70 +214,86 @@ def create_command_handlers(
             setter=set_user_long_term_objective,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     async def run_clear_long_term_objective(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             clear_long_term_objective_for_avatar,
             runtime,
             avatar_id=req.avatar_id,
             clearer=clear_user_long_term_objective,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     async def run_grant_avatar_support(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             grant_player_support_for_avatar,
             runtime,
             avatar_id=req.avatar_id,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     async def run_appoint_avatar_seed(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             appoint_player_seed_for_avatar,
             runtime,
             avatar_id=req.avatar_id,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     async def run_claim_sect(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             claim_player_sect,
             runtime,
             sect_id=req.sect_id,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     async def run_set_main_avatar(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             set_player_main_avatar,
             runtime,
             avatar_id=req.avatar_id,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     async def run_switch_control_seat(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             switch_player_control_seat,
             runtime,
             controller_id=req.controller_id,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     async def run_release_control_seat(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             release_player_control_seat,
             runtime,
             controller_id=req.controller_id,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     async def run_update_player_profile(req) -> dict:
         runtime = _runtime()
@@ -277,6 +303,7 @@ def create_command_handlers(
             viewer_id=req.viewer_id,
             display_name=req.display_name,
         )
+        _persist_runtime_player_state(runtime)
         auth_store = get_player_auth_store()
         if auth_store is not None and getattr(req, "viewer_id", None):
             auth_store.update_player_display_name(req.viewer_id, req.display_name)
@@ -411,26 +438,30 @@ def create_command_handlers(
 
     async def run_set_sect_directive(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             set_player_directive_for_sect,
             runtime,
             sect_id=req.sect_id,
             content=req.content,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     async def run_clear_sect_directive(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             clear_player_directive_for_sect,
             runtime,
             sect_id=req.sect_id,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     async def run_intervene_sect_relation(req) -> dict:
         runtime = _runtime()
-        return await runtime.run_mutation(
+        result = await runtime.run_mutation(
             intervene_relation_for_sects,
             runtime,
             sect_id=req.sect_id,
@@ -438,6 +469,8 @@ def create_command_handlers(
             mode=req.mode,
             viewer_id=req.viewer_id,
         )
+        _persist_runtime_player_state(runtime)
+        return result
 
     def run_save_game(*, custom_name: str | None) -> dict:
         runtime = _runtime()

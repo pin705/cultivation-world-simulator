@@ -372,6 +372,9 @@ def build_init_game_async(target_runtime):
             sects_by_id=sects_by_id,
             make_random_avatars=_new_make_random,
             check_llm_connectivity=check_llm_connectivity,
+            hydrate_room_player_state=lambda: room_registry.hydrate_runtime_player_state(
+                room_registry.get_room_id_for_runtime(target_runtime) or room_registry.get_active_room_id()
+            ),
         )
 
     return _init_game_async
@@ -415,6 +418,7 @@ async def game_loop():
         trigger_auto_save=trigger_auto_save,
         build_auto_save_toast=build_auto_save_toast,
         collect_room_notifications=room_registry.collect_room_billing_notifications,
+        persist_room_runtime_state=room_registry.capture_runtime_player_state,
         get_logger=get_logger,
     )
 

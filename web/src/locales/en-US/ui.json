@@ -77,6 +77,7 @@
   "player_campaign_main_avatar_empty": "This sect has no living disciples available yet.",
   "player_campaign_main_avatar_failed": "Failed to set main disciple",
   "player_campaign_ready_desc": "Opening setup is complete. You can now use sect directives, support actions, and avatar objectives with a clear faction position.",
+  "player_campaign_open_setup": "Open full setup",
   "player_campaign_age": "Age {age}",
   "player_campaign_power": "Power {value}",
   "player_identity_current": "Current identity: {id}",

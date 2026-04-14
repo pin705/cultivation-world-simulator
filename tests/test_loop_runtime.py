@@ -173,6 +173,7 @@ async def test_run_game_loop_forever_broadcasts_room_notifications_after_tick():
                         "render_params": {"roomId": room_id, "days": 2, "date": "2026-04-20"},
                     }
                 ],
+                persist_room_runtime_state=lambda _room_id: None,
                 get_logger=lambda: SimpleNamespace(logger=SimpleNamespace(error=lambda *args, **kwargs: None)),
             )
         except RuntimeError as exc:

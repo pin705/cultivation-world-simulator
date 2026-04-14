@@ -102,6 +102,7 @@ async def perform_game_initialization(
     sects_by_id,
     make_random_avatars,
     check_llm_connectivity: Callable[[], tuple[bool, str]],
+    hydrate_room_player_state: Callable[[], Any] | None = None,
 ) -> None:
     runtime.begin_initialization()
 
@@ -176,6 +177,8 @@ async def perform_game_initialization(
         world.existed_sects = existed_sects
         world.sect_context.from_existed_sects(existed_sects)
         runtime.update({"world": world, "sim": sim})
+        if callable(hydrate_room_player_state):
+            hydrate_room_player_state()
 
         update_init_progress(5, "checking_llm")
         print("Checking LLM connectivity...")

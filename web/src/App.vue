@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { NConfigProvider, darkTheme, NMessageProvider, NDialogProvider } from 'naive-ui'
 import { systemApi } from './api/modules/system'
+import { avatarApi, worldApi } from './api'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -36,6 +38,7 @@ import { useSystemStore } from './stores/system'
 const uiStore = useUiStore()
 const settingStore = useSettingStore()
 const systemStore = useSystemStore()
+const { playerOnboarding, viewerId } = storeToRefs(systemStore)
 
 // Sidebar resizer 状态
 const { sidebarWidth, isResizing, onResizerMouseDown } = useSidebarResize()
@@ -108,6 +111,72 @@ function onKeydown(e: KeyboardEvent) {
 
 function handleSelection(target: { type: 'avatar' | 'region'; id: string; name?: string }) {
   uiStore.select(target.type, target.id)
+}
+
+const isSubmittingOnboarding = ref(false)
+const onboardingError = ref('')
+const onboardingOverlayVisible = computed(() => (
+  canRenderGameShell.value
+  && initStatus.value?.status === 'ready'
+  && Boolean(playerOnboarding.value)
+  && !playerOnboarding.value?.ready
+))
+const onboardingRecommendedStep = computed(() => (
+  playerOnboarding.value?.recommended_step || 'claim_sect'
+))
+const onboardingClaimableSects = computed(() => (
+  (playerOnboarding.value?.claimable_sects || []).slice(0, 3)
+))
+const onboardingMainAvatarCandidates = computed(() => (
+  (playerOnboarding.value?.main_avatar_candidates || []).slice(0, 3)
+))
+
+function onboardingStepLabel(step: string) {
+  if (step === 'set_main_avatar') {
+    return t('ui.player_campaign_step_main_avatar')
+  }
+  if (step === 'ready') {
+    return t('ui.player_campaign_step_ready')
+  }
+  return t('ui.player_campaign_step_claim_sect')
+}
+
+function openPlayerCampaignSetup() {
+  uiStore.openSystemMenu('other', true, 'game')
+}
+
+async function claimSectFromOverlay(sectId: number) {
+  isSubmittingOnboarding.value = true
+  onboardingError.value = ''
+  try {
+    await worldApi.claimSect({
+      sect_id: sectId,
+      viewer_id: viewerId.value,
+    })
+    await systemStore.fetchInitStatus()
+  } catch (e) {
+    logError('App.claimSectFromOverlay', e)
+    onboardingError.value = t('ui.player_campaign_claim_failed')
+  } finally {
+    isSubmittingOnboarding.value = false
+  }
+}
+
+async function setMainAvatarFromOverlay(avatarId: string) {
+  isSubmittingOnboarding.value = true
+  onboardingError.value = ''
+  try {
+    await avatarApi.setMainAvatar({
+      avatar_id: avatarId,
+      viewer_id: viewerId.value,
+    })
+    await systemStore.fetchInitStatus()
+  } catch (e) {
+    logError('App.setMainAvatarFromOverlay', e)
+    onboardingError.value = t('ui.player_campaign_main_avatar_failed')
+  } finally {
+    isSubmittingOnboarding.value = false
+  }
 }
 
 async function handleSplashAction(key: string) {
@@ -199,6 +268,66 @@ watch(sidebarWidth, width => {
                 <div class="pause-text">{{ t('game.controls.paused') }}</div>
               </div>
 
+              <div v-if="onboardingOverlayVisible" class="player-onboarding-overlay">
+                <div class="player-onboarding-card">
+                  <div class="player-onboarding-header">
+                    <div class="player-onboarding-kicker">{{ t('ui.player_campaign_title') }}</div>
+                    <div class="player-onboarding-step">{{ onboardingStepLabel(onboardingRecommendedStep) }}</div>
+                  </div>
+                  <p class="player-onboarding-desc">{{ t('ui.player_campaign_desc') }}</p>
+
+                  <div
+                    v-if="onboardingRecommendedStep === 'claim_sect'"
+                    class="player-onboarding-options"
+                  >
+                    <button
+                      v-for="sect in onboardingClaimableSects"
+                      :key="sect.id"
+                      class="player-onboarding-option"
+                      :disabled="isSubmittingOnboarding"
+                      @click="claimSectFromOverlay(sect.id)"
+                    >
+                      <span class="player-onboarding-option-title">{{ sect.name }}</span>
+                      <span class="player-onboarding-option-meta">
+                        {{ t('ui.player_campaign_members', { count: sect.member_count }) }}
+                      </span>
+                    </button>
+                  </div>
+
+                  <div
+                    v-else-if="onboardingRecommendedStep === 'set_main_avatar'"
+                    class="player-onboarding-options"
+                  >
+                    <button
+                      v-for="avatar in onboardingMainAvatarCandidates"
+                      :key="avatar.id"
+                      class="player-onboarding-option"
+                      :disabled="isSubmittingOnboarding"
+                      @click="setMainAvatarFromOverlay(avatar.id)"
+                    >
+                      <span class="player-onboarding-option-title">{{ avatar.name }}</span>
+                      <span class="player-onboarding-option-meta">
+                        {{ avatar.realm }} · {{ t('ui.player_campaign_age', { age: avatar.age }) }}
+                      </span>
+                    </button>
+                  </div>
+
+                  <div v-if="onboardingError" class="player-onboarding-error">
+                    {{ onboardingError }}
+                  </div>
+
+                  <div class="player-onboarding-actions">
+                    <button
+                      class="player-onboarding-link"
+                      :disabled="isSubmittingOnboarding"
+                      @click="openPlayerCampaignSetup"
+                    >
+                      {{ t('ui.player_campaign_open_setup') }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <GameCanvas
                 :sidebar-width="sidebarWidth"
                 @avatarSelected="handleSelection"
@@ -274,6 +403,119 @@ watch(sidebarWidth, width => {
   z-index: 100;
   display: flex;
   gap: 10px;
+}
+
+.player-onboarding-overlay {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 95;
+  max-width: min(420px, calc(100vw - 120px));
+}
+
+.player-onboarding-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(240, 220, 180, 0.28);
+  background:
+    linear-gradient(180deg, rgba(24, 18, 12, 0.94), rgba(11, 10, 8, 0.92)),
+    rgba(0, 0, 0, 0.82);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(12px);
+}
+
+.player-onboarding-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.player-onboarding-kicker {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(226, 206, 171, 0.82);
+}
+
+.player-onboarding-step {
+  font-size: 13px;
+  color: #f5deb6;
+}
+
+.player-onboarding-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(236, 232, 219, 0.84);
+}
+
+.player-onboarding-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.player-onboarding-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(207, 181, 138, 0.2);
+  background: rgba(255, 248, 235, 0.04);
+  color: #f7edd6;
+  cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+}
+
+.player-onboarding-option:hover:not(:disabled) {
+  border-color: rgba(229, 197, 141, 0.46);
+  background: rgba(255, 248, 235, 0.08);
+  transform: translateY(-1px);
+}
+
+.player-onboarding-option:disabled {
+  cursor: wait;
+  opacity: 0.66;
+}
+
+.player-onboarding-option-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.player-onboarding-option-meta {
+  font-size: 12px;
+  color: rgba(221, 210, 190, 0.74);
+}
+
+.player-onboarding-error {
+  font-size: 12px;
+  color: #ff9f8a;
+}
+
+.player-onboarding-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.player-onboarding-link {
+  border: 0;
+  background: transparent;
+  color: #e3c994;
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.player-onboarding-link:disabled {
+  cursor: wait;
+  opacity: 0.6;
 }
 
 .control-btn {
