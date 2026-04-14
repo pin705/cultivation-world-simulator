@@ -1,0 +1,25 @@
+{
+  "title": "Bắt Đầu Trò Chơi",
+  "description": "Thiết lập trạng thái ban đầu của thế giới. Lưu ý: Sau khi trò chơi bắt đầu, những thiết lập này sẽ không thể thay đổi.",
+  "labels": {
+    "init_npc_num": "Số Tu Sĩ Ban Đầu",
+    "sect_num": "Số Tông Môn Hoạt Động",
+    "new_npc_rate": "Tỷ Lệ Tu Sĩ Mới Mỗi Tháng",
+    "world_lore": "Thế Giới Quan Và Lịch Sử"
+  },
+  "tips": {
+    "sect_num": "Số lượng tông môn nên nhỏ hơn một nửa số tu sĩ ban đầu."
+  },
+  "placeholders": {
+    "world_lore": "Hãy mô tả trước hệ thống tu luyện, cục diện chính tà, hệ sinh thái tông môn và sắc thái vùng miền, rồi bổ sung các thời kỳ và sự kiện lịch sử quan trọng. Bật mục này sẽ gọi LLM và làm tăng rõ rệt thời gian khởi tạo. (Tùy chọn)"
+  },
+  "options": {},
+  "actions": {
+    "start": "Bắt Đầu"
+  },
+  "messages": {
+    "load_failed": "Tải cấu hình thất bại",
+    "start_success": "Đã lưu cấu hình, đang khởi tạo thế giới...",
+    "start_failed": "Khởi động trò chơi thất bại"
+  }
+}

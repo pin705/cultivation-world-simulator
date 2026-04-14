@@ -1,0 +1,29 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-TW\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# 執行結果
+msgid "{avatar_name} {done} {grade} {label}『{item_name}』."
+msgstr "{avatar_name} {done}{grade}{label}『{item_name}』。"
+
+msgid "{avatar} failed retreat and lost {years} years of lifespan."
+msgstr "{avatar} 閉關失敗，折損了 {years} 年陽壽。"
+
+msgid "{avatar} finished retreat successfully."
+msgstr "{avatar} 閉關成功，修爲大增。"
+
+msgid "{avatar} gained cultivation experience +{exp} points"
+msgstr "{avatar} 修爲增長 {exp} 點"
+
+msgid "{winner} defeated {loser}"
+msgstr "{winner} 戰勝了 {loser}"

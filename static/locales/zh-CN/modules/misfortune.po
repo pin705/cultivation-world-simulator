@@ -1,0 +1,98 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid ", defended {region}"
+msgstr "，守住了 {region}"
+
+msgid ", successfully seized {region}"
+msgstr "，成功夺取了 {region}"
+
+msgid "Already the owner of this cave dwelling"
+msgstr "已经是该洞府的主人了"
+
+msgid "Cannot drive away in wilderness"
+msgstr "荒野之中无法驱赶"
+
+msgid "Cannot find region: {region}"
+msgstr "无法找到区域：{region}"
+
+msgid "Cannot initiate interaction with self"
+msgstr "不能对自己发起互动"
+
+msgid "Elixirs cannot be gifted"
+msgstr "丹药不可赠送"
+
+msgid "Gift you {item}"
+msgstr "向你赠送 {item}"
+
+msgid "Insufficient item: {name}"
+msgstr "物品不足：{name}"
+
+msgid "Insufficient spirit stones (current: {current}, need: {need})"
+msgstr "灵石不足（当前：{current}，需要：{need}）"
+
+msgid "Item not equipped: {name}"
+msgstr "未装备该物品：{name}"
+
+msgid "Item not found: {name}"
+msgstr "未找到物品：{name}"
+
+msgid ""
+"Level difference insufficient, need 20 levels (current gap: {diff} levels)"
+msgstr "等级差不足20级（当前差距：{diff}级）"
+
+msgid "Target is not your apprentice"
+msgstr "目标不是自己的徒弟"
+
+msgid ""
+"Target is not your disciple, martial grandchild, martial sibling, child, "
+"grandchild, or friend"
+msgstr "目标不是你的徒弟、徒孙、同门、子女、孙辈或朋友"
+
+msgid "Target not within interaction range"
+msgstr "目标不在交互范围内"
+
+# Misfortune messages
+msgid "misfortune_event_base"
+msgstr "遭遇霉运（{title}），{result}"
+
+msgid "misfortune_result_backlash"
+msgstr "{name} 修为倒退 {amount} 点"
+
+msgid "misfortune_result_injury"
+msgstr "{name} 受到伤害 {damage} 点，剩余HP {current}/{max}"
+
+msgid "misfortune_result_loss_spirit_stone"
+msgstr "{name} 损失灵石 {amount} 枚"
+
+msgid "misfortune_title_backlash"
+msgstr "修为倒退"
+
+msgid "misfortune_title_injury"
+msgstr "意外受伤"
+
+msgid "misfortune_title_loss_spirit_stone"
+msgstr "破财消灾"
+
+msgid "misfortune_title_mystery"
+msgstr "神秘霉运"
+
+msgid "{name} cultivation regressed by {amount} points"
+msgstr "{name} 修为倒退 {amount} 点"
+
+msgid "{name} lost {amount} spirit stones"
+msgstr "{name} 损失灵石 {amount} 枚"
+
+msgid "{name} took {damage} damage, HP remaining {current}/{max}"
+msgstr "{name} 受到伤害 {damage} 点，剩余HP {current}/{max}"

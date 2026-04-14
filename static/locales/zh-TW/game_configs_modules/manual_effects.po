@@ -1,0 +1,44 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-TW\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "condition_has_spirit_animal"
+msgstr "擁有本命靈獸時"
+
+msgid "condition_level_ge_30"
+msgstr "等級達到30級時"
+
+msgid "condition_realm_early"
+msgstr "處於煉氣或築基期時"
+
+# Celestial Phenomenon
+msgid "condition_realm_high"
+msgstr "化神期及以上時"
+
+msgid "condition_realm_late"
+msgstr "處於結丹或元嬰期時"
+
+msgid "condition_realm_low"
+msgstr "化神期以下時"
+
+# Personas
+msgid "condition_unarmed"
+msgstr "未裝備武器時"
+
+# Weapons
+msgid "effect_god_slaying_spear_desc"
+msgstr "基於槍法資質提升戰力"
+
+# Auxiliary
+msgid "effect_ten_thousand_souls_banner_desc"
+msgstr "吞噬城中凡人可增長魂魄；基於魂魄數量分段提升戰力，最高+8"

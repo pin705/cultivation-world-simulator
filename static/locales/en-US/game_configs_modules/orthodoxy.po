@@ -1,0 +1,60 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: en-US\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "ORTHODOXY_BUDDHISM_DESC"
+msgstr ""
+"Save all sentient beings, and improve cultivation realm through meditation "
+"and sudden enlightenment."
+
+# Buddhism
+msgid "ORTHODOXY_BUDDHISM_NAME"
+msgstr "Buddhism"
+
+msgid "ORTHODOXY_CONFUCIANISM_DESC"
+msgstr ""
+"Educate the common people, cultivate the Noble Spirit (Haoran Qi), and the "
+"realm will increase accordingly."
+
+# Confucianism
+msgid "ORTHODOXY_CONFUCIANISM_NAME"
+msgstr "Confucianism"
+
+msgid "ORTHODOXY_DAO_DESC"
+msgstr ""
+"Conform to the Heavenly Dao, breathe in spiritual energy (Qi), and improve "
+"cultivation realm through practice."
+
+# Dao (Daoism)
+msgid "ORTHODOXY_DAO_NAME"
+msgstr "Dao"
+
+msgid "ORTHODOXY_SANXIU_DESC"
+msgstr "Take Heaven and Earth as teacher, follow the Way of Nature."
+
+# Nature (Sanxiu)
+msgid "ORTHODOXY_SANXIU_NAME"
+msgstr "Nature"
+
+msgid "ORTHODOXY_WU_DESC"
+msgstr ""
+"Entering the Dao through martial arts and Body Tempering. Although progress "
+"is slow, the foundation is solid, and breaking through bottlenecks comes as "
+"naturally as eating and drinking."
+
+# Martial (Wu)
+msgid "ORTHODOXY_WU_NAME"
+msgstr "Martial"
+
+msgid "Orthodoxy [{name}]"
+msgstr "Orthodoxy [{name}]"

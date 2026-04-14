@@ -1,0 +1,29 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Story Styles
+msgid ""
+"Plain narration: Restrained language, minimal embellishment, recording like "
+"a bystander."
+msgstr "平淡叙述：语句克制、少修饰、像旁观者记录。"
+
+msgid ""
+"Poetic lyricism: Short sentences and parallelism, sparse use of allusions, "
+"avoiding flowery language."
+msgstr "诗意抒情：短句与对仗点缀，少量用典，不堆砌辞藻。"
+
+msgid ""
+"Taoist nature: Tinted with Taoist vocabulary, not obscure, focusing on a "
+"single thought."
+msgstr "道法自然：以道家语汇点染，不艰涩，收束于一念。"

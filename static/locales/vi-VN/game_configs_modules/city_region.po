@@ -1,0 +1,53 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: vi-VN\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "CITY_REGION_301_DESC"
+msgstr ""
+"Một đại thành phồn thịnh, dân cư đông đúc, thương khách tụ hội, là nơi "
+"quan trọng để giao dịch thiên tài địa bảo và tìm kiếm cơ duyên."
+
+msgid "CITY_REGION_301_NAME"
+msgstr "Thanh Vân Thành"
+
+msgid "CITY_REGION_302_DESC"
+msgstr ""
+"Một tiểu thành mậu dịch giữa ốc đảo sa mạc, nơi thương đội qua lại không "
+"dứt, là điểm tiếp tế và giao lưu quan trọng của tu sĩ."
+
+msgid "CITY_REGION_302_NAME"
+msgstr "Sa Châu Thành"
+
+msgid "CITY_REGION_303_DESC"
+msgstr ""
+"Một thành trấn tu tiên nằm sâu trong rừng; tuy không phồn hoa bằng danh đô, "
+"vẫn có đông đảo tu sĩ cư ngụ, rất thích hợp để tu hành và luyện khí."
+
+msgid "CITY_REGION_303_NAME"
+msgstr "Thúy Lâm Thành"
+
+msgid "CITY_REGION_304_DESC"
+msgstr ""
+"Một đại thành phồn thịnh nơi cửa sông đổ ra biển, đường thủy hưng thịnh, là "
+"bảo địa nơi tu sĩ hệ Thủy lui tới đông đúc."
+
+msgid "CITY_REGION_304_NAME"
+msgstr "Thương Lan Thành"
+
+msgid "CITY_REGION_305_DESC"
+msgstr ""
+"Một tiểu thành giữa non cao trùng điệp, quanh năm mây mù bao phủ, linh khí "
+"tinh thuần, là chốn tuyệt hảo để khổ tu và ngộ Thiên Đạo."
+
+msgid "CITY_REGION_305_NAME"
+msgstr "Lãm Nguyệt Thành"

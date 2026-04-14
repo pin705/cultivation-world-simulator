@@ -1,0 +1,56 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-TW\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid " But you already have '{current_auxiliary}'."
+msgstr " 但你手中已有『{current_auxiliary}』。"
+
+msgid " But you already have '{current_weapon}'."
+msgstr " 但你手中已有『{current_weapon}』。"
+
+msgid " But you already have『{auxiliary_name}』."
+msgstr " 但你手中已有『{auxiliary_name}』。"
+
+msgid " But you already have『{weapon_name}』."
+msgstr " 但你手中已有『{weapon_name}』。"
+
+msgid " This conflicts with your current technique '{current_technique}'."
+msgstr " 這與你當前主修的『{current_technique}』衝突。"
+
+msgid " This conflicts with your current technique『{technique_name}』."
+msgstr " 這與你當前主修的『{technique_name}』衝突。"
+
+msgid "Comprehended technique '{technique}', {exchange_result}"
+msgstr "領悟了功法『{technique}』，{exchange_result}"
+
+msgid "Comprehended technique『{technique_name}』, {exchange_text}"
+msgstr "領悟了功法『{technique_name}』，{exchange_text}"
+
+msgid "Discovered auxiliary『{auxiliary_name}』, {exchange_text}"
+msgstr "發現了輔助裝備『{auxiliary_name}』，{exchange_text}"
+
+msgid "Discovered weapon『{weapon_name}』, {exchange_text}"
+msgstr "發現了兵器『{weapon_name}』，{exchange_text}"
+
+msgid "Found auxiliary equipment '{auxiliary}', {exchange_result}"
+msgstr "發現了輔助裝備『{auxiliary}』，{exchange_result}"
+
+msgid "Found weapon '{weapon}', {exchange_result}"
+msgstr "發現了兵器『{weapon}』，{exchange_result}"
+
+# 格式化字符串
+msgid "{weapon_name}, Proficiency: {proficiency}%"
+msgstr "{weapon_name}，熟練度：{proficiency}%"
+
+msgid "【{name}】 {gender} {age} years old"
+msgstr "【{name}】 {gender} {age}歲"

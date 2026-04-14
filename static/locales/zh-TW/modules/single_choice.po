@@ -1,0 +1,58 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-TW\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Single choice - context and options
+msgid ""
+"Current situation: {context}\n"
+"\n"
+"{choices}"
+msgstr ""
+"【當前情境】：{context}\n"
+"\n"
+"{choices}"
+
+msgid "Current {label}: {info}"
+msgstr "現有{label}：{info}"
+
+msgid "Discard '{new_name}'"
+msgstr "放棄『{new_name}』"
+
+msgid "Equip new {label} '{new_name}'"
+msgstr "裝備新{label}『{new_name}』"
+
+msgid "New {label}: {info}"
+msgstr "新{label}：{info}"
+
+msgid "Sell new {label} '{new_name}' for spirit stones, keep current"
+msgstr "賣掉新{label}『{new_name}』換取靈石，保留現狀"
+
+# SingleChoice 系統 - 物品決策
+msgid "Accept new item"
+msgstr "接受新物品"
+
+msgid "Reject new item"
+msgstr "拒絕新物品"
+
+msgid "Automatically accept the new item."
+msgstr "自動接受該新物品。"
+
+# 決策界面
+msgid ""
+"【Current Situation】: {context}\n"
+"\n"
+"{choices}"
+msgstr ""
+"【當前情境】：{context}\n"
+"\n"
+"{choices}"

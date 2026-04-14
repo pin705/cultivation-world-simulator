@@ -1,0 +1,174 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid ""
+"\n"
+"--- Current Effects Detail ---"
+msgstr ""
+"\n"
+"--- 当前效果明细 ---"
+
+msgid "Contains elements: {elements}"
+msgstr "包含元素：{elements}"
+
+msgid "Identity: {identity}"
+msgstr "身份: {identity}"
+
+msgid "No additional effects"
+msgstr "无额外效果"
+
+msgid "Performing {action}"
+msgstr "正在{action}"
+
+msgid "Realm: {realm}"
+msgstr "境界: {realm}"
+
+msgid "Goldfinger"
+msgstr "外挂"
+
+# Feedback labels
+msgid "feedback_accept"
+msgstr "接受"
+
+msgid "feedback_attack"
+msgstr "应战"
+
+msgid "feedback_escape"
+msgstr "逃离"
+
+msgid "feedback_move_away_from_avatar"
+msgstr "试图远离"
+
+msgid "feedback_move_away_from_region"
+msgstr "离开此地"
+
+msgid "feedback_reject"
+msgstr "拒绝"
+
+msgid "{avatar} attempted to escape from {target}: {result}"
+msgstr "{avatar} 试图从 {target} 逃离：{result}"
+
+msgid "{avatar} attempts to escape from {target}"
+msgstr "{avatar} 尝试从 {target} 逃离"
+
+msgid "{avatar} attempts to tame spirit beast at {location}"
+msgstr "{avatar} 在 {location} 尝试御兽"
+
+msgid "{avatar} begins harvesting at {location}"
+msgstr "{avatar} 在 {location} 开始采集"
+
+msgid "{avatar} begins hunting at {location}"
+msgstr "{avatar} 在 {location} 开始狩猎"
+
+msgid "{avatar} begins leaving {region}"
+msgstr "{avatar} 开始离开 {region}"
+
+msgid "{avatar} begins mining at {location}"
+msgstr "{avatar} 在 {location} 开始挖矿"
+
+msgid "{avatar} begins moving away from {target}"
+msgstr "{avatar} 开始远离 {target}"
+
+msgid "{avatar} begins moving toward {direction}"
+msgstr "{avatar} 开始向{direction}方移动"
+
+msgid "{avatar} begins moving toward {region}"
+msgstr "{avatar} 开始移动向 {region}"
+
+msgid "{avatar} begins moving toward {target}"
+msgstr "{avatar} 开始移动向 {target}"
+
+msgid "{avatar} begins nurturing {weapon}"
+msgstr "{avatar} 开始温养{weapon}"
+
+msgid "{avatar} begins respiring at {location}, {efficiency}"
+msgstr "{avatar} 在 {location} 开始吐纳，{efficiency}"
+
+msgid "{avatar} begins resting and healing at {location}"
+msgstr "{avatar} 在 {location} 开始静养疗伤"
+
+msgid "{avatar} breakthrough result: {result}"
+msgstr "{avatar} 突破{result}"
+
+msgid "tribulation_inner_demon"
+msgstr "心魔"
+
+msgid "tribulation_lightning_tribulation"
+msgstr "雷劫"
+
+msgid "tribulation_body_reforging"
+msgstr "肉身"
+
+msgid "tribulation_vengeance"
+msgstr "寻仇"
+
+msgid "tribulation_love_tribulation"
+msgstr "情劫"
+
+msgid "tribulation_solar_force"
+msgstr "阳罡"
+
+msgid "tribulation_thunderflame"
+msgstr "雷火"
+
+msgid "tribulation_wind_disaster"
+msgstr "风灾"
+
+msgid "tribulation_nether_prison"
+msgstr "阴狱"
+
+msgid "tribulation_demonic_tribulation"
+msgstr "魔劫"
+
+msgid "{avatar} encountered {calamity} tribulation, breakthrough {result}"
+msgstr "{avatar} 遭遇了{calamity}劫难，突破{result}"
+
+msgid "{avatar} finished harvesting, obtained: {materials}"
+msgstr "{avatar} 结束了采集，获得了：{materials}"
+
+msgid "{avatar} finished hunting, obtained: {materials}"
+msgstr "{avatar} 结束了狩猎，获得了：{materials}"
+
+msgid "{avatar} finished mining, obtained: {materials}"
+msgstr "{avatar} 结束了挖矿，获得了：{materials}"
+
+msgid "{avatar} finished moving toward {direction}"
+msgstr "{avatar} 结束了向{direction}方的移动"
+
+msgid "{avatar} spent {price} spirit stones in town, {action} {item}{suffix}"
+msgstr "{avatar} 在城镇花费 {price} 灵石{action} {item}{suffix}"
+
+msgid "{avatar} starts {action}"
+msgstr "{avatar} 开始{action}"
+
+msgid "{label}: {names}"
+msgstr "{label}：{names}"
+
+# 复杂格式化字符串 (get_other_avatar_info)
+msgid ""
+"{name}, Nickname: {nickname}, Realm: {realm}, Relation: {relation}, Sect: "
+"{sect}, Alignment: {alignment}, Appearance: {appearance}, Goldfinger: "
+"{goldfinger}, Technique: {technique}, Weapon: {weapon}, Auxiliary: {aux}, "
+"HP: {hp}"
+msgstr ""
+"{name}，绰号：{nickname}，境界：{realm}，关系：{relation}，宗门：{sect}，阵营：{alignment}，外貌：{appearance}，外挂：{goldfinger}，功法：{technique}，兵器：{weapon}，辅助：{aux}，HP：{hp}"
+
+msgid "{name}, Realm: {realm}"
+msgstr "{name}，境界：{realm}"
+
+msgid "{region} does not sell {item}"
+msgstr "{region} 不出售 {item}"
+
+msgid "{sect} {rank}"
+msgstr "{sect}{rank}"

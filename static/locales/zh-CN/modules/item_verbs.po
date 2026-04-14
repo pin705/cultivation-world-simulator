@@ -1,0 +1,55 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid ""
+"\n"
+"【Related Avatars Information】"
+msgstr ""
+"\n"
+"【相关角色信息】"
+
+msgid "auxiliary"
+msgstr "辅助装备"
+
+msgid "elixir"
+msgstr "丹药"
+
+msgid "item_label_auxiliary"
+msgstr "辅助装备"
+
+msgid "item_label_elixir"
+msgstr "丹药"
+
+msgid "item_label_technique"
+msgstr "功法"
+
+# 物品动词
+msgid "item_verb_equip"
+msgstr "装备"
+
+msgid "item_verb_equipped"
+msgstr "换上了"
+
+msgid "item_verb_practice"
+msgstr "修炼"
+
+msgid "item_verb_replace"
+msgstr "替换"
+
+msgid "item_verb_switched"
+msgstr "改修了"
+
+# 自动装备消息
+msgid "{avatar_name} obtained {grade} {label}『{item_name}』and {action}."
+msgstr "{avatar_name} 获得了{grade}{label}『{item_name}』并{action}。"

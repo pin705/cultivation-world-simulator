@@ -1,0 +1,39 @@
+{
+  "name": "web",
+  "private": true,
+  "license": "CC-BY-NC-SA-4.0",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@testing-library/vue": "^8.1.0",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^25.0.1",
+    "msw": "^2.7.0",
+    "sass": "^1.94.1",
+    "typescript": "~5.9.3",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "@vueuse/core": "^14.0.0",
+    "naive-ui": "^2.43.2",
+    "pinia": "^3.0.4",
+    "pixi-viewport": "^6.0.3",
+    "pixi.js": "^8.14.2",
+    "vfonts": "^0.0.3",
+    "vue-i18n": "^9.14.5",
+    "vue3-pixi": "^1.0.0-beta.3"
+  }
+}

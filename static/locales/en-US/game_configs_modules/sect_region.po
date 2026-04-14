@@ -1,0 +1,240 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: en-US\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. sect_region.csv: SECT_REGION_401_DESC
+msgid "SECT_REGION_401_DESC"
+msgstr ""
+"The Jueyun Peaks spear into the sea of clouds, linked by iron chains and "
+"cloud bridges over perilous mountain paths. Only those who can truly steady "
+"their sword intent may climb to the highest reaches. Midway up stand sword-"
+"testing platforms, sword-washing pools, and sheer cliffs carved with "
+"countless blade marks; higher still, the wind grows sharper and lightning "
+"sometimes flashes past the precipices. The entire mountain gate feels like "
+"an ancient sword drawn but never sheathed, austere, towering, and edged with"
+" cold menace."
+
+#. sect_region.csv: SECT_REGION_401_NAME
+msgid "SECT_REGION_401_NAME"
+msgstr "Jueyun Peak"
+
+#. sect_region.csv: SECT_REGION_402_DESC
+msgid "SECT_REGION_402_DESC"
+msgstr ""
+"Myriad Beasts Cavern lies hidden in the depths of the mountain ranges, its "
+"outer layers sealed by miasma and tangled vines that form a natural barrier."
+" Only by going deeper does one reach the descending beast domains within. "
+"Stone bridges, iron gates, and beast-taming platforms divide the layers, "
+"while low roars and clashing chains echo without end through air thick with "
+"lingering demon qi. Bones and claw marks scatter across the ground. This is "
+"less a normal mountain gate than a living nest-city of colossal beasts, and "
+"every lower level feels more oppressive than the last."
+
+#. sect_region.csv: SECT_REGION_402_NAME
+msgid "SECT_REGION_402_NAME"
+msgstr "Ten Thousand Beasts Cave"
+
+#. sect_region.csv: SECT_REGION_403_DESC
+msgid "SECT_REGION_403_DESC"
+msgstr ""
+"Jinghaiya hangs above a sheer sea cliff, where halls, corridors, and tide-"
+"viewing terraces of frost spirit jade lie half-veiled in ocean mist. From "
+"afar, the entire mountain gate seems to float inside moonlight and surf. At "
+"the cliffside, the jade wall reflects sea and stars, and as the tides rise "
+"and fall, watery gleams ripple across walls and floors until paths seem half"
+" real and half illusion. It is so quiet here that only waves, wind, and the "
+"occasional bell brushing an eave remind visitors they have not yet stepped "
+"outside the mortal world."
+
+#. sect_region.csv: SECT_REGION_403_NAME
+msgid "SECT_REGION_403_NAME"
+msgstr "Silent Sea Cliff"
+
+#. sect_region.csv: SECT_REGION_404_DESC
+msgid "SECT_REGION_404_DESC"
+msgstr ""
+"The Dead Sea is made of black islands and shadowed bays linked by narrow "
+"plank bridges, ruined ferry markers, and ghostfire lighthouses, so that from"
+" afar it resembles a city of specters drifting atop ink-dark waters. The sea"
+" surges without wind, and each rising wave carries a shriek like distant "
+"weeping. The halls and stone steps on the islands are stained gray-white and"
+" sickly green by clammy mist. At night, moonlight matters less than the soul"
+" lamps flickering through the fog, turning the whole region into something "
+"like the underworld seen in a dream."
+
+#. sect_region.csv: SECT_REGION_404_NAME
+msgid "SECT_REGION_404_NAME"
+msgstr "Dead Silence Sea"
+
+#. sect_region.csv: SECT_REGION_405_DESC
+msgid "SECT_REGION_405_DESC"
+msgstr ""
+"At first glance Qianji Valley looks like an ordinary mountain valley, with "
+"blue stone roads, elegant eaves, and carefully arranged courtyards and "
+"flowers. Only on approach does one realize that bridges can turn, walls can "
+"open and close, and even the height of the stairs conceals trigger "
+"mechanisms. Watchtowers and suspended bridges stand above, while secret "
+"tunnels, workshops, and sealed chambers lie below. Now and then one hears "
+"gear teeth bite, metal hum softly, or puppet footsteps approach from "
+"nowhere. The most terrifying thing here is not a single trap, but that the "
+"whole valley is itself a giant machine."
+
+#. sect_region.csv: SECT_REGION_405_NAME
+msgid "SECT_REGION_405_NAME"
+msgstr "Thousand Mechanisms Valley"
+
+#. sect_region.csv: SECT_REGION_406_DESC
+msgid "SECT_REGION_406_DESC"
+msgstr ""
+"The Gilded Den lies in a private heaven hidden behind a prosperous market "
+"city. At the entrance are seas of lanterns, drifting incense, curved "
+"bridges, and layered pavilions over the water. The deeper one goes, the more"
+" the clamor fades and the more lingering the sounds of water and music "
+"become. Outer terraces glitter with gold and jade and overflow with guests, "
+"while deeper within lie quiet rooms, hot springs, and dream pools hidden "
+"behind gauze, flower walls, and mist. Everything here is beautiful and "
+"luxurious, yet it is impossible to tell whether one has come to feast, to "
+"dream, or to step into a subtler kind of cultivation."
+
+#. sect_region.csv: SECT_REGION_406_NAME
+msgid "SECT_REGION_406_NAME"
+msgstr "Gold-Squandering Cave"
+
+#. sect_region.csv: SECT_REGION_407_DESC
+msgid "SECT_REGION_407_DESC"
+msgstr ""
+"Pudu Island hangs alone in the center of the Storm Sea. Outside its shores, "
+"colossal waves rise and lightning churns, yet within, bells and Buddhist "
+"light press the island into an almost frozen calm. The Vajra Pagoda stands "
+"at the center, ringed by temple halls, stone steps, sea-cliff austerity "
+"platforms, and a harbor facing the water. Golden bells at the top ring with "
+"the sea wind and seem to smooth the storm little by little. When morning "
+"mist lifts, gold light falls over black reefs and pale halls, and the island"
+" looks like a sacred seal lifted from an angry sea."
+
+#. sect_region.csv: SECT_REGION_407_NAME
+msgid "SECT_REGION_407_NAME"
+msgstr "Pudu Island"
+
+#. sect_region.csv: SECT_REGION_408_DESC
+msgid "SECT_REGION_408_DESC"
+msgstr ""
+"Shadow Marsh never sees true daylight. Poison fog, foul water, and tangled "
+"ancient trees seal the whole region shut, and intruders are often watched by"
+" unseen eyes before they ever glimpse the mountain gate. The real stronghold"
+" is not concentrated on the surface: hidden towers and rope bridges lie in "
+"the canopy, while tunnels, cells, and miasma-covered entrances spread "
+"beneath the bog. There is almost no open line of sight here, only cold lamps"
+" flickering through drifting mist and black waters ready to swallow the "
+"sound of footsteps at any moment."
+
+#. sect_region.csv: SECT_REGION_408_NAME
+msgid "SECT_REGION_408_NAME"
+msgstr "Shadow Swamp"
+
+#. sect_region.csv: SECT_REGION_409_DESC
+msgid "SECT_REGION_409_DESC"
+msgstr ""
+"Duobao Floating Isles are not one island but a chain of differently sized "
+"sky-islands linked by giant chains, cloud bridges, and cloudship routes into"
+" an immortal city suspended in the heavens. The outer ring is filled with "
+"busy docks and cargo yards, the middle levels with trade streets, auction "
+"houses, and markets, and the heights with forging towers that vent furnace "
+"fire day and night. After dark, lamps run along chains and skyways into the "
+"clouds, making the whole region look like a golden mercantile web spread "
+"across the sky, forever noisy and forever in motion."
+
+#. sect_region.csv: SECT_REGION_409_NAME
+msgid "SECT_REGION_409_NAME"
+msgstr "Myriad Treasures Floating Island"
+
+#. sect_region.csv: SECT_REGION_410_DESC
+msgid "SECT_REGION_410_DESC"
+msgstr ""
+"Echo Valley narrows between towering cliffs, naturally forming countless "
+"resonance holes and sound fissures. Even a single plucked note can whirl "
+"through the valley for a long time without fading. Pavilions, waterside "
+"terraces, qin towers, and corridors follow the mountain contours while "
+"streams run straight through the buildings. On the surface it is as graceful"
+" as an immortal retreat, yet careful listening reveals that wind past the "
+"eaves and drops striking water seem rearranged by an unseen hand. The valley"
+" is often most dangerous not when music fills it, but when everything "
+"suddenly falls silent."
+
+#. sect_region.csv: SECT_REGION_410_NAME
+msgid "SECT_REGION_410_NAME"
+msgstr "Echo Valley"
+
+#. sect_region.csv: SECT_REGION_411_DESC
+msgid "SECT_REGION_411_DESC"
+msgstr ""
+"Mizhongtian appears to be only a solitary peak, but once one enters the "
+"mountain gate, terraces, steps, bridges, and roads all prove to be embedded "
+"inside layers of folded space. The same road may look completely different "
+"when seen from before and after. On the slopes stand plazas engraved with "
+"array patterns, corridors suspended in midair, and halls that fade in and "
+"out of sight, while lines of light sometimes flow across the ground as if "
+"the mountain itself were slowly thinking. There is no stable sense of "
+"direction here; every step feels like entering another world."
+
+#. sect_region.csv: SECT_REGION_411_NAME
+msgid "SECT_REGION_411_NAME"
+msgstr "Maze Heaven"
+
+#. sect_region.csv: SECT_REGION_412_DESC
+msgid "SECT_REGION_412_DESC"
+msgstr ""
+"Aurora Heaven lies in the depths of the far northern eternal night. Beyond "
+"it stretch silent ice plains, yet this palace city alone is bathed year-"
+"round in moving aurora bright as day. Lofty ice walls, black-iron gates, "
+"frozen bridges, and training grounds gleam beneath the shifting light, while"
+" deep within the city the sacred flame altar casts a steady warmth-red glow "
+"through the cold. Its beauty is not merely grandeur, but the ordered "
+"coexistence of ice and fire, stillness and radiance, as if the whole city "
+"were a flame enduring inside the deepest winter."
+
+#. sect_region.csv: SECT_REGION_412_NAME
+msgid "SECT_REGION_412_NAME"
+msgstr "Aurora Heaven Realm"
+
+#. sect_region.csv: SECT_REGION_413_DESC
+msgid "SECT_REGION_413_DESC"
+msgstr ""
+"The Forest of Sages stands where central spirit veins converge, filled with "
+"towering ancient trees and scattered stone steles. Lecture halls, libraries,"
+" and waterside courtyards are tucked among the shade, and anyone walking "
+"there must often pass along leaf-strewn paths and corridors carved with "
+"classical inscriptions. By day, the sound of reading travels far with the "
+"forest wind; by night, the steles emit a faint glow under the moon, leaving "
+"trees and eaves wrapped in quiet dignity. The place feels less like a closed"
+" sect and more like a living academy still growing with time."
+
+#. sect_region.csv: SECT_REGION_413_NAME
+msgid "SECT_REGION_413_NAME"
+msgstr "Sage Forest"
+
+#. sect_region.csv: SECT_REGION_414_DESC
+msgid "SECT_REGION_414_DESC"
+msgstr ""
+"The mountain above the Shura Blood Pool is dark red through and through, "
+"with blood-colored mist and heat rising constantly from its cracks. Deep "
+"inside the mountain, immense underground blood pools and layered sacrificial"
+" halls have been hollowed out of the earth. Iron chain bridges span blood "
+"rivers, and stone stairs descend toward battle platforms, bone caves, and "
+"altars lit by scarlet light. The deeper one goes, the heavier the scent of "
+"rust, medicine, and damp blood becomes. The entire stronghold feels like a "
+"monstrous beast breathing slowly beneath the ground."
+
+#. sect_region.csv: SECT_REGION_414_NAME
+msgid "SECT_REGION_414_NAME"
+msgstr "Asura Blood Pool"

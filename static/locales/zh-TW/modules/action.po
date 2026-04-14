@@ -1,0 +1,320 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-TW\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid ""
+"Evil alignment follows the principles of survival of the fittest, "
+"prioritizing self-interest above all, disdaining rules, and venerating power"
+" and fear. Acts ruthlessly, often resorting to murder and plunder."
+msgstr "邪惡陣營的理念是：弱肉強食，以自身利益爲先，蔑視規則，推崇權力與恐懼。行事狠辣，常有殺人奪寶之舉。"
+
+msgid ""
+"Neutral alignment follows the principles of going with the flow, seeking "
+"benefit and avoiding harm, valuing self-cultivation and balance, and not "
+"easily taking sides."
+msgstr "中立陣營的理念是：順勢而爲，趨利避害，重視自度與平衡，不輕易站隊。"
+
+msgid ""
+"Righteous alignment follows the principles of helping the weak, maintaining "
+"order, and vanquishing evil."
+msgstr "正義陣營的理念是：扶助弱小，維護秩序，除魔衛道。"
+
+# Action 簡短名稱（用於 legal_actions）
+msgid "action_dualcultivation_short_name"
+msgstr "雙修"
+
+msgid "action_educate_short_name"
+msgstr "教化"
+
+msgid "action_meditate_short_name"
+msgstr "禪定"
+
+# Action: Play Extended
+msgid "action_reading"
+msgstr "讀書"
+
+msgid "action_reading_desc"
+msgstr "研讀古籍，增長見聞。"
+
+msgid "action_respire_short_name"
+msgstr "吐纳"
+
+msgid "action_tea_party"
+msgstr "茶會"
+
+msgid "action_tea_party_desc"
+msgstr "與友共品清茶。"
+
+msgid "action_tea_party_story_prompt"
+msgstr "兩人正在舉行一場雅緻的茶會。"
+
+msgid "action_tea_tasting"
+msgstr "品茶"
+
+msgid "action_tea_tasting_desc"
+msgstr "品味清茶，靜心養性。"
+
+msgid "action_temper_short_name"
+msgstr "鍛體"
+
+msgid "sect_mission_action_name"
+msgstr "宗門任務"
+
+msgid "sect_mission_description"
+msgstr "留在本宗總部承接宗門內務、巡查與鎮守等差事，數月後結算成敗與獎賞。"
+
+msgid "sect_mission_requirements"
+msgstr "必須是本宗弟子，且身處本宗總部。"
+
+msgid "sect_mission_hq_only"
+msgstr "只能在本宗總部接取宗門任務。"
+
+msgid "sect_mission_members_only"
+msgstr "只有宗門弟子才能接取宗門任務。"
+
+msgid "sect_mission_no_task_available"
+msgstr "當前宗門暫無適合你境界的任務。"
+
+msgid "sect_mission_start_headquarter"
+msgstr "{avatar} 在 {sect_name} 總部接下了「{title}」的宗門任務，預計需 {duration} 個月完成。"
+
+msgid "sect_mission_start_member_request"
+msgstr "{avatar} 受同門 {issuer} 所託，接下了「{title}」的宗門任務，預計需 {duration} 個月完成。"
+
+msgid "sect_mission_result_success"
+msgstr "{avatar} 順利完成「{title}」，獲得 {stones} 枚靈石與 {contribution} 點宗門貢獻。"
+
+msgid "sect_mission_result_fail"
+msgstr "{avatar} 執行「{title}」時失手受創，損失 {damage} 點氣血，當前氣血 {current}/{max}。"
+
+msgid "sect_mission_result_fail_death_append"
+msgstr " 傷勢過重，當場殞命。"
+
+msgid "sect_mission_story_prompt_success"
+msgstr "圍繞這項宗門任務的具體標題展開，描寫任務過程中的細節、波折與宗門氛圍，並以成功完成為結局。任務發生地仍在宗門總部及其附屬區域。"
+
+msgid "sect_mission_story_prompt_fail"
+msgstr "圍繞這項宗門任務的具體標題展開，描寫任務過程中的細節、波折與意外，並以執行失敗、身受重傷甚至瀕死為結局。任務發生地仍在宗門總部及其附屬區域。"
+
+msgid "action_traveling"
+msgstr "遊歷"
+
+msgid "action_traveling_desc"
+msgstr "遊歷四方，感悟天地。"
+
+msgid "action_zither_playing"
+msgstr "撫琴"
+
+msgid "action_zither_playing_desc"
+msgstr "撫琴奏樂，陶冶情操。"
+
+msgid "evil"
+msgstr "邪"
+
+msgid "failed"
+msgstr "失敗"
+
+msgid "neutral"
+msgstr "中立"
+
+# Action: Play
+msgid "play_action_name"
+msgstr "消遣"
+
+msgid "play_description"
+msgstr "消遣，放鬆身心"
+
+msgid "play_requirements"
+msgstr "目標在交互範圍內"
+
+msgid "succeeded"
+msgstr "成功"
+
+msgid ""
+"{attacker} initiates battle against {target} (Power: {attacker} {att_power} "
+"vs {target} {def_power})"
+msgstr ""
+"{attacker} 對 {target} 發起戰鬥（戰鬥力：{attacker} {att_power} vs {target} "
+"{def_power}）"
+
+msgid "{avatar} begins leisure activities"
+msgstr "{avatar} 開始消遣"
+
+msgid ""
+"{avatar} failed to cast {realm}-tier treasure, all materials turned to ash"
+msgstr "{avatar} 鑄造{realm}階法寶失敗，所有材料化爲灰燼"
+
+msgid ""
+"{avatar} failed to refine {realm}-tier elixir, all materials turned to ash"
+msgstr "{avatar} 煉製{realm}階丹藥失敗，所有材料化爲灰燼"
+
+msgid ""
+"{avatar} finished nurturing {weapon}, proficiency increased to "
+"{proficiency}%"
+msgstr "{avatar} 完成溫養{weapon}，熟練度提升至{proficiency}%"
+
+msgid "{avatar} finished {action}."
+msgstr "{avatar} 完成了{action}。"
+
+msgid ""
+"{avatar} had an epiphany during meditation! Cultivation increased "
+"significantly (+{exp})."
+msgstr "{avatar} 在禪定中頓悟了！修為大增 (+{exp})。"
+
+msgid ""
+"{avatar} nurturing {old_weapon}, the weapon's spirituality greatly "
+"increased, evolved into {new_weapon}!"
+msgstr "{avatar} 溫養{old_weapon}時，兵器靈性大增，昇華爲{new_weapon}！"
+
+msgid ""
+"{avatar} successfully tamed spirit beast, {realm} realm {beast} became their"
+" spirit beast"
+msgstr "{avatar} 御獸成功，{realm}境的{beast}成爲其靈獸"
+
+msgid "{root_name} ({elements})"
+msgstr "{root_name}（{elements}）"
+
+msgid "An anonymous passerby (extra)"
+msgstr "無名路人"
+
+msgid "Current world celestial phenomenon: {name}"
+msgstr "當前世界天象：{name}"
+
+msgid "sect_task_title_sect_task_patrol_gate"
+msgstr "巡邏山門"
+
+msgid "sect_task_title_sect_task_watch_storehouse"
+msgstr "值守庫房"
+
+msgid "sect_task_title_sect_task_tend_herb_garden"
+msgstr "看護藥圃"
+
+msgid "sect_task_title_sect_task_assist_deacon"
+msgstr "協助執事"
+
+msgid "sect_task_title_sect_task_calm_spirit_beast"
+msgstr "處理靈獸騷動"
+
+msgid "sect_task_title_sect_task_escort_supplies"
+msgstr "護送內務物資"
+
+msgid "sect_task_title_sect_task_receive_returnees"
+msgstr "接應歸山弟子"
+
+msgid "sect_task_title_sect_task_maintain_array_node"
+msgstr "護持陣眼"
+
+msgid "sect_task_title_sect_task_inspect_restrictions"
+msgstr "查驗禁制"
+
+msgid "sect_task_title_sect_task_guard_scripture_pavilion"
+msgstr "鎮守藏經閣"
+
+msgid "sect_task_title_sect_task_investigate_night_anomaly"
+msgstr "調查夜間異動"
+
+msgid "sect_task_title_sect_task_host_law_hall"
+msgstr "主持法堂秩序"
+
+msgid "sect_task_title_sect_task_clean_training_grounds"
+msgstr "清掃演武場禁制殘痕"
+
+msgid "sect_task_title_sect_task_watch_reception_platform"
+msgstr "看守接引台"
+
+msgid "sect_task_title_sect_task_sort_low_tier_scrolls"
+msgstr "整理低階藏書"
+
+msgid "sect_task_title_sect_task_count_outer_supplies"
+msgstr "清點外門物資"
+
+msgid "sect_task_title_sect_task_maintain_irrigation_channels"
+msgstr "養護靈田水渠"
+
+msgid "sect_task_title_sect_task_feed_spirit_beasts"
+msgstr "餵養低階靈獸"
+
+msgid "sect_task_title_sect_task_register_new_disciples"
+msgstr "協助新弟子入門登記"
+
+msgid "sect_task_title_sect_task_search_lost_tokens"
+msgstr "查找遺失令牌"
+
+msgid "sect_task_title_sect_task_patrol_restriction_barrier"
+msgstr "巡查山門禁制"
+
+msgid "sect_task_title_sect_task_guard_pill_hall"
+msgstr "守衛丹房重地"
+
+msgid "sect_task_title_sect_task_escort_message_jade"
+msgstr "護送傳訊玉簡"
+
+msgid "sect_task_title_sect_task_mediate_disciple_dispute"
+msgstr "調解同門爭執"
+
+msgid "sect_task_title_sect_task_inspect_market_order"
+msgstr "查驗附屬坊市秩序"
+
+msgid "sect_task_title_sect_task_search_missing_outer_disciple"
+msgstr "搜尋失聯外門弟子"
+
+msgid "sect_task_title_sect_task_repair_field_barrier"
+msgstr "修補靈田防護陣"
+
+msgid "sect_task_title_sect_task_assist_apprentice_trial"
+msgstr "協助長老收徒考核"
+
+msgid "sect_task_title_sect_task_inspect_grand_array_nodes"
+msgstr "巡檢護山大陣節點"
+
+msgid "sect_task_title_sect_task_guard_seclusion_cave"
+msgstr "守衛閉關洞府外圍"
+
+msgid "sect_task_title_sect_task_track_infiltrator"
+msgstr "追查潛入宗門細作"
+
+msgid "sect_task_title_sect_task_investigate_leyline_fluctuation"
+msgstr "調查靈脈波動異常"
+
+msgid "sect_task_title_sect_task_escort_secret_treasury"
+msgstr "護送秘庫寶材轉移"
+
+msgid "sect_task_title_sect_task_suppress_earthfire"
+msgstr "鎮壓地火外洩"
+
+msgid "sect_task_title_sect_task_investigate_forbidden_art"
+msgstr "查辦私藏禁術事件"
+
+msgid "sect_task_title_sect_task_guard_forbidden_area"
+msgstr "鎮守禁地入口"
+
+msgid "sect_task_title_sect_task_oversee_grand_array_core"
+msgstr "坐鎮護宗大陣中樞"
+
+msgid "sect_task_title_sect_task_review_treasury_irregularities"
+msgstr "秘查內庫調撥異常"
+
+msgid "sect_task_title_sect_task_secure_sect_ceremony"
+msgstr "監理宗門祭典戒備"
+
+msgid "sect_task_title_sect_task_trial_major_rule_case"
+msgstr "審理重大門規案件"
+
+msgid "sect_task_title_sect_task_screen_core_promotion"
+msgstr "審核核心弟子晉升試煉"
+
+msgid "sect_task_title_sect_task_coordinate_border_defense"
+msgstr "統籌邊境防務"
+
+msgid "sect_task_title_sect_task_investigate_internal_traitor"
+msgstr "查辦內鬼通敵嫌疑"

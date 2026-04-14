@@ -1,0 +1,176 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: ja-JP\n"
+"Language: ja_JP\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid ""
+"\n"
+"--- Current Effects Detail ---"
+msgstr ""
+"\n"
+"--- 現在の効果詳細 ---"
+
+msgid "Contains elements: {elements}"
+msgstr "属性: {elements}"
+
+msgid "Identity: {identity}"
+msgstr "身分: {identity}"
+
+msgid "No additional effects"
+msgstr "追加効果なし"
+
+msgid "Performing {action}"
+msgstr "{action} 実行中"
+
+msgid "Realm: {realm}"
+msgstr "境界: {realm}"
+
+# Feedback labels
+msgid "feedback_accept"
+msgstr "接受"
+
+msgid "feedback_attack"
+msgstr "迎え撃つ"
+
+msgid "feedback_escape"
+msgstr "逃走"
+
+msgid "feedback_move_away_from_avatar"
+msgstr "距離を取る"
+
+msgid "feedback_move_away_from_region"
+msgstr "この場を離れる"
+
+msgid "feedback_reject"
+msgstr "拒绝"
+
+msgid "Goldfinger"
+msgstr "外挂"
+
+msgid "{avatar} attempted to escape from {target}: {result}"
+msgstr "{avatar} は {target} からの逃走を試みた: {result}"
+
+msgid "{avatar} attempts to escape from {target}"
+msgstr "{avatar} は {target} から逃げようとしている"
+
+msgid "{avatar} attempts to tame spirit beast at {location}"
+msgstr "{avatar} は {location} で霊獣の調伏を試みている"
+
+msgid "{avatar} begins harvesting at {location}"
+msgstr "{avatar} は {location} で採集を始めた"
+
+msgid "{avatar} begins hunting at {location}"
+msgstr "{avatar} は {location} で狩猟を始めた"
+
+msgid "{avatar} begins leaving {region}"
+msgstr "{avatar} は {region} を離れ始めた"
+
+msgid "{avatar} begins mining at {location}"
+msgstr "{avatar} は {location} で採鉱を始めた"
+
+msgid "{avatar} begins moving away from {target}"
+msgstr "{avatar} は {target} から離れ始めた"
+
+msgid "{avatar} begins moving toward {direction}"
+msgstr "{avatar} は {direction} へ進み始めた"
+
+msgid "{avatar} begins moving toward {region}"
+msgstr "{avatar} は {region} へ向かい始めた"
+
+msgid "{avatar} begins moving toward {target}"
+msgstr "{avatar} は {target} へ向かい始めた"
+
+msgid "{avatar} begins nurturing {weapon}"
+msgstr "{avatar} は {weapon} の温養を始めた"
+
+msgid "{avatar} begins respiring at {location}, {efficiency}"
+msgstr "{avatar} は {location} で吐納を始めた。{efficiency}"
+
+msgid "{avatar} begins resting and healing at {location}"
+msgstr "{avatar} は {location} で休息し、療傷を始めた"
+
+msgid "{avatar} breakthrough result: {result}"
+msgstr "{avatar} の突破結果: {result}"
+
+msgid "tribulation_inner_demon"
+msgstr "心魔"
+
+msgid "tribulation_lightning_tribulation"
+msgstr "雷劫"
+
+msgid "tribulation_body_reforging"
+msgstr "肉身"
+
+msgid "tribulation_vengeance"
+msgstr "復讐"
+
+msgid "tribulation_love_tribulation"
+msgstr "情劫"
+
+msgid "tribulation_solar_force"
+msgstr "陽罡"
+
+msgid "tribulation_thunderflame"
+msgstr "雷火"
+
+msgid "tribulation_wind_disaster"
+msgstr "風災"
+
+msgid "tribulation_nether_prison"
+msgstr "陰獄"
+
+msgid "tribulation_demonic_tribulation"
+msgstr "魔劫"
+
+msgid "{avatar} encountered {calamity} tribulation, breakthrough {result}"
+msgstr "{avatar} は {calamity} の劫に遭い、突破は {result}"
+
+msgid "{avatar} finished harvesting, obtained: {materials}"
+msgstr "{avatar} は採集を終え、獲得: {materials}"
+
+msgid "{avatar} finished hunting, obtained: {materials}"
+msgstr "{avatar} は狩猟を終え、獲得: {materials}"
+
+msgid "{avatar} finished mining, obtained: {materials}"
+msgstr "{avatar} は採鉱を終え、獲得: {materials}"
+
+msgid "{avatar} finished moving toward {direction}"
+msgstr "{avatar} は {direction} への移動を終えた"
+
+msgid "{avatar} spent {price} spirit stones in town, {action} {item}{suffix}"
+msgstr "{avatar} は町で {price} 霊石を使い、{action} {item}{suffix}"
+
+msgid "{avatar} starts {action}"
+msgstr "{avatar} は {action} を始めた"
+
+msgid "{label}: {names}"
+msgstr "{label}: {names}"
+
+# Complex Formatted String (get_other_avatar_info)
+msgid ""
+"{name}, Nickname: {nickname}, Realm: {realm}, Relation: {relation}, Sect: "
+"{sect}, Alignment: {alignment}, Appearance: {appearance}, Goldfinger: "
+"{goldfinger}, Technique: {technique}, Weapon: {weapon}, Auxiliary: {aux}, "
+"HP: {hp}"
+msgstr ""
+"{name}、渾名: {nickname}、境界: {realm}、関係: {relation}、宗門: {sect}、"
+"属性: {alignment}、容姿: {appearance}、外挂: {goldfinger}、功法: {technique}、"
+"武器: {weapon}、補助: {aux}、HP: {hp}"
+
+msgid "{name}, Realm: {realm}"
+msgstr "{name}、境界: {realm}"
+
+msgid "{region} does not sell {item}"
+msgstr "{region} では {item} は売っていない"
+
+msgid "{sect} {rank}"
+msgstr "{sect} {rank}"

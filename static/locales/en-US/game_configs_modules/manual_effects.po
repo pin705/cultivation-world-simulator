@@ -1,0 +1,44 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: en-US\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "condition_has_spirit_animal"
+msgstr "When possessing a Spirit Animal"
+
+msgid "condition_level_ge_30"
+msgstr "When Level >= 30"
+
+msgid "condition_realm_early"
+msgstr "At Qi Refinement or Foundation Establishment stage"
+
+# Celestial Phenomenon
+msgid "condition_realm_high"
+msgstr "At Divinity Transformation stage or higher"
+
+msgid "condition_realm_late"
+msgstr "At Core Formation or Nascent Soul stage"
+
+msgid "condition_realm_low"
+msgstr "Below Divinity Transformation stage"
+
+# Personas
+msgid "condition_unarmed"
+msgstr "When unarmed"
+
+# Weapons
+msgid "effect_god_slaying_spear_desc"
+msgstr "Increases Battle Strength based on Spear Proficiency"
+
+# Auxiliary
+msgid "effect_ten_thousand_souls_banner_desc"
+msgstr "Devour city mortals to gather souls; grants tiered Battle Strength up to +8"

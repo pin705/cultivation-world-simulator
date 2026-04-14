@@ -1,0 +1,257 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-TW\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid " (and sold old {item} at reduced price)"
+msgstr "（並將原有的{item}折價售出）"
+
+msgid "Animal realms in current area exceed character realm"
+msgstr "當前區域的動物境界高於角色境界"
+
+msgid "Assassination failed! Both sides engaged in fierce battle."
+msgstr "暗殺失敗！雙方爆發激戰。"
+
+msgid "Breakthrough failed"
+msgstr "突破失敗"
+
+msgid "Breakthrough succeeded"
+msgstr "突破成功"
+
+msgid "Can only execute in city areas"
+msgstr "僅能在城市區域執行"
+
+msgid "Cannot resolve region: {region}"
+msgstr "無法解析區域：{region}"
+
+msgid "Cannot sell this type: {name}"
+msgstr "無法出售此類型：{name}"
+
+msgid "Casting succeeded! Obtained {realm} {label} '{item}'"
+msgstr "鑄造成功！獲得了{realm}{label}『{item}』"
+
+msgid "Cultivation has reached bottleneck, cannot continue cultivating"
+msgstr "修爲已達瓶頸，無法繼續修煉"
+
+msgid "Current HP is full"
+msgstr "當前HP已滿"
+
+msgid "Current area {region} has no animals"
+msgstr "當前區域{region}沒有動物"
+
+msgid "Do not possess equipment: {name}"
+msgstr "未持有裝備：{name}"
+
+msgid "Do not possess item/equipment: {name}"
+msgstr "未持有物品/裝備：{name}"
+
+msgid "Do not possess material: {name}"
+msgstr "未持有材料：{name}"
+
+msgid ""
+"Forbidden illegal action (missing Ten Thousand Souls Banner or permission)"
+msgstr "未被允許的非法動作（缺少萬魂幡或權限）"
+
+msgid ""
+"Insufficient materials, need {cost} {realm}-tier materials, currently have "
+"{count}"
+msgstr "材料不足，需要 {cost} 個{realm}階材料，當前擁有 {count} 個"
+
+msgid "Insufficient spirit stones"
+msgstr "靈石不足"
+
+msgid "Invalid direction: {direction}"
+msgstr "無效的方向：{direction}"
+
+msgid "Invalid realm: {realm}"
+msgstr "無效的境界：{realm}"
+
+msgid "Missing HP information"
+msgstr "缺少HP信息"
+
+msgid "Missing target parameter"
+msgstr "缺少目標參數"
+
+msgid "Must be in a City to educate people."
+msgstr "必須在城市中才能教化世人。"
+
+msgid "Not at bottleneck, cannot breakthrough"
+msgstr "當前不處於瓶頸，無法突破"
+
+msgid "Not currently in normal area"
+msgstr "當前不在普通區域"
+
+msgid "Only evil alignment can execute"
+msgstr "僅邪陣營可執行"
+
+msgid "Only righteous alignment can execute"
+msgstr "僅正陣營可執行"
+
+msgid "Refining succeeded! Obtained {realm} elixir '{item}'"
+msgstr "煉丹成功！獲得了{realm}丹藥『{item}』"
+
+msgid "Syncing language setting: {lang}..."
+msgstr "正在同步語言設定：{lang}..."
+
+msgid "Target does not exist"
+msgstr "目標不存在"
+
+msgid "Target is already dead"
+msgstr "目標已死亡"
+
+msgid "Target realm not specified"
+msgstr "未指定目標境界"
+
+msgid "The population of {city} has increased due to {avatar}'s teachings."
+msgstr "因 {avatar} 的教化，{city} 的繁榮度提升了。"
+
+msgid "This area has no shop"
+msgstr "該區域沒有商店"
+
+msgid "This cave dwelling has been occupied by {name}, cannot respire"
+msgstr "該洞府已被 {name} 佔據，無法吐納"
+
+msgid "Unknown item: {name}"
+msgstr "未知物品：{name}"
+
+msgid "Your orthodoxy does not support Body Tempering."
+msgstr "您的道統不支持鍛體。"
+
+msgid "Your orthodoxy does not support Confucian Education."
+msgstr "您的道統不支持教化世人。"
+
+msgid "Your orthodoxy does not support Qi Respiration."
+msgstr "您的道統不支持吐納靈氣。"
+
+msgid "Your orthodoxy does not support Zen Meditation."
+msgstr "您的道統不支持禪定。"
+
+msgid ""
+"[{region}] is another sect's territory, you are not a disciple of that sect"
+msgstr "【{region}】是其他宗門駐地，你並非該宗門弟子"
+
+msgid "action_chess"
+msgstr "下棋"
+
+msgid "action_chess_desc"
+msgstr "對弈博弈，磨礪心智。"
+
+msgid "action_chess_story_prompt"
+msgstr "兩人正在對弈下棋。"
+
+msgid "action_devourpeople_short_name"
+msgstr "吞噬生靈"
+
+msgid "Prefers male cultivators"
+msgstr "偏好男性修士"
+
+msgid "Prefers female cultivators"
+msgstr "偏好女性修士"
+
+msgid "Prefers righteous cultivators"
+msgstr "偏好正道修士"
+
+msgid "Prefers evil cultivators"
+msgstr "偏好邪道修士"
+
+msgid "Prefers neutral cultivators"
+msgstr "偏好中立修士"
+
+msgid "Prefers Confucian cultivators"
+msgstr "偏好儒家修士"
+
+msgid "Prefers Daoist cultivators"
+msgstr "偏好道家修士"
+
+msgid "Prefers Buddhist cultivators"
+msgstr "偏好佛家修士"
+
+msgid "Prefers martial cultivators"
+msgstr "偏好武道修士"
+
+msgid "Prefers worldly cultivators"
+msgstr "偏好入世之人"
+
+msgid "Prefers orthodox gentlemen"
+msgstr "偏好名教中人"
+
+msgid "Prefers secluded cultivators"
+msgstr "偏好出世之人"
+
+msgid "Prefers solitary mountain cultivators"
+msgstr "偏好山澤孤修"
+
+msgid "Prefers {value}"
+msgstr "偏好{value}"
+
+msgid "official_rank_none"
+msgstr "無品"
+
+msgid "official_rank_county_magistrate"
+msgstr "縣令"
+
+msgid "official_rank_commandery_governor"
+msgstr "郡守"
+
+msgid "official_rank_provincial_governor"
+msgstr "州牧"
+
+msgid "official_rank_grand_chancellor"
+msgstr "宰輔"
+
+msgid "dynasty_style_law_and_arms"
+msgstr "尚法重軍"
+
+msgid "dynasty_style_pure_discourse_and_orthodoxy"
+msgstr "清談名教"
+
+msgid "dynasty_style_civil_governance"
+msgstr "重文理政"
+
+msgid "dynasty_style_elegant_courtly_rule"
+msgstr "風流雅政"
+
+msgid "dynasty_style_wild_marches"
+msgstr "山澤雜行"
+
+msgid "dynasty_style_pragmatic_commerce"
+msgstr "尚實通商"
+
+msgid "dynasty_style_stoic_frontier_guard"
+msgstr "沉毅守邊"
+
+msgid "dynasty_style_horsemanship_and_arms"
+msgstr "騎射尚武"
+
+msgid "dynasty_style_strict_law_and_central_power"
+msgstr "法密權重"
+
+msgid "dynasty_style_pragmatic_conservatism"
+msgstr "務本守成"
+
+msgid "dynasty_style_flexible_statecraft"
+msgstr "柔治機變"
+
+msgid "dynasty_style_endure_and_strike_late"
+msgstr "堅忍後發"
+
+msgid "dynasty_title_format"
+msgstr "{name}朝"
+
+msgid "dynasty_royal_house_format"
+msgstr "{surname}氏"
+
+msgid "Action on cooldown, {remain} month(s) remaining"
+msgstr "冷卻中，還需 {remain} 個月"
+
+msgid "Focus on governance affairs, malevolent incidents, local strongmen, and political rivals creating obstacles."
+msgstr "主題圍繞處理政務、遭遇邪祟、地方豪強、政敵掣肘展開。"

@@ -1,0 +1,70 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: en-US\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Technique System - Techniques
+msgid " Effect: {effect_desc}"
+msgstr " Effect: {effect_desc}"
+
+msgid "Cave Dwelling"
+msgstr "Cave Dwelling"
+
+msgid "City Region"
+msgstr "City Region"
+
+msgid "Normal Region"
+msgstr "Normal Region"
+
+msgid "Ruins"
+msgstr "Ruins"
+
+msgid "dark_attribute"
+msgstr "Dark"
+
+msgid "earth_attribute"
+msgstr "Earth"
+
+msgid "evil_attribute"
+msgstr "Evil"
+
+msgid "fire_attribute"
+msgstr "Fire"
+
+# Technique Attribute
+msgid "gold_attribute"
+msgstr "Gold"
+
+msgid "ice_attribute"
+msgstr "Ice"
+
+# Technique Grade
+msgid "lower_grade"
+msgstr "Inferior Grade"
+
+msgid "middle_grade"
+msgstr "Medium Grade"
+
+msgid "thunder_attribute"
+msgstr "Thunder"
+
+msgid "upper_grade"
+msgstr "Superior Grade"
+
+msgid "water_attribute"
+msgstr "Water"
+
+msgid "wind_attribute"
+msgstr "Wind"
+
+msgid "wood_attribute"
+msgstr "Wood"

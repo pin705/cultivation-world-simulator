@@ -1,0 +1,107 @@
+{
+  "loading": "Loading...",
+  "fetch_failed": "Failed to fetch configuration",
+  "test_success": "Connection test successful",
+  "save_success": "Configuration saved",
+  "test_save_failed": "Test or save failed: {error}",
+  "test_save_failed_title": "Test or Save Failed",
+  "api_key_required": "Please fill in API Key",
+  "base_url_required": "Please fill in Base URL",
+  "preset_applied": "Applied {name} preset ({extra})",
+  "preset_extra_key": "Please fill in API Key",
+  "preset_extra_local": "Please ensure Ollama is running",
+  "sections": {
+    "quick_fill": "Quick Fill",
+    "api_config": "API Configuration",
+    "model_selection": "Model Selection",
+    "run_mode": "Run Mode"
+  },
+  "labels": {
+    "api_key": "API Key",
+    "base_url": "Base URL",
+    "normal_model": "Normal Model (Normal)",
+    "fast_model": "Fast Model (Fast)",
+    "max_concurrent_requests": "Max Concurrent Requests",
+    "what_is_api": "What is API / How to get?",
+    "api_format": "API Format"
+  },
+  "descs": {
+    "normal_model": "Used for complex logic, story generation, etc.",
+    "fast_model": "Used for simple judgments, frequent interactions, etc.",
+    "max_concurrent_requests": "Number of concurrent requests to AI. Higher value increases speed but may trigger API Rate Limit. Recommended: 5-20."
+  },
+  "placeholders": {
+    "api_key": "Enter your API Key here (usually starts with sk-)",
+    "base_url": "https://api.example.com/v1",
+    "normal_model": "e.g., gpt-4, claude-3-opus, qwen-plus",
+    "fast_model": "e.g., gpt-3.5-turbo, qwen-flash",
+    "max_concurrent_requests": "Default: 10"
+  },
+  "modes": {
+    "default": "Balanced (Default)",
+    "default_desc": "Auto-select models (Recommended)",
+    "normal": "Intelligent (Normal)",
+    "normal_desc": "Use intelligent model for all tasks",
+    "fast": "Fast (Fast)",
+    "fast_desc": "Use fast model for all tasks"
+  },
+  "formats": {
+    "openai": "OpenAI Compatible",
+    "openai_desc": "Supported by most providers",
+    "anthropic": "Anthropic Native",
+    "anthropic_desc": "Direct Anthropic Claude API"
+  },
+  "actions": {
+    "testing": "Testing connection...",
+    "test_and_save": "Test Connectivity and Save"
+  },
+  "help": {
+    "title": "What is API? Configuration Guide",
+    "q1_title": "🌐 1. What is API?",
+    "q1_content": "API (Application Programming Interface) is like a 'phone line'. This game itself doesn't have thinking capabilities; it connects to a remote AI 'brain' (like Qwen or DeepSeek servers) through this line. When the game settles monthly and decides NPC actions, it sends relevant information through the API to the AI, which thinks and returns the result.",
+    "q2_title": "⚡ 2. Recommended Models (2025)",
+    "q2_qwen": "Major domestic player (Alibaba), stable with large free quotas, good for beginners.",
+    "q2_deepseek": "Extremely high cost-performance, logic fits Chinese context well.",
+    "q2_gemini": "Produced by Google, top-tier comprehensive performance.",
+    "q3_title": "📝 3. How to fill configuration?",
+    "q3_content": "Once you have an API, you need to fill in these three core parameters. Usually, you can find them in the provider's documentation:",
+    "q3_format_note": "⚠️ Note: This game supports both OpenAI-compatible and Anthropic native API formats. Most providers use the OpenAI-compatible format; if connecting directly to Anthropic API, select 'Anthropic Native' in the API Format option. We recommend using the presets.",
+    "q3_base_url": "API Base URL: The entry point to AI, usually provided by the vendor (e.g., https://api.deepseek.com).",
+    "q3_api_key": "API Key: Your identity credential, like an account password.",
+    "q3_model_name": "Model Name: Tell the server which 'brain' to use, e.g., deepseek-chat or gemini-3-flash-preview.",
+    "q4_title": "🔗 4. Where to get Key?",
+    "q5_title": "🛡️ 5. Security Note",
+    "q5_p1": "Your API Key is only saved in your local computer's configuration file (`static/local_config.yml`), and the locally running game backend communicates directly with the model vendor. This game (Cultivation World Simulator) is completely open-source and will never upload your Key to any third-party server. Also, please do not share your local_config.yml file with anyone.",
+    "q5_p2": "Token usage incurs costs; please evaluate the cost of use yourself.",
+    "confirm": "I understand"
+  },
+  "presets": {
+    "openai": "OpenAI",
+    "qwen": "Qwen",
+    "deepseek": "DeepSeek",
+    "minimax": "MiniMax",
+    "longcat": "LongCat",
+    "siliconflow": "SiliconFlow",
+    "openrouter": "OpenRouter",
+    "gemini": "Gemini",
+    "groq": "Groq",
+    "kimi": "Kimi",
+    "ollama": "Ollama",
+    "anthropic": "Anthropic"
+  },
+  "badges": {
+    "recommended": "Rec",
+    "free": "Cheap",
+    "local": "Local"
+  },
+  "help_links": {
+    "openai": "OpenAI Platform",
+    "qwen": "Aliyun Bailian (Qwen / Recommended)",
+    "deepseek": "DeepSeek Platform (Fast & Cheap)",
+    "minimax": "MiniMax Platform (1M Context, Fast)",
+    "longcat": "LongCat API Platform (Meituan, generous free quota)",
+    "openrouter": "OpenRouter (All-in-one, Recommended)",
+    "siliconflow": "SiliconFlow (Domestic Aggregation)",
+    "gemini": "Google AI Studio (Gemini)"
+  }
+}

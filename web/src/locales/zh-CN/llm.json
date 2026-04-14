@@ -1,0 +1,118 @@
+{
+  "loading": "加载中...",
+  "fetch_failed": "获取配置失败",
+  "test_success": "连接测试成功",
+  "save_success": "配置已保存",
+  "test_save_failed": "测试或保存失败: {error}",
+  "test_save_failed_title": "测试或保存失败",
+  "api_key_required": "请填写 API Key",
+  "base_url_required": "请填写 Base URL",
+  "preset_applied": "已应用 {name} 预设 ({extra})",
+  "preset_extra_key": "请填写 API Key",
+  "preset_extra_local": "请确保 Ollama 已启动",
+  "sections": {
+    "quick_fill": "快速填充",
+    "api_config": "API 配置",
+    "model_selection": "模型选择",
+    "run_mode": "运行模式",
+    "commercial_profile": "商业运行档位"
+  },
+  "labels": {
+    "api_key": "API Key",
+    "base_url": "Base URL",
+    "normal_model": "智能模型 (Normal)",
+    "fast_model": "快速模型 (Fast)",
+    "max_concurrent_requests": "最大并发数",
+    "what_is_api": "什么是 API / 如何获取?",
+    "api_format": "API 格式"
+  },
+  "descs": {
+    "normal_model": "用于处理复杂逻辑、剧情生成等任务",
+    "fast_model": "用于简单判定、频繁交互等任务",
+    "max_concurrent_requests": "同时请求 AI 的线程数。调大可加快速度，但可能触发 API 速率限制 (Rate Limit)。建议值：5-20。"
+  },
+  "placeholders": {
+    "api_key": "在此填入你自己的 API Key (通常以 sk- 开头)",
+    "base_url": "https://api.example.com/v1",
+    "normal_model": "例如: gpt-4, claude-3-opus, qwen-plus",
+    "fast_model": "例如: gpt-3.5-turbo, qwen-flash",
+    "max_concurrent_requests": "默认: 10"
+  },
+  "modes": {
+    "default": "均衡 (Default)",
+    "default_desc": "自动选择模型（推荐）",
+    "normal": "智能 (Normal)",
+    "normal_desc": "全用智能模型",
+    "fast": "快速 (Fast)",
+    "fast_desc": "全用快速模型"
+  },
+  "commercial_profiles": {
+    "standard": "标准档",
+    "story_rich": "剧情增强档",
+    "internal_full": "内部全开档"
+  },
+  "commercial_profile_desc": {
+    "standard": "默认商业档位，优先控制 AI 成本。",
+    "story_rich": "提高叙事密度，适合高价剧情世界。",
+    "internal_full": "内部调试使用，放宽大部分 AI 限制。"
+  },
+  "formats": {
+    "openai": "OpenAI 兼容",
+    "openai_desc": "大多数服务商均支持",
+    "anthropic": "Anthropic 原生",
+    "anthropic_desc": "Anthropic Claude 直连"
+  },
+  "actions": {
+    "testing": "测试连接中...",
+    "test_and_save": "测试连通性并保存"
+  },
+  "help": {
+    "title": "什么是 API? 新手配置指南",
+    "q1_title": "🌐 1. 什么是 API?",
+    "q1_content": "API (应用程序接口) 就像是一条“电话线”。本游戏本身不具备思考能力，它通过这条线连接到远端的 AI 大脑 (如 Qwen 或 DeepSeek 的服务器)。当游戏进行每月结算并决定 NPC 动作时，会将相关信息通过 API 发给 AI，AI 思考后再把结果传回来。",
+    "q2_title": "⚡ 2. 推荐的模型 (2025版)",
+    "q2_qwen": "国内大厂 (阿里)，稳定且免费额度大，适合入门。",
+    "q2_deepseek": "性价比极高，中文叙事逻辑更符合国人习惯。",
+    "q2_gemini": "Google 出品，综合性能顶尖。",
+    "q3_title": "📝 3. 如何填入配置?",
+    "q3_content": "获得 API 后，你需要填入以下三大核心参数才能使用，通常你可以在api提供方的文档中找到 these 参数怎么填：",
+    "q3_format_note": "⚠️ 提示：本游戏支持 OpenAI 兼容格式和 Anthropic 原生格式。大多数服务商使用 OpenAI 兼容格式；如果直连 Anthropic API，请在 API 格式中选择「Anthropic 原生」。推荐使用预设中的服务。",
+    "q3_base_url": "API Base URL (接口地址): AI 的访问大门，通常由厂商提供 (如 https://api.deepseek.com)。",
+    "q3_api_key": "API Key (密钥): 你的身份凭证，就像账号密码。",
+    "q3_model_name": "Model Name (模型名称): 告诉服务器你想用哪颗大脑，如 deepseek-chat 或 gemini-3-flash-preview。",
+    "q4_title": "🔗 4. 从哪里获取 Key?",
+    "q5_title": "🛡️ 5. 安全说明",
+    "q5_p1": "您的 API Key 仅保存在本机用户数据目录下的 `secrets.json` 中，由本地运行的游戏后端直接与模型厂商通信。本游戏 (Cultivation World Simulator) 是完全开源的程序，绝不会将您的 Key 上传至任何第三方服务器。也请不要分享包含 settings/secrets 的用户数据目录。",
+    "q5_p2": "使用token会产生费用，请自行评估使用成本。",
+    "confirm": "我明白了"
+  },
+  "presets": {
+    "openai": "OpenAI",
+    "qwen": "通义千问",
+    "deepseek": "DeepSeek",
+    "minimax": "MiniMax",
+    "longcat": "LongCat",
+    "siliconflow": "硅基流动",
+    "openrouter": "OpenRouter",
+    "gemini": "Gemini",
+    "groq": "Groq",
+    "kimi": "Kimi",
+    "ollama": "Ollama",
+    "anthropic": "Anthropic"
+  },
+  "badges": {
+    "recommended": "推荐",
+    "free": "便宜",
+    "local": "本地"
+  },
+  "help_links": {
+    "openai": "OpenAI Platform",
+    "qwen": "阿里云百炼 (Qwen / 最推荐)",
+    "deepseek": "DeepSeek 开放平台 (国内推荐，便宜)",
+    "minimax": "MiniMax 开放平台 (百万上下文，高速)",
+    "longcat": "LongCat API 开放平台 (美团，免费额度高)",
+    "openrouter": "OpenRouter (全机型聚合，推荐)",
+    "siliconflow": "硅基流动 (国内聚合)",
+    "gemini": "Google AI Studio (Gemini)"
+  }
+}

@@ -1,0 +1,4 @@
+id,kind,min_realm,max_realm,weight,title_id,title
+1,loss_spirit_stone,QI_REFINEMENT,NASCENT_SOUL,10,misfortune_title_loss_spirit_stone,破财消灾
+2,injury,QI_REFINEMENT,NASCENT_SOUL,10,misfortune_title_injury,意外受伤
+3,backlash,QI_REFINEMENT,NASCENT_SOUL,10,misfortune_title_backlash,修为倒退

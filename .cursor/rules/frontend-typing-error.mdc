@@ -1,0 +1,24 @@
+---
+description: 前端类型与错误处理统一规范
+globs: ["web/src/**/*.vue", "web/src/**/*.ts", "web/src/**/*.tsx"]
+---
+# Frontend Type and Error Policy
+
+在修改前端代码时，必须遵循以下类型与错误处理约束，避免回退到松散实现。
+
+## 1. DTO 与 Mapper 先行
+- 新增或修改后端响应字段时，先更新 `web/src/types/api.ts`。
+- 需要结构转换或兼容逻辑时，优先放在 `web/src/api/mappers/*`，不要散在组件或 store 中。
+
+## 2. 禁止扩散 any
+- 新增代码不得引入无必要 `any`。
+- 必须临时使用时，需明确过渡目的，并限制在最小范围。
+
+## 3. 错误处理统一出口
+- 记录日志优先使用 `web/src/utils/appError.ts`（`logError` / `logWarn`）。
+- 用户提示统一通过消息层（`message`），避免重复弹窗或风格不一致。
+
+## 4. Socket 消息处理分层
+- `web/src/api/socket.ts` 只负责 transport。
+- 消息业务分发统一在 `web/src/stores/socketMessageRouter.ts`，不要在组件中按消息类型分支。
+

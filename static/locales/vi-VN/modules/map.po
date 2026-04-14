@@ -1,0 +1,81 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: vi-VN\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Map & Region & Others (New)
+msgid "Cultivate Region (can respire to increase cultivation)"
+msgstr "Khu Vực Tu Luyện (có thể thổ nạp để tăng tu vi)"
+
+msgid ""
+"Cultivate Region: {name} ({essence_type} Essence: {essence_density}) - "
+"{desc}"
+msgstr ""
+"Khu Vực Tu Luyện: {name} ({essence_type} linh khí: {essence_density}) - "
+"{desc}"
+
+msgid "No special resources"
+msgstr "Không có tài nguyên đặc thù"
+
+msgid "Normal Region (can hunt, gather, mine)"
+msgstr "Khu Vực Thường (có thể săn bắt, thu thập, khai khoáng)"
+
+msgid "Normal Region: {name} - {desc} | Resource Distribution: {species_info}"
+msgstr ""
+"Khu Vực Thường: {name} - {desc} | Phân bố tài nguyên: {species_info}"
+
+msgid "Sect Headquarters (sect disciples heal faster here)"
+msgstr "Tổng Bộ Tông Môn (đệ tử bổn tông dưỡng thương nhanh hơn tại đây)"
+
+msgid "Sell: "
+msgstr "Bán: "
+
+msgid "emotion_angry"
+msgstr "Phẫn Nộ"
+
+msgid "emotion_anticipating"
+msgstr "Chờ Mong"
+
+msgid "emotion_calm"
+msgstr "Bình Tĩnh"
+
+msgid "emotion_confused"
+msgstr "Bối Rối"
+
+msgid "emotion_disgusted"
+msgstr "Chán Ghét"
+
+msgid "emotion_fearful"
+msgstr "Sợ Hãi"
+
+msgid "emotion_happy"
+msgstr "Vui Vẻ"
+
+msgid "emotion_sad"
+msgstr "Buồn Bã"
+
+msgid "emotion_surprised"
+msgstr "Kinh Ngạc"
+
+msgid "emotion_tired"
+msgstr "Mệt Mỏi"
+
+msgid "misfortune_dynamic_story_prompt"
+msgstr ""
+"Nhân vật hiện đang ở cảnh giới {realm}. Vừa rồi họ đang ở {location} và thực hiện hành động: [{action_desc}]. Kết quả cuối cùng là: [{result}].\n"
+"Nhiệm vụ: Hãy kết hợp cảnh giới, bối cảnh và [hành động họ vừa thực hiện] để tự động suy ra một nguyên nhân xui xẻo hợp lý, mạch lạc và giàu sáng tạo làm cầu nối, giải thích vì sao hành động đó lại dẫn tới kết quả này. Hãy miêu tả phong phú chi tiết môi trường và hoạt động tâm lý của nhân vật, khống chế độ dài trong khoảng 100-200 từ."
+
+msgid "{names} ({price} Spirit Stones)"
+msgstr "{names} ({price} linh thạch)"
+
+msgid "{value} Spirit Stones"
+msgstr "{value} linh thạch"

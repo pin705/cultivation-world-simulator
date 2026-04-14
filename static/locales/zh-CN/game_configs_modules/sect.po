@@ -1,0 +1,195 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. sect.csv: SECT_10_DESC
+msgid "SECT_10_DESC"
+msgstr ""
+"摄魂音宗盘踞回音谷中，琴楼、鼓台、试音廊与摄魂阵场顺着山势铺开，谷风一过，连最细微的弦声都能被放大成夺魄杀机。门内分幻音、杀音、镇魂三支，弟子要学的不只是乐理与术法，还包括节奏、呼吸、情绪引导和神魂控制。这里表面风雅，实则气氛极度危险，许多人终日以笑语和琴声试探彼此心境，因此宗门里最可怕的往往不是怒意，而是温柔地落下的那一段曲子。"
+
+#. sect.csv: SECT_10_RULE_DESC
+msgid "SECT_10_RULE_DESC"
+msgstr "可惑外敌，不得失控摄魂同门、坏我宗门根基；若因此败坏宗门声名且不知收敛，逐出山门。"
+
+#. sect.csv: SECT_10_NAME
+msgid "SECT_10_NAME"
+msgstr "摄魂音宗"
+
+#. sect.csv: SECT_11_DESC
+msgid "SECT_11_DESC"
+msgstr ""
+"天衍阵宗坐落于迷踪天，一峰之内暗藏无数折叠空间，演天台、万阵廊、试阵谷与地脉井层层嵌套，弟子若不懂阵图，连回自己的住处都可能走错。宗内大致分天演、地脉、器阵、守御诸路，人人都习惯以推演结果说话，从布一座小阵到改一方山河都讲求精确与秩序。这里最吸引那些痴迷结构与规律的人，也最容易养出把人情世故都视作变量来计算的冷峻阵师。"
+
+#. sect.csv: SECT_11_RULE_DESC
+msgid "SECT_11_RULE_DESC"
+msgstr "不得以阵法祸及凡城、反噬同门；若堕入邪道仍执迷不悟，逐出宗门。"
+
+#. sect.csv: SECT_11_NAME
+msgid "SECT_11_NAME"
+msgstr "天衍阵宗"
+
+#. sect.csv: SECT_12_DESC
+msgid "SECT_12_DESC"
+msgstr ""
+"长明宫位于极北永夜中的极光天境，长明殿、圣火坛、洗髓池与曜甲校场常年被极光照亮，冰与火并存，使整座宫城带着近乎神迹般的庄严。宫中修士多走炼体、护命、长生三系，既重拳脚兵刃，也重药浴、秘术与对生命本源的体悟。这里崇尚光明、坚忍与持久，门人往往有极强的责任感和自制力，但也容易把自己活成一盏不肯熄灭的灯，习惯在沉默中独自承担一切。"
+
+#. sect.csv: SECT_12_RULE_DESC
+msgid "SECT_12_RULE_DESC"
+msgstr "不得残民炼体、败坏光明正统；若沦为邪修且屡劝不改，逐出宫门。"
+
+#. sect.csv: SECT_12_NAME
+msgid "SECT_12_NAME"
+msgstr "长明宫"
+
+#. sect.csv: SECT_13_DESC
+msgid "SECT_13_DESC"
+msgstr ""
+"浩然书院坐落于圣贤林中，讲经堂、明法殿、碑林书库和问心石径散布林间，晨钟未起便已书声琅琅，来往弟子多衣冠整肃、言谈克制。院中分经义、法理、治世、辞章诸系，不只读书养气，也论政、辩理、修身、授徒，许多大儒一生都在追求言行合一。这里最看重风骨、名节与师道传承，因而既能孕育胸怀天下的君子，也容易诞生坚持己见、不肯轻易低头的执拗人物。"
+
+#. sect.csv: SECT_13_RULE_DESC
+msgid "SECT_13_RULE_DESC"
+msgstr "不得欺师害民、投身魔道；证据确凿且不知悔改者，逐出书院。"
+
+#. sect.csv: SECT_13_NAME
+msgid "SECT_13_NAME"
+msgstr "浩然书院"
+
+#. sect.csv: SECT_14_DESC
+msgid "SECT_14_DESC"
+msgstr ""
+"罗刹血宗盘踞修罗血池之上，血河祭坛、战功堂、炼骨窟与夺元台昼夜不停运转，空气里常年弥漫着血雾、药气和铁锈味。宗内大致分血战、祭修、掠夺、炼体数脉，资源分配往往直接与战果、供奉和个人凶名挂钩，强者可以迅速崛起，弱者也会被迅速吞没。这里崇尚最赤裸的力量秩序，门人多半桀骜狠厉，却也因此形成一种只承认实力、不相信空话的残酷真实。"
+
+#. sect.csv: SECT_14_RULE_DESC
+msgid "SECT_14_RULE_DESC"
+msgstr "可争可掠，但不得背叛血宗、私吞战利、以邪术害本门；犯此重戒者逐出。"
+
+#. sect.csv: SECT_14_NAME
+msgid "SECT_14_NAME"
+msgstr "罗刹血宗"
+
+#. sect.csv: SECT_1_DESC
+msgid "SECT_1_DESC"
+msgstr ""
+"凌霄剑宗坐落于绝云峰群，山门、剑阁与试剑台层层高起，终年罡风呼啸，越往上越考验剑修心志。宗内以御剑、雷剑、养剑诸脉并立，弟子晨昏皆需登崖问剑，在剑碑前印证所得。这里崇尚锋锐与纯粹，重视名声，也重视个人悟性，常有一战成名的天才，也常有困于执念的孤高之士。"
+
+#. sect.csv: SECT_1_RULE_DESC
+msgid "SECT_1_RULE_DESC"
+msgstr "不得勾结邪魔、残害凡俗；若堕入邪道且屡教不改，逐出山门。"
+
+#. sect.csv: SECT_1_NAME
+msgid "SECT_1_NAME"
+msgstr "凌霄剑宗"
+
+#. sect.csv: SECT_2_DESC
+msgid "SECT_2_DESC"
+msgstr ""
+"万兽魔山深藏十万大山腹地，九十九层洞天圈养着自低阶灵兽到凶煞妖王的庞大兽群，兽栏、血食场与契灵坛终日不得安静。宗内弟子多分驭兽、育兽、炼血三路，有人将妖兽视作伙伴，也有人只当作可消耗的战力。山门氛围原始而强横，讲究以实力压服万兽，也讲究从兽性中磨出自己的生存法则。"
+
+#. sect.csv: SECT_2_RULE_DESC
+msgid "SECT_2_RULE_DESC"
+msgstr "可争可杀，但不得背叛山门、私通外敌、反噬同门；犯此大忌者逐出。"
+
+#. sect.csv: SECT_2_NAME
+msgid "SECT_2_NAME"
+msgstr "万兽魔山"
+
+#. sect.csv: SECT_3_DESC
+msgid "SECT_3_DESC"
+msgstr ""
+"听涛阁立于静海涯绝壁之上，寒冰灵玉筑成的楼阁映着海潮与星辉，阁中最重要的并非兵刃，而是观海玉璧、观潮台与推演星盘。弟子多习观星、听潮、问卦诸法，平日寡言少动，却善于从风向、潮声和人心细微处窥见变化。此地气氛清冷疏离，人人都像隔着一层雾看世界，因此既有超然物外的高士，也有被天机牵引太深的偏执之人。"
+
+#. sect.csv: SECT_3_RULE_DESC
+msgid "SECT_3_RULE_DESC"
+msgstr "不得为私欲搅乱阁中卜算、出卖宗门天机；情节极重者逐出。"
+
+#. sect.csv: SECT_3_NAME
+msgid "SECT_3_NAME"
+msgstr "听涛阁"
+
+#. sect.csv: SECT_4_DESC
+msgid "SECT_4_DESC"
+msgstr ""
+"九幽黄泉道盘踞死寂海群岛，山门间建有引魂殿、渡魂桥、镇尸窟与幽灯长廊，海雾终年不散，来去都像行走在生死缝隙之间。宗内有炼魂、渡死、阴术诸脉，弟子修行时常与亡魂、尸傀、阴河之气为伴，对生死轮转有着异于常人的理解。这里秩序森然、气氛幽冷，门人多半沉默克制，却也因此容易养出极端冷静、将万物都视作代价的心性。"
+
+#. sect.csv: SECT_4_RULE_DESC
+msgid "SECT_4_RULE_DESC"
+msgstr "可修阴法，但不得违逆师命、擅自勾魂害同门；犯重戒者逐出。"
+
+#. sect.csv: SECT_4_NAME
+msgid "SECT_4_NAME"
+msgstr "九幽黄泉道"
+
+#. sect.csv: SECT_5_DESC
+msgid "SECT_5_DESC"
+msgstr ""
+"千机诡门藏身千机谷深处，外看楼台精巧华丽，内里却遍布机关廊、傀儡坊、毒械库与暗道密室，一砖一瓦都可能藏着杀机。门中弟子大致分为机关师、傀儡师、毒师与潜行客，既要懂制造，也要懂伏击，还得学会在无声处保全自己。这里推崇效率、隐秘与结果，合作往往建立在共同利益之上，因此最容易孕育精于算计的天才，也最常出现彼此试探的复杂关系。"
+
+#. sect.csv: SECT_5_RULE_DESC
+msgid "SECT_5_RULE_DESC"
+msgstr "不得泄露机关秘图、擅刺本门之人；若勾结正道反噬宗门，逐出。"
+
+#. sect.csv: SECT_5_NAME
+msgid "SECT_5_NAME"
+msgstr "千机诡门"
+
+#. sect.csv: SECT_6_DESC
+msgid "SECT_6_DESC"
+msgstr ""
+"醉梦楼建于闹市洞天之中，香阁、水榭、乐坊与幻梦池彼此相连，白日歌舞不断，夜里灯火如霞，表面像人间最奢华的销金窟。楼中修行并不只靠双修，还重香道、音律、舞法、谈判与察言观色，弟子往往兼修魅术、乐术与情报手段。这里最擅长把红尘欲望化为修行资粮，也最懂人情冷热，因此门人既可能活得玲珑通透，也可能在真假情意之间越陷越深。"
+
+#. sect.csv: SECT_6_RULE_DESC
+msgid "SECT_6_RULE_DESC"
+msgstr "可纵情红尘，但不得以采补害命、欺师灭祖；犯重戒者逐出。"
+
+#. sect.csv: SECT_6_NAME
+msgid "SECT_6_NAME"
+msgstr "醉梦楼"
+
+#. sect.csv: SECT_7_DESC
+msgid "SECT_7_DESC"
+msgstr ""
+"须弥禅院立于风暴海中的普渡岛，以金刚塔为中心，伏魔殿、听钟台、苦修崖和药浴池分列四方，钟声一起，整座岛便像被无形佛光镇住。院中有禅修、武修、护法三路，弟子既要习经，也要炼体，还常被派去镇守海域妖邪与接引受难之人。这里外表庄严肃穆，内里却并不死板，许多僧修都带着入世济人的愿心，因此宗门气质兼有慈悲与刚猛两面。"
+
+#. sect.csv: SECT_7_RULE_DESC
+msgid "SECT_7_RULE_DESC"
+msgstr "严禁滥杀凡俗、勾结邪祟、残害同门；罪重不悔者逐出。"
+
+#. sect.csv: SECT_7_NAME
+msgid "SECT_7_NAME"
+msgstr "须弥禅院"
+
+#. sect.csv: SECT_8_DESC
+msgid "SECT_8_DESC"
+msgstr ""
+"影煞殿潜伏于暗影沼泽深处，树冠之上有隐楼，泥沼之下有密道，影牢、匿形场、毒瘴潭与情报据点层层交错，外人极难真正摸清它的轮廓。殿中弟子多分潜刺、遁行、侦缉与收尸善后几路，从入门起便学习隐匿踪迹、切断痕迹与在绝境中脱身。这里几乎没有多余的温情，人人都习惯观察和怀疑，但也因此形成一种只在生死边缘才会显露的默契。"
+
+#. sect.csv: SECT_8_RULE_DESC
+msgid "SECT_8_RULE_DESC"
+msgstr "许行暗杀，不许背刺本殿、泄露据点；若转投正道并出卖同门，逐出。"
+
+#. sect.csv: SECT_8_NAME
+msgid "SECT_8_NAME"
+msgstr "影煞殿"
+
+#. sect.csv: SECT_9_DESC
+msgid "SECT_9_DESC"
+msgstr ""
+"万宝仙盟建立于多宝浮空岛群之上，拍卖殿、千炉塔、云舟港、总库与各类商行彼此贯通，飞舟昼夜不停，整座山门更像一座永不歇业的仙城。盟中修士既修炼也经商，分炼器、鉴宝、航运、账务与外贸诸系，许多弟子从小就要学会估价、议价、立契与维护商路。这里最重流通与效率，人人都明白资源如何转化为权势，因此气氛远比寻常宗门更现实，也更讲究秩序和信誉。"
+
+#. sect.csv: SECT_9_RULE_DESC
+msgid "SECT_9_RULE_DESC"
+msgstr "可逐利，但不得侵吞宗库、通敌卖盟；情节恶劣者逐出。"
+
+#. sect.csv: SECT_9_NAME
+msgid "SECT_9_NAME"
+msgstr "万宝仙盟"

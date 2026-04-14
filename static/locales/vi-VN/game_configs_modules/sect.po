@@ -1,0 +1,331 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: vi-VN\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. sect.csv: SECT_10_DESC
+msgid "SECT_10_DESC"
+msgstr ""
+"Nhiếp Hồn Âm Tông chiếm cứ Hồi Âm Cốc, nơi cầm lâu, cổ đài, hành lang thí âm"
+" và trận trường nhiếp hồn trải dọc theo thế núi. Chỉ cần một cơn gió lùa "
+"qua, ngay cả tiếng dây đàn nhỏ nhất cũng có thể bị khuếch đại thành sát cơ "
+"đoạt phách. Trong môn chia thành ba nhánh huyễn âm, sát âm và trấn hồn; đệ "
+"tử không chỉ học nhạc lý và thuật pháp mà còn phải luyện tiết tấu, hơi thở, "
+"dẫn dắt cảm xúc và khống chế thần hồn. Bề ngoài nơi đây phong nhã, nhưng "
+"thực chất vô cùng nguy hiểm, đáng sợ nhất thường không phải cơn giận dữ mà "
+"là một khúc nhạc dịu dàng rơi xuống đúng lúc."
+
+#. sect.csv: SECT_10_NAME
+msgid "SECT_10_NAME"
+msgstr "Nhiếp Hồn Âm Tông"
+
+#. sect.csv: SECT_10_RULE_DESC
+msgid "SECT_10_RULE_DESC"
+msgstr ""
+"Ngươi có thể mê hoặc địch nhân, nhưng tuyệt đối không được mất khống chế rồi"
+" nhiếp hồn đồng môn hay làm tổn hại căn cơ của tông môn; kẻ bôi nhọ thanh "
+"danh bản tông mà vẫn không chịu kiềm chế sẽ bị trục xuất."
+
+#. sect.csv: SECT_11_DESC
+msgid "SECT_11_DESC"
+msgstr ""
+"Thiên Diễn Trận Tông tọa lạc tại Mê Tung Thiên, nơi một ngọn núi duy nhất "
+"lại ẩn giấu vô số không gian gấp lớp, chồng lên nhau bởi Diễn Thiên Đài, Vạn"
+" Trận Lang, Thí Trận Cốc và địa mạch giếng. Đệ tử nếu không hiểu trận đồ thì"
+" ngay cả đường về chỗ ở cũng có thể đi nhầm. Trong tông đại khái phân thành "
+"các lộ thiên diễn, địa mạch, khí trận và thủ ngự, ai cũng quen dùng kết quả "
+"suy diễn để lên tiếng, từ bố một tiểu trận cho tới cải biến cả sơn hà. Nơi "
+"đây rất dễ hấp dẫn những kẻ say mê cấu trúc và quy luật, đồng thời cũng nuôi"
+" ra các trận sư lạnh lùng coi nhân tình thế thái chỉ là biến số."
+
+#. sect.csv: SECT_11_NAME
+msgid "SECT_11_NAME"
+msgstr "Thiên Diễn Trận Tông"
+
+#. sect.csv: SECT_11_RULE_DESC
+msgid "SECT_11_RULE_DESC"
+msgstr ""
+"Ngươi không được dùng trận pháp để gieo tai họa xuống thành trì phàm nhân "
+"hay khiến đồng môn chịu phản phệ; nếu sa vào tà đạo mà vẫn không chịu hối "
+"cải, sẽ bị trục xuất khỏi tông."
+
+#. sect.csv: SECT_12_DESC
+msgid "SECT_12_DESC"
+msgstr ""
+"Trường Minh Cung nằm giữa Cực Quang Thiên Cảnh của vùng cực bắc vĩnh dạ, nơi"
+" Trường Minh Điện, Thánh Hỏa Đàn, Tẩy Tủy Trì và Diệu Giáp Giáo Trường quanh"
+" năm được cực quang chiếu sáng. Băng và hỏa cùng tồn tại khiến cả cung thành"
+" mang vẻ trang nghiêm gần như thần tích. Tu sĩ trong cung chủ yếu đi theo ba"
+" hệ luyện thể, hộ mệnh và trường sinh, vừa trọng quyền cước binh khí, vừa "
+"coi trọng dược dục, bí thuật và sự lĩnh ngộ đối với bản nguyên sinh mệnh. Họ"
+" tôn sùng ánh sáng, sự bền bỉ và kéo dài, nên thường gánh vác trách nhiệm "
+"rất nặng mà vẫn âm thầm chịu đựng."
+
+#. sect.csv: SECT_12_NAME
+msgid "SECT_12_NAME"
+msgstr "Trường Minh Cung"
+
+#. sect.csv: SECT_12_RULE_DESC
+msgid "SECT_12_RULE_DESC"
+msgstr ""
+"Ngươi không được hãm hại phàm nhân để luyện thể hay bôi nhọ chính đạo quang "
+"minh; nếu sa vào tà tu mà vẫn ngoan cố không sửa, sẽ bị trục xuất khỏi cung."
+
+#. sect.csv: SECT_13_DESC
+msgid "SECT_13_DESC"
+msgstr ""
+"Hạo Nhiên Thư Viện tọa lạc trong Thánh Hiền Lâm, nơi giảng kinh đường, Minh "
+"Pháp Điện, bia lâm thư khố và vấn tâm thạch kính nằm rải rác giữa rừng. "
+"Chuông sớm còn chưa ngân mà tiếng đọc sách đã vang khắp nơi, còn đệ tử qua "
+"lại phần nhiều đều áo mũ chỉnh tề, lời nói chừng mực. Trong viện chia thành "
+"các hệ kinh nghĩa, pháp lý, trị thế và từ chương; học giả nơi đây không chỉ "
+"đọc sách dưỡng khí mà còn nghị chính, biện lý, tu thân và truyền đạo. Nơi "
+"này đặc biệt coi trọng khí tiết, danh dự và truyền thừa sư đạo, vì thế vừa "
+"có thể nuôi dưỡng quân tử mang chí lớn, vừa dễ sinh ra những người cố chấp "
+"không chịu cúi đầu."
+
+#. sect.csv: SECT_13_NAME
+msgid "SECT_13_NAME"
+msgstr "Hạo Nhiên Thư Viện"
+
+#. sect.csv: SECT_13_RULE_DESC
+msgid "SECT_13_RULE_DESC"
+msgstr ""
+"Ngươi không được khi sư áp dân, cũng không được tự mình lao vào ma đạo; nếu "
+"chứng cứ xác thực mà vẫn không chịu hối cải, sẽ bị trục xuất khỏi thư viện."
+
+#. sect.csv: SECT_14_DESC
+msgid "SECT_14_DESC"
+msgstr ""
+"La Sát Huyết Tông thống trị Tu La Huyết Trì, nơi Huyết Hà Tế Đàn, Chiến Công"
+" Đường, Luyện Cốt Quật và Đoạt Nguyên Đài ngày đêm vận chuyển giữa màn huyết"
+" vụ, dược khí và mùi sắt gỉ dày đặc trong không trung. Nội bộ đại khái chia "
+"thành các mạch huyết chiến, tế tu, cướp đoạt và luyện thể, còn tài nguyên "
+"thì phân phối trực tiếp theo chiến quả, cống phẩm và hung danh cá nhân. Kẻ "
+"mạnh có thể quật khởi cực nhanh, còn kẻ yếu cũng sẽ bị nuốt chửng cực nhanh."
+" Đây là nơi tôn sùng trật tự sức mạnh trần trụi nhất, nơi lời nói suông "
+"chẳng có giá trị bằng thực lực chứng minh trong máu."
+
+#. sect.csv: SECT_14_NAME
+msgid "SECT_14_NAME"
+msgstr "La Sát Huyết Tông"
+
+#. sect.csv: SECT_14_RULE_DESC
+msgid "SECT_14_RULE_DESC"
+msgstr ""
+"Ngươi có thể tranh đấu và cướp đoạt, nhưng tuyệt đối không được phản bội "
+"Huyết Tông, biển thủ chiến lợi phẩm hay dùng tà thuật đối phó người của bản "
+"môn; bất kỳ ai phạm trọng cấm này đều sẽ bị trục xuất."
+
+#. sect.csv: SECT_1_DESC
+msgid "SECT_1_DESC"
+msgstr ""
+"Lăng Tiêu Kiếm Tông tọa lạc giữa quần phong Tuyệt Vân, nơi sơn môn, kiếm các"
+" và đài thí kiếm tầng tầng vươn cao trong cương phong gào thét quanh năm. "
+"Trong tông có các mạch ngự kiếm, lôi kiếm và dưỡng kiếm cùng tồn tại; đệ tử "
+"sáng tối đều phải trèo vách vấn kiếm, đối chiếu sở ngộ trước kiếm bia. Nơi "
+"đây tôn sùng sự sắc bén và thuần túy, coi trọng thanh danh lẫn ngộ tính, vì "
+"thế thường sinh ra cả kỳ tài một trận thành danh lẫn những kiếm tu cô ngạo "
+"bị chấp niệm trói chặt."
+
+#. sect.csv: SECT_1_NAME
+msgid "SECT_1_NAME"
+msgstr "Lăng Tiêu Kiếm Tông"
+
+#. sect.csv: SECT_1_RULE_DESC
+msgid "SECT_1_RULE_DESC"
+msgstr ""
+"Ngươi tuyệt đối không được thông đồng với tà ma hay tàn sát kẻ vô tội; nếu "
+"sa vào ma đạo mà sau nhiều lần răn dạy vẫn không chịu sửa đổi, sẽ bị trục "
+"xuất khỏi sơn môn."
+
+#. sect.csv: SECT_2_DESC
+msgid "SECT_2_DESC"
+msgstr ""
+"Vạn Thú Ma Sơn ẩn sâu trong Thập Vạn Đại Sơn, nơi chín mươi chín tầng động "
+"thiên nuôi nhốt một quần thể linh thú và yêu vương vô cùng đồ sộ. Chuồng "
+"thú, huyết thực trường và đàn khế linh ngày đêm chẳng lúc nào yên. Đệ tử "
+"trong tông phần lớn chia thành ba đường ngự thú, dưỡng thú và luyện huyết; "
+"có người coi yêu thú là bạn đồng hành, cũng có kẻ chỉ xem chúng như chiến "
+"lực có thể hao tổn. Bầu không khí nơi đây nguyên sơ mà cường hoành, dạy "
+"người ta dùng thực lực áp phục vạn thú và mài giũa bản năng sinh tồn từ "
+"chính thú tính."
+
+#. sect.csv: SECT_2_NAME
+msgid "SECT_2_NAME"
+msgstr "Vạn Thú Ma Sơn"
+
+#. sect.csv: SECT_2_RULE_DESC
+msgid "SECT_2_RULE_DESC"
+msgstr ""
+"Ngươi có thể chém giết tranh đấu, nhưng không được phản bội sơn môn, cấu kết"
+" ngoại địch hay để thú nuôi quay lại làm hại đồng môn; kẻ phạm trọng cấm này"
+" sẽ bị trục xuất."
+
+#. sect.csv: SECT_3_DESC
+msgid "SECT_3_DESC"
+msgstr ""
+"Thính Đào Các đứng trên tuyệt bích Tĩnh Hải Nhai, nơi lầu các làm bằng hàn "
+"băng linh ngọc phản chiếu triều dâng cùng tinh huy. Bảo vật quan trọng nhất "
+"ở đây không phải binh khí mà là Quan Hải Ngọc Bích, đài quan triều và tinh "
+"bàn dùng để suy diễn thiên cơ. Đệ tử tu tập các pháp quan tinh, thính triều "
+"và vấn quái, thường ít lời ít động nhưng lại rất giỏi từ gió, thủy triều và "
+"những biến chuyển rất nhỏ trong lòng người mà nhìn ra điềm báo. Cả các luôn "
+"mang cảm giác thanh lãnh xa cách, như thể ai cũng nhìn thế gian qua một lớp "
+"sương mờ."
+
+#. sect.csv: SECT_3_NAME
+msgid "SECT_3_NAME"
+msgstr "Thính Đào Các"
+
+#. sect.csv: SECT_3_RULE_DESC
+msgid "SECT_3_RULE_DESC"
+msgstr ""
+"Ngươi không được vì tư tâm mà quấy nhiễu việc bói toán của các, cũng không "
+"được bán đứng thiên cơ của tông môn; nếu tình tiết đặc biệt nghiêm trọng, sẽ"
+" bị trục xuất."
+
+#. sect.csv: SECT_4_DESC
+msgid "SECT_4_DESC"
+msgstr ""
+"Cửu U Hoàng Tuyền Đạo chiếm cứ quần đảo Tử Tịch Hải, nơi giữa sơn môn dựng "
+"nên Dẫn Hồn Điện, Độ Hồn Kiều, Trấn Thi Khố và hành lang u đăng quanh năm "
+"chìm trong hải vụ. Bước chân ra vào nơi này đều giống như đi giữa khe nứt "
+"của sinh tử. Nội bộ có các mạch luyện hồn, độ tử và âm thuật; đệ tử tu hành "
+"thường xuyên bên cạnh vong hồn, thi khôi và âm hà chi khí nên có nhận thức "
+"về luân chuyển sinh tử khác hẳn người thường. Nơi đây trật tự nghiêm ngặt, "
+"bầu không khí u lãnh, dễ nuôi dưỡng những tâm tính lạnh lùng đến mức coi vạn"
+" vật đều chỉ là cái giá phải trả."
+
+#. sect.csv: SECT_4_NAME
+msgid "SECT_4_NAME"
+msgstr "Cửu U Hoàng Tuyền Đạo"
+
+#. sect.csv: SECT_4_RULE_DESC
+msgid "SECT_4_RULE_DESC"
+msgstr ""
+"Ngươi có thể tu luyện âm pháp, nhưng tuyệt đối không được trái lệnh sư "
+"trưởng hay tự ý cướp hồn làm hại đồng môn; kẻ phạm trọng quy này sẽ bị trục "
+"xuất."
+
+#. sect.csv: SECT_5_DESC
+msgid "SECT_5_DESC"
+msgstr ""
+"Thiên Cơ Quỷ Môn ẩn mình trong sâu thẳm Thiên Cơ Cốc. Từ bên ngoài, đài tạ "
+"lầu các tinh xảo mà hoa lệ, nhưng bên trong lại ken dày hành lang cơ quan, "
+"phường khôi lỗi, kho độc khí và mật đạo tối tăm, đến từng viên gạch mái ngói"
+" cũng có thể giấu sát cơ. Đệ tử trong môn thường chia thành cơ quan sư, khôi"
+" lỗi sư, độc sư và ẩn hành khách, vừa phải biết chế tác, vừa phải biết phục "
+"kích, còn phải học cách tự bảo toàn trong im lặng. Nơi đây đề cao hiệu suất,"
+" bí mật và kết quả, vì vậy rất dễ sinh ra thiên tài mưu toán cùng những mối "
+"quan hệ luôn căng như dây đàn."
+
+#. sect.csv: SECT_5_NAME
+msgid "SECT_5_NAME"
+msgstr "Thiên Cơ Quỷ Môn"
+
+#. sect.csv: SECT_5_RULE_DESC
+msgid "SECT_5_RULE_DESC"
+msgstr ""
+"Ngươi không được tiết lộ bản vẽ cơ quan bí mật hay ám sát người của bản môn;"
+" nếu cấu kết với chính đạo rồi quay lưng với tông môn, sẽ bị trục xuất."
+
+#. sect.csv: SECT_6_DESC
+msgid "SECT_6_DESC"
+msgstr ""
+"Túy Mộng Lâu được dựng trong động thiên giữa chốn phồn hoa, nơi hương các, "
+"thủy tạ, nhạc phường và Huyễn Mộng Trì liên kết với nhau dưới tiếng ca vũ "
+"ban ngày và ánh đèn rực rỡ ban đêm. Tu hành ở đây không chỉ dựa vào song tu "
+"mà còn coi trọng hương đạo, âm luật, vũ pháp, đàm phán và khả năng quan sát "
+"lòng người; đệ tử thường kiêm tu mị thuật, nhạc thuật cùng thủ đoạn tình "
+"báo. Tông môn này giỏi nhất ở chỗ biến dục vọng hồng trần thành tư lương tu "
+"hành, nhưng cũng khiến người ta dễ lạc trong ranh giới giữa chân tình và lợi"
+" dụng."
+
+#. sect.csv: SECT_6_NAME
+msgid "SECT_6_NAME"
+msgstr "Túy Mộng Lâu"
+
+#. sect.csv: SECT_6_RULE_DESC
+msgid "SECT_6_RULE_DESC"
+msgstr ""
+"Ngươi có thể đắm mình trong chốn hồng trần, nhưng không được hái bổ người "
+"khác đến chết hay phản bội sư môn tổ tông; kẻ phạm trọng giới này sẽ bị trục"
+" xuất."
+
+#. sect.csv: SECT_7_DESC
+msgid "SECT_7_DESC"
+msgstr ""
+"Tu Di Thiền Viện tọa lạc trên Phổ Độ Đảo giữa Phong Bạo Hải, lấy Kim Cang "
+"Tháp làm trung tâm, xung quanh là Phục Ma Điện, thính chung đài, khổ tu nhai"
+" và dược dục trì. Mỗi khi tiếng chuông ngân lên, cả hòn đảo như bị phật "
+"quang vô hình trấn giữ. Trong viện có ba đường thiền tu, võ tu và hộ pháp; "
+"đệ tử vừa phải tụng kinh, vừa phải luyện thể, lại thường được phái đi trấn "
+"áp yêu tà ngoài hải vực và tiếp dẫn người gặp nạn. Bề ngoài nơi đây trang "
+"nghiêm túc mục, nhưng bên trong không hề khô cứng, bởi nhiều tăng tu vẫn "
+"mang trong lòng chí nguyện nhập thế cứu người."
+
+#. sect.csv: SECT_7_NAME
+msgid "SECT_7_NAME"
+msgstr "Tu Di Thiền Viện"
+
+#. sect.csv: SECT_7_RULE_DESC
+msgid "SECT_7_RULE_DESC"
+msgstr ""
+"Tùy tiện giết hại phàm nhân, cấu kết với tà linh hay tàn hại đồng môn đều bị"
+" nghiêm cấm; kẻ phạm trọng tội mà vẫn không chịu hối cải sẽ bị trục xuất."
+
+#. sect.csv: SECT_8_DESC
+msgid "SECT_8_DESC"
+msgstr ""
+"Ảnh Sát Điện ẩn phục sâu trong Ám Ảnh Chiểu Trạch, nơi phía trên tán cây có "
+"ẩn lâu, dưới bùn lầy có mật đạo, còn Ảnh Lao, Ẩn Hình Trường, độc chướng đàm"
+" và các cứ điểm tình báo thì chồng lớp lên nhau. Người ngoài rất khó nhìn rõ"
+" bộ dạng thật của nơi này. Đệ tử trong điện thường chia thành các tuyến tiềm"
+" thích, độn hành, trinh tập và thu thi xử lý hậu sự, từ lúc nhập môn đã phải"
+" học cách giấu tung tích, cắt đứt dấu vết và thoát thân trong tuyệt cảnh. "
+"Nơi đây gần như không có chút ấm áp dư thừa nào, nhưng chính sự lạnh lẽo ấy "
+"lại rèn ra thứ ăn ý chỉ hiện ra bên bờ sinh tử."
+
+#. sect.csv: SECT_8_NAME
+msgid "SECT_8_NAME"
+msgstr "Ảnh Sát Điện"
+
+#. sect.csv: SECT_8_RULE_DESC
+msgid "SECT_8_RULE_DESC"
+msgstr ""
+"Ám sát được cho phép, nhưng không được đâm sau lưng người của bản điện hay "
+"tiết lộ cứ điểm bí mật; nếu đầu nhập chính đạo rồi bán đứng đồng môn, sẽ bị "
+"trục xuất."
+
+#. sect.csv: SECT_9_DESC
+msgid "SECT_9_DESC"
+msgstr ""
+"Vạn Bảo Tiên Minh được dựng trên quần đảo Đa Bảo Phù Không, nơi điện đấu "
+"giá, Thiên Lô Tháp, cảng vân chu, tổng khố và đủ loại thương quán nối liền "
+"với nhau thành một tòa tiên thành không bao giờ nghỉ. Tu sĩ trong minh vừa "
+"tu luyện vừa kinh thương, chia thành các hệ luyện khí, giám bảo, hàng vận, "
+"kế toán và ngoại thương; rất nhiều đệ tử từ nhỏ đã phải học định giá, trả "
+"giá, lập khế và duy trì thương lộ. Bầu không khí nơi đây thực tế hơn đa số "
+"tông môn khác, bởi ai cũng hiểu tài nguyên có thể chuyển thành quyền thế như"
+" thế nào."
+
+#. sect.csv: SECT_9_NAME
+msgid "SECT_9_NAME"
+msgstr "Vạn Bảo Tiên Minh"
+
+#. sect.csv: SECT_9_RULE_DESC
+msgid "SECT_9_RULE_DESC"
+msgstr ""
+"Ngươi có thể theo đuổi lợi ích, nhưng không được biển thủ tài khố của tông "
+"môn hay bán đứng tiên minh cho kẻ địch; nếu tội đặc biệt nặng nề sẽ bị trục "
+"xuất."

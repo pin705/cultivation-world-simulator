@@ -1,0 +1,78 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Map & Region & Others (New)
+msgid "Cultivate Region (can respire to increase cultivation)"
+msgstr "修炼区域（可以吐纳以增进修为）"
+
+msgid ""
+"Cultivate Region: {name} ({essence_type} Essence: {essence_density}) - "
+"{desc}"
+msgstr "修炼区域：{name}（{essence_type}行灵气：{essence_density}）- {desc}"
+
+msgid "No special resources"
+msgstr "无特色资源"
+
+msgid "Normal Region (can hunt, gather, mine)"
+msgstr "普通区域（可以狩猎、采集、挖矿）"
+
+msgid "Normal Region: {name} - {desc} | Resource Distribution: {species_info}"
+msgstr "普通区域：{name} - {desc} | 资源分布：{species_info}"
+
+msgid "Sect Headquarters (sect disciples heal faster here)"
+msgstr "宗门总部（宗门弟子在此疗伤事半功倍）"
+
+msgid "Sell: "
+msgstr "出售："
+
+msgid "emotion_angry"
+msgstr "愤怒"
+
+msgid "emotion_anticipating"
+msgstr "期待"
+
+msgid "emotion_calm"
+msgstr "平静"
+
+msgid "emotion_confused"
+msgstr "疑惑"
+
+msgid "emotion_disgusted"
+msgstr "厌恶"
+
+msgid "emotion_fearful"
+msgstr "恐惧"
+
+msgid "emotion_happy"
+msgstr "开心"
+
+msgid "emotion_sad"
+msgstr "悲伤"
+
+msgid "emotion_surprised"
+msgstr "惊讶"
+
+msgid "emotion_tired"
+msgstr "疲惫"
+
+msgid "misfortune_dynamic_story_prompt"
+msgstr ""
+"角色当前境界是{realm}。TA刚才正在{location}执行操作：【{action_desc}】。最终的结果是：【{result}】。\n"
+"任务：请你结合角色的境界、背景以及TA【正在执行的行为】，自动推理出一个合理、连贯且富有创意的倒霉事由作为桥梁，解释为什么这个行为会导致这个结果。描写丰富的环境细节和角色的心理活动，字数控制在100-200字之间。"
+
+msgid "{names} ({price} Spirit Stones)"
+msgstr "{names}（{price}灵石）"
+
+msgid "{value} Spirit Stones"
+msgstr "{value}灵石"

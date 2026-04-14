@@ -1,0 +1,188 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-TW\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid ""
+"(Orthodoxy: {orthodoxy}, Alignment: {alignment}, Style: {style}, "
+"Headquarters: {hq_name}){effect}"
+msgstr "（道統：{orthodoxy}，陣營：{alignment}，風格：{style}，駐地：{hq_name}）{effect}"
+
+# 場景設定
+msgid ""
+"Event Type: Mysterious Auction\n"
+"Scene Setting: The auction takes place in a mysterious space, hosted by a mysterious figure with an unfathomable aura."
+msgstr ""
+"事件類型：神祕拍賣會\n"
+"場景設定：拍賣會發生在一處神祕空間，由一位面目模糊、氣息深不可測的神祕人主持。"
+
+msgid "SECT_10_STYLE"
+msgstr "文雅綺麗中深藏算計，喜用言語與音律掌控局勢，殺伐不沾煙火氣。"
+
+msgid "SECT_11_STYLE"
+msgstr "嚴謹細緻，追求技術極致，戰鬥中擅長以後手陣法反制敵人，步步為營。"
+
+msgid "SECT_12_RANK_ELDER"
+msgstr "閣老"
+
+msgid "SECT_12_RANK_INNER"
+msgstr "執令"
+
+msgid "SECT_12_RANK_OUTER"
+msgstr "守夜人"
+
+msgid "SECT_12_RANK_PATRIARCH"
+msgstr "城主"
+
+msgid "SECT_12_STYLE"
+msgstr "堅韌頑強，在逆境中圖強，行事光明磊落但也深謀遠慮，極其護短。"
+
+msgid "SECT_13_STYLE"
+msgstr "恪守原則，講究道義，除魔衛道一馬當先，寧折不彎。"
+
+msgid "SECT_14_STYLE"
+msgstr "強者為尊，隨心所欲，崇尚絕對的力量與殺戮，視眾生為血食。"
+
+msgid "SECT_1_STYLE"
+msgstr "清明克己，行止如一。重劍與心法並重，講究明心見性。"
+
+msgid "SECT_2_RANK_ELDER"
+msgstr "供奉"
+
+msgid "SECT_2_RANK_INNER"
+msgstr "御獸師"
+
+msgid "SECT_2_RANK_OUTER"
+msgstr "扈從"
+
+msgid "SECT_2_RANK_PATRIARCH"
+msgstr "谷主"
+
+msgid "SECT_2_STYLE"
+msgstr "言語直接，重視力量與血性，崇尚狩獵與搏鬥。"
+
+msgid "SECT_3_RANK_ELDER"
+msgstr "掌鏡人"
+
+msgid "SECT_3_RANK_INNER"
+msgstr "傳人"
+
+msgid "SECT_3_RANK_OUTER"
+msgstr "侍鏡"
+
+msgid "SECT_3_RANK_PATRIARCH"
+msgstr "鏡主"
+
+msgid "SECT_3_STYLE"
+msgstr "處事冷靜圓融，喜以柔克剛，擅借力與反制。"
+
+msgid "SECT_4_RANK_ELDER"
+msgstr "判官"
+
+msgid "SECT_4_RANK_INNER"
+msgstr "無常"
+
+msgid "SECT_4_RANK_OUTER"
+msgstr "鬼卒"
+
+msgid "SECT_4_RANK_PATRIARCH"
+msgstr "殿主"
+
+msgid "SECT_4_STYLE"
+msgstr "言辭冷厲少情，敬畏因果而不懼殺伐，偏向效率與結果。"
+
+msgid "SECT_5_RANK_ELDER"
+msgstr "掌刑使"
+
+msgid "SECT_5_RANK_INNER"
+msgstr "影刺"
+
+msgid "SECT_5_RANK_OUTER"
+msgstr "探子"
+
+msgid "SECT_5_RANK_PATRIARCH"
+msgstr "樓主"
+
+msgid "SECT_5_STYLE"
+msgstr "直面慾望與代價，不懼黑暗，以攻伐見長。"
+
+msgid "SECT_6_RANK_ELDER"
+msgstr "護法"
+
+msgid "SECT_6_RANK_INNER"
+msgstr "媚仙"
+
+msgid "SECT_6_RANK_OUTER"
+msgstr "侍童"
+
+msgid "SECT_6_RANK_PATRIARCH"
+msgstr "宮主"
+
+msgid "SECT_6_STYLE"
+msgstr "辭令婉轉，善於拿捏人慾與局勢，以柔制剛。"
+
+msgid "SECT_7_RANK_ELDER"
+msgstr "首座"
+
+msgid "SECT_7_RANK_INNER"
+msgstr "行者"
+
+msgid "SECT_7_RANK_OUTER"
+msgstr "居士"
+
+msgid "SECT_7_RANK_PATRIARCH"
+msgstr "住持"
+
+msgid "SECT_7_STYLE"
+msgstr "肅穆沉穩，重安魂鎮邪，少言而果決。"
+
+msgid "SECT_8_RANK_ELDER"
+msgstr "護法"
+
+msgid "SECT_8_RANK_INNER"
+msgstr "影衛"
+
+msgid "SECT_8_RANK_OUTER"
+msgstr "探子"
+
+msgid "SECT_8_RANK_PATRIARCH"
+msgstr "門主"
+
+msgid "SECT_8_STYLE"
+msgstr "行事隱祕果斷，重結果輕虛名，擅潛行與出其不意。"
+
+msgid "SECT_9_RANK_ELDER"
+msgstr "大供奉"
+
+msgid "SECT_9_RANK_INNER"
+msgstr "執事"
+
+msgid "SECT_9_RANK_OUTER"
+msgstr "學徒"
+
+msgid "SECT_9_RANK_PATRIARCH"
+msgstr "城主"
+
+msgid "SECT_9_STYLE"
+msgstr "務實精明，重交易與信譽，崇尚規則與秩序。"
+
+msgid "elder"
+msgstr "長老"
+
+msgid "inner_disciple"
+msgstr "內門弟子"
+
+msgid "outer_disciple"
+msgstr "外門弟子"
+
+msgid "World lore and history"
+msgstr "世界觀與歷史"

@@ -1,0 +1,48 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Gathering 系统 - 拍卖会
+# 状态文本
+msgid "Auction is in progress..."
+msgstr "拍卖会正在举行..."
+
+msgid "epiphany_event_desc"
+msgstr "特殊事件：弟子 {names} 在听道中顿悟，直接学会了 {tech_name}！\n"
+
+msgid "female"
+msgstr "女"
+
+msgid "sect_teaching_context_prompt"
+msgstr ""
+"宗门：{sect_name}\n"
+"风格：{style}\n"
+"传道者：{teacher_name} ({teacher_realm})\n"
+"{epiphany_text}\n"
+"参考宗门和角色设定，描写传道者对天地、世界、道的理解，并描写弟子们的不同反应。"
+
+msgid "sect_teaching_event_desc"
+msgstr "{teacher_name}正在登台讲道。"
+
+msgid "sect_teaching_exp_gain"
+msgstr "{student_name} 获得了 {exp} 点经验。"
+
+msgid "sect_teaching_gathering_info"
+msgstr "{sect_name}传道大会"
+
+# Gathering 系统 - 宗门传道
+msgid "sect_teaching_story_prompt"
+msgstr "描写一场宗门传道大会。侧重描写大会的氛围、传道者的道韵流转以及众弟子的众生百态。请避免提及具体的经验数值。"
+
+msgid "sect_teaching_summary"
+msgstr "{sect_name}举办了传道大会，由{teacher_name}主讲。参与弟子：{student_names}。"

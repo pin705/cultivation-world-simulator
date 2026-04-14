@@ -1,0 +1,336 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: vi-VN\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid ""
+"Evil alignment follows the principles of survival of the fittest, "
+"prioritizing self-interest above all, disdaining rules, and venerating power"
+" and fear. Acts ruthlessly, often resorting to murder and plunder."
+msgstr ""
+"Trận doanh tà ác tôn thờ đạo lý mạnh được yếu thua, đặt lợi ích bản thân lên"
+" trên hết, khinh thường quy tắc, tôn sùng quyền lực và nỗi sợ. Hành sự ngoan"
+" độc, thường có những việc như sát nhân đoạt bảo."
+
+msgid ""
+"Neutral alignment follows the principles of going with the flow, seeking "
+"benefit and avoiding harm, valuing self-cultivation and balance, and not "
+"easily taking sides."
+msgstr ""
+"Trận doanh trung lập lấy thuận thế mà làm, tránh hại cầu lợi, coi trọng tự "
+"độ cùng cân bằng, không dễ nghiêng về phe nào."
+
+msgid ""
+"Righteous alignment follows the principles of helping the weak, maintaining "
+"order, and vanquishing evil."
+msgstr ""
+"Trận doanh chính đạo lấy việc phù trợ kẻ yếu, duy trì trật tự và trừ ma vệ "
+"đạo làm chuẩn tắc."
+
+# Action Short Names (for legal_actions)
+msgid "action_dualcultivation_short_name"
+msgstr "Song Tu"
+
+msgid "action_educate_short_name"
+msgstr "Giáo Hóa"
+
+msgid "action_meditate_short_name"
+msgstr "Thiền Định"
+
+# Action: Play Extended
+msgid "action_reading"
+msgstr "Đọc Sách"
+
+msgid "action_reading_desc"
+msgstr "Nghiên đọc cổ tịch để mở mang kiến thức."
+
+msgid "action_respire_short_name"
+msgstr "Thổ Nạp"
+
+msgid "action_tea_party"
+msgstr "Trà Hội"
+
+msgid "action_tea_party_desc"
+msgstr "Cùng bằng hữu thưởng trà."
+
+msgid "action_tea_party_story_prompt"
+msgstr "Hai người đang mở một trà hội thanh nhã."
+
+msgid "action_tea_tasting"
+msgstr "Phẩm Trà"
+
+msgid "action_tea_tasting_desc"
+msgstr "Nếm trà ngon, dưỡng tâm tĩnh khí."
+
+msgid "action_temper_short_name"
+msgstr "Luyện Thể"
+
+msgid "sect_mission_action_name"
+msgstr "Nhiệm Vụ Tông Môn"
+
+msgid "sect_mission_description"
+msgstr "Ở lại tổng bộ tông môn để nhận các việc nội vụ, tuần tra và trấn thủ, rồi kết toán thành bại cùng phần thưởng sau vài tháng."
+
+msgid "sect_mission_requirements"
+msgstr "Phải là đệ tử của tông môn và đang ở tổng bộ của chính tông môn đó."
+
+msgid "sect_mission_hq_only"
+msgstr "Chỉ có thể nhận nhiệm vụ tông môn tại tổng bộ của chính tông môn mình."
+
+msgid "sect_mission_members_only"
+msgstr "Chỉ đệ tử tông môn mới có thể nhận nhiệm vụ tông môn."
+
+msgid "sect_mission_no_task_available"
+msgstr "Hiện tại tông môn không có nhiệm vụ nào phù hợp với cảnh giới của ngươi."
+
+msgid "sect_mission_start_headquarter"
+msgstr "{avatar} đã nhận nhiệm vụ tông môn \"{title}\" tại tổng bộ của {sect_name}. Dự kiến cần {duration} tháng để hoàn thành."
+
+msgid "sect_mission_start_member_request"
+msgstr "{avatar} nhận nhiệm vụ tông môn \"{title}\" theo lời nhờ của đồng môn {issuer}. Dự kiến cần {duration} tháng để hoàn thành."
+
+msgid "sect_mission_result_success"
+msgstr "{avatar} đã hoàn thành thuận lợi \"{title}\", nhận được {stones} linh thạch và {contribution} điểm cống hiến tông môn."
+
+msgid "sect_mission_result_fail"
+msgstr "{avatar} bị thương khi thi hành \"{title}\", mất {damage} HP. HP hiện tại: {current}/{max}."
+
+msgid "sect_mission_result_fail_death_append"
+msgstr " Thương thế quá nặng, chết ngay tại chỗ."
+
+msgid "sect_mission_story_prompt_success"
+msgstr "Hãy triển khai câu chuyện xoay quanh đúng tiêu đề nhiệm vụ tông môn này, miêu tả chi tiết quá trình làm nhiệm vụ, những trắc trở và bầu không khí trong tông môn, rồi kết thúc bằng việc nhiệm vụ được hoàn thành thành công. Địa điểm vẫn nằm trong tổng bộ tông môn và các khu vực phụ thuộc của nó."
+
+msgid "sect_mission_story_prompt_fail"
+msgstr "Hãy triển khai câu chuyện xoay quanh đúng tiêu đề nhiệm vụ tông môn này, miêu tả chi tiết quá trình làm nhiệm vụ, những trắc trở và biến cố bất ngờ, rồi kết thúc bằng việc nhiệm vụ thất bại, trọng thương hoặc thậm chí cận kề cái chết. Địa điểm vẫn nằm trong tổng bộ tông môn và các khu vực phụ thuộc của nó."
+
+msgid "action_traveling"
+msgstr "Du Lịch"
+
+msgid "action_traveling_desc"
+msgstr "Du lịch tứ phương để cảm ngộ thiên địa."
+
+msgid "action_zither_playing"
+msgstr "Phủ Cầm"
+
+msgid "action_zither_playing_desc"
+msgstr "Phủ cầm tấu nhạc, bồi dưỡng tính tình."
+
+msgid "evil"
+msgstr "Tà"
+
+msgid "failed"
+msgstr "thất bại"
+
+msgid "neutral"
+msgstr "Trung Lập"
+
+# Action: Play
+msgid "play_action_name"
+msgstr "Giải Khuây"
+
+msgid "play_description"
+msgstr "Giải khuây để thư giãn thân tâm"
+
+msgid "play_requirements"
+msgstr "Mục tiêu ở trong phạm vi tương tác"
+
+msgid "succeeded"
+msgstr "thành công"
+
+msgid ""
+"{attacker} initiates battle against {target} (Power: {attacker} {att_power} "
+"vs {target} {def_power})"
+msgstr ""
+"{attacker} phát khởi chiến đấu với {target} (Chiến lực: {attacker} "
+"{att_power} vs {target} {def_power})"
+
+msgid "{avatar} begins leisure activities"
+msgstr "{avatar} bắt đầu giải khuây thư giãn"
+
+msgid ""
+"{avatar} failed to cast {realm}-tier treasure, all materials turned to ash"
+msgstr ""
+"{avatar} đúc tạo pháp bảo bậc {realm} thất bại, toàn bộ vật liệu hóa thành "
+"tro bụi"
+
+msgid ""
+"{avatar} failed to refine {realm}-tier elixir, all materials turned to ash"
+msgstr ""
+"{avatar} luyện chế đan dược bậc {realm} thất bại, toàn bộ vật liệu hóa thành"
+" tro bụi"
+
+msgid ""
+"{avatar} finished nurturing {weapon}, proficiency increased to "
+"{proficiency}%"
+msgstr ""
+"{avatar} hoàn tất ôn dưỡng {weapon}, độ thuần thục tăng lên {proficiency}%"
+
+msgid "{avatar} finished {action}."
+msgstr "{avatar} đã hoàn tất {action}."
+
+msgid ""
+"{avatar} had an epiphany during meditation! Cultivation increased "
+"significantly (+{exp})."
+msgstr "{avatar} đã đốn ngộ trong lúc thiền định! Tu vi tăng mạnh (+{exp})."
+
+msgid ""
+"{avatar} nurturing {old_weapon}, the weapon's spirituality greatly "
+"increased, evolved into {new_weapon}!"
+msgstr ""
+"{avatar} trong lúc ôn dưỡng {old_weapon}, linh tính của binh khí tăng vọt, "
+"thăng hoa thành {new_weapon}!"
+
+msgid ""
+"{avatar} successfully tamed spirit beast, {realm} realm {beast} became their"
+" spirit beast"
+msgstr ""
+"{avatar} thuần phục linh thú thành công, {beast} cảnh giới {realm} đã trở "
+"thành linh thú của họ"
+
+msgid "{root_name} ({elements})"
+msgstr "{root_name} ({elements})"
+
+msgid "An anonymous passerby (extra)"
+msgstr "Một người qua đường vô danh"
+
+msgid "Current world celestial phenomenon: {name}"
+msgstr "Thiên tượng thế giới hiện tại: {name}"
+
+msgid "sect_task_title_sect_task_patrol_gate"
+msgstr "Tuần tra sơn môn"
+
+msgid "sect_task_title_sect_task_watch_storehouse"
+msgstr "Canh giữ kho tàng"
+
+msgid "sect_task_title_sect_task_tend_herb_garden"
+msgstr "Chăm nom dược viên"
+
+msgid "sect_task_title_sect_task_assist_deacon"
+msgstr "Hỗ trợ chấp sự"
+
+msgid "sect_task_title_sect_task_calm_spirit_beast"
+msgstr "Dẹp yên linh thú náo loạn"
+
+msgid "sect_task_title_sect_task_escort_supplies"
+msgstr "Hộ tống vật tư nội vụ"
+
+msgid "sect_task_title_sect_task_receive_returnees"
+msgstr "Đón đệ tử hồi sơn"
+
+msgid "sect_task_title_sect_task_maintain_array_node"
+msgstr "Bảo trì trận nhãn"
+
+msgid "sect_task_title_sect_task_inspect_restrictions"
+msgstr "Kiểm tra cấm chế"
+
+msgid "sect_task_title_sect_task_guard_scripture_pavilion"
+msgstr "Trấn thủ Tàng Kinh Các"
+
+msgid "sect_task_title_sect_task_investigate_night_anomaly"
+msgstr "Điều tra dị động ban đêm"
+
+msgid "sect_task_title_sect_task_host_law_hall"
+msgstr "Chủ trì trật tự pháp đường"
+
+msgid "sect_task_title_sect_task_clean_training_grounds"
+msgstr "Dọn tàn tích cấm chế ở diễn võ trường"
+
+msgid "sect_task_title_sect_task_watch_reception_platform"
+msgstr "Canh giữ đài tiếp dẫn"
+
+msgid "sect_task_title_sect_task_sort_low_tier_scrolls"
+msgstr "Sắp xếp tàng thư cấp thấp"
+
+msgid "sect_task_title_sect_task_count_outer_supplies"
+msgstr "Kiểm kê vật tư ngoại môn"
+
+msgid "sect_task_title_sect_task_maintain_irrigation_channels"
+msgstr "Bảo dưỡng kênh dẫn nước linh điền"
+
+msgid "sect_task_title_sect_task_feed_spirit_beasts"
+msgstr "Chăm nuôi linh thú cấp thấp"
+
+msgid "sect_task_title_sect_task_register_new_disciples"
+msgstr "Hỗ trợ đăng ký nhập môn cho đệ tử mới"
+
+msgid "sect_task_title_sect_task_search_lost_tokens"
+msgstr "Tìm kiếm lệnh bài thất lạc"
+
+msgid "sect_task_title_sect_task_patrol_restriction_barrier"
+msgstr "Tuần tra cấm chế sơn môn"
+
+msgid "sect_task_title_sect_task_guard_pill_hall"
+msgstr "Canh giữ trọng địa đan phòng"
+
+msgid "sect_task_title_sect_task_escort_message_jade"
+msgstr "Hộ tống ngọc giản truyền tin"
+
+msgid "sect_task_title_sect_task_mediate_disciple_dispute"
+msgstr "Hòa giải tranh chấp đồng môn"
+
+msgid "sect_task_title_sect_task_inspect_market_order"
+msgstr "Kiểm tra trật tự phường thị phụ thuộc"
+
+msgid "sect_task_title_sect_task_search_missing_outer_disciple"
+msgstr "Tìm kiếm đệ tử ngoại môn mất tích"
+
+msgid "sect_task_title_sect_task_repair_field_barrier"
+msgstr "Sửa chữa trận bảo hộ linh điền"
+
+msgid "sect_task_title_sect_task_assist_apprentice_trial"
+msgstr "Hỗ trợ khảo hạch thu đồ"
+
+msgid "sect_task_title_sect_task_inspect_grand_array_nodes"
+msgstr "Tuần kiểm các nút đại trận hộ sơn"
+
+msgid "sect_task_title_sect_task_guard_seclusion_cave"
+msgstr "Canh giữ khu ngoại vi động phủ bế quan"
+
+msgid "sect_task_title_sect_task_track_infiltrator"
+msgstr "Truy tìm mật thám xâm nhập tông môn"
+
+msgid "sect_task_title_sect_task_investigate_leyline_fluctuation"
+msgstr "Điều tra dị thường dao động linh mạch"
+
+msgid "sect_task_title_sect_task_escort_secret_treasury"
+msgstr "Hộ tống bảo tài bí khố"
+
+msgid "sect_task_title_sect_task_suppress_earthfire"
+msgstr "Trấn áp địa hỏa rò rỉ"
+
+msgid "sect_task_title_sect_task_investigate_forbidden_art"
+msgstr "Điều tra vụ cất giấu cấm thuật"
+
+msgid "sect_task_title_sect_task_guard_forbidden_area"
+msgstr "Trấn giữ lối vào cấm địa"
+
+msgid "sect_task_title_sect_task_oversee_grand_array_core"
+msgstr "Tọa trấn trung khu đại trận hộ tông"
+
+msgid "sect_task_title_sect_task_review_treasury_irregularities"
+msgstr "Mật tra điều phối nội khố bất thường"
+
+msgid "sect_task_title_sect_task_secure_sect_ceremony"
+msgstr "Giám sát an ninh đại điển tông môn"
+
+msgid "sect_task_title_sect_task_trial_major_rule_case"
+msgstr "Xét xử trọng án môn quy"
+
+msgid "sect_task_title_sect_task_screen_core_promotion"
+msgstr "Thẩm tra thử luyện thăng cấp đệ tử nòng cốt"
+
+msgid "sect_task_title_sect_task_coordinate_border_defense"
+msgstr "Điều phối phòng vụ biên cảnh"
+
+msgid "sect_task_title_sect_task_investigate_internal_traitor"
+msgstr "Điều tra nghi án nội gián thông địch"

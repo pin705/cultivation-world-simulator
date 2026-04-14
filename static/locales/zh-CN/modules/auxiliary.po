@@ -1,0 +1,89 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Auxiliary 系统 - 辅助装备
+msgid " Devoured Souls: {count}"
+msgstr " 吞噬魂魄：{count}"
+
+msgid " Devoured Souls: {count}, Battle Bonus: +{bonus}"
+msgstr " 吞噬魂魄：{count}，战力加成：+{bonus}"
+
+msgid "A rogue cultivator {name} has appeared in the world."
+msgstr "一名散修 {name} 现身于世。"
+
+msgid "A rogue cultivator {name} appeared, but their lifespan was already exhausted."
+msgstr "一名散修 {name} 现身于世，却已寿元耗尽。"
+
+msgid "{name} awakened spiritual roots, but their lifespan was already exhausted."
+msgstr "{name} 觉醒了灵根，却已寿元耗尽。"
+
+msgid "Age"
+msgstr "年龄"
+
+msgid "Alignment"
+msgstr "阵营"
+
+msgid "Appearance"
+msgstr "外貌"
+
+msgid "Auxiliary"
+msgstr "辅助装备"
+
+msgid "Backstory"
+msgstr "身世"
+
+msgid "Backstory: {backstory}"
+msgstr "身世：{backstory}"
+
+msgid "Current Action"
+msgstr "当前动作"
+
+msgid "Current Action: {action}"
+msgstr "当前动作：{action}"
+
+msgid "Current Effects"
+msgstr "当前效果"
+
+msgid "Emotion"
+msgstr "情绪"
+
+msgid "Gender"
+msgstr "性别"
+
+msgid "HP"
+msgstr "hp"
+
+msgid "Long-term Goal"
+msgstr "长期目标"
+
+msgid "Major Events"
+msgstr "重大事件"
+
+msgid "Materials"
+msgstr "材料"
+
+msgid "Name"
+msgstr "名字"
+
+msgid "Nearby Avatars"
+msgstr "周围角色"
+
+msgid "Nickname"
+msgstr "绰号"
+
+msgid "{desc} (Devoured Souls: {souls})"
+msgstr "{desc} (已吞噬魂魄：{souls})"
+
+msgid "{desc} (Devoured Souls: {souls}, Battle Bonus: +{bonus})"
+msgstr "{desc} (已吞噬魂魄：{souls}，战力加成：+{bonus})"

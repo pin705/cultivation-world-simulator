@@ -1,0 +1,58 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: en-US\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Single choice - context and options
+msgid ""
+"Current situation: {context}\n"
+"\n"
+"{choices}"
+msgstr ""
+"Current situation: {context}\n"
+"\n"
+"{choices}"
+
+msgid "Current {label}: {info}"
+msgstr "Current {label}: {info}"
+
+msgid "Discard '{new_name}'"
+msgstr "Discard '{new_name}'"
+
+msgid "Equip new {label} '{new_name}'"
+msgstr "Equip new {label} '{new_name}'"
+
+msgid "New {label}: {info}"
+msgstr "New {label}: {info}"
+
+msgid "Sell new {label} '{new_name}' for spirit stones, keep current"
+msgstr "Sell new {label} '{new_name}' for spirit stones, keep current"
+
+# SingleChoice System - Item Decisions
+msgid "Accept new item"
+msgstr "Accept new item"
+
+msgid "Reject new item"
+msgstr "Reject new item"
+
+msgid "Automatically accept the new item."
+msgstr "Automatically accept the new item."
+
+# Decision Interface
+msgid ""
+"【Current Situation】: {context}\n"
+"\n"
+"{choices}"
+msgstr ""
+"【Current Situation】: {context}\n"
+"\n"
+"{choices}"

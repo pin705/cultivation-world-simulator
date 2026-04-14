@@ -1,0 +1,261 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: en-US\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid " (and sold old {item} at reduced price)"
+msgstr " (and sold old {item} at reduced price)"
+
+msgid "Animal realms in current area exceed character realm"
+msgstr "Animal realms in current area exceed character realm"
+
+msgid "Assassination failed! Both sides engaged in fierce battle."
+msgstr "Assassination failed! Both sides engaged in fierce battle."
+
+msgid "Breakthrough failed"
+msgstr "Breakthrough failed"
+
+msgid "Breakthrough succeeded"
+msgstr "Breakthrough succeeded"
+
+msgid "Can only execute in city areas"
+msgstr "Can only execute in city areas"
+
+msgid "Cannot resolve region: {region}"
+msgstr "Cannot resolve region: {region}"
+
+msgid "Cannot sell this type: {name}"
+msgstr "Cannot sell this type: {name}"
+
+msgid "Casting succeeded! Obtained {realm} {label} '{item}'"
+msgstr "Casting succeeded! Obtained {realm} {label} '{item}'"
+
+msgid "Cultivation has reached bottleneck, cannot continue cultivating"
+msgstr "Cultivation has reached bottleneck, cannot continue cultivating"
+
+msgid "Current HP is full"
+msgstr "Current HP is full"
+
+msgid "Current area {region} has no animals"
+msgstr "Current area {region} has no animals"
+
+msgid "Do not possess equipment: {name}"
+msgstr "Do not possess equipment: {name}"
+
+msgid "Do not possess item/equipment: {name}"
+msgstr "Do not possess item/equipment: {name}"
+
+msgid "Do not possess material: {name}"
+msgstr "Do not possess material: {name}"
+
+msgid ""
+"Forbidden illegal action (missing Ten Thousand Souls Banner or permission)"
+msgstr ""
+"Forbidden illegal action (missing Ten Thousand Souls Banner or permission)"
+
+msgid ""
+"Insufficient materials, need {cost} {realm}-tier materials, currently have "
+"{count}"
+msgstr ""
+"Insufficient materials, need {cost} {realm}-tier materials, currently have "
+"{count}"
+
+msgid "Insufficient spirit stones"
+msgstr "Insufficient spirit stones"
+
+msgid "Invalid direction: {direction}"
+msgstr "Invalid direction: {direction}"
+
+msgid "Invalid realm: {realm}"
+msgstr "Invalid realm: {realm}"
+
+msgid "Missing HP information"
+msgstr "Missing HP information"
+
+msgid "Missing target parameter"
+msgstr "Missing target parameter"
+
+msgid "Must be in a City to educate people."
+msgstr "Must be in a City to educate people."
+
+msgid "Not at bottleneck, cannot breakthrough"
+msgstr "Not at bottleneck, cannot breakthrough"
+
+msgid "Not currently in normal area"
+msgstr "Not currently in normal area"
+
+msgid "Only evil alignment can execute"
+msgstr "Only evil alignment can execute"
+
+msgid "Only righteous alignment can execute"
+msgstr "Only righteous alignment can execute"
+
+msgid "Refining succeeded! Obtained {realm} elixir '{item}'"
+msgstr "Refining succeeded! Obtained {realm} elixir '{item}'"
+
+msgid "Syncing language setting: {lang}..."
+msgstr "Syncing language setting: {lang}..."
+
+msgid "Target does not exist"
+msgstr "Target does not exist"
+
+msgid "Target is already dead"
+msgstr "Target is already dead"
+
+msgid "Target realm not specified"
+msgstr "Target realm not specified"
+
+msgid "The population of {city} has increased due to {avatar}'s teachings."
+msgstr "The population of {city} has increased due to {avatar}'s teachings."
+
+msgid "This area has no shop"
+msgstr "This area has no shop"
+
+msgid "This cave dwelling has been occupied by {name}, cannot respire"
+msgstr "This cave dwelling has been occupied by {name}, cannot respire"
+
+msgid "Unknown item: {name}"
+msgstr "Unknown item: {name}"
+
+msgid "Your orthodoxy does not support Body Tempering."
+msgstr "Your orthodoxy does not support Body Tempering."
+
+msgid "Your orthodoxy does not support Confucian Education."
+msgstr "Your orthodoxy does not support Confucian Education."
+
+msgid "Your orthodoxy does not support Qi Respiration."
+msgstr "Your orthodoxy does not support Qi Respiration."
+
+msgid "Your orthodoxy does not support Zen Meditation."
+msgstr "Your orthodoxy does not support Zen Meditation."
+
+msgid ""
+"[{region}] is another sect's territory, you are not a disciple of that sect"
+msgstr ""
+"[{region}] is another sect's territory, you are not a disciple of that sect"
+
+msgid "action_chess"
+msgstr "Chess"
+
+msgid "action_chess_desc"
+msgstr "Play chess to sharpen your mind."
+
+msgid "action_chess_story_prompt"
+msgstr "Two people are playing chess."
+
+msgid "action_devourpeople_short_name"
+msgstr "Devour People"
+
+msgid "Prefers male cultivators"
+msgstr "Prefers male cultivators"
+
+msgid "Prefers female cultivators"
+msgstr "Prefers female cultivators"
+
+msgid "Prefers righteous cultivators"
+msgstr "Prefers righteous cultivators"
+
+msgid "Prefers evil cultivators"
+msgstr "Prefers evil cultivators"
+
+msgid "Prefers neutral cultivators"
+msgstr "Prefers neutral cultivators"
+
+msgid "Prefers Confucian cultivators"
+msgstr "Prefers Confucian cultivators"
+
+msgid "Prefers Daoist cultivators"
+msgstr "Prefers Daoist cultivators"
+
+msgid "Prefers Buddhist cultivators"
+msgstr "Prefers Buddhist cultivators"
+
+msgid "Prefers martial cultivators"
+msgstr "Prefers martial cultivators"
+
+msgid "Prefers worldly cultivators"
+msgstr "Prefers worldly cultivators"
+
+msgid "Prefers orthodox gentlemen"
+msgstr "Prefers orthodox gentlemen"
+
+msgid "Prefers secluded cultivators"
+msgstr "Prefers secluded cultivators"
+
+msgid "Prefers solitary mountain cultivators"
+msgstr "Prefers solitary mountain cultivators"
+
+msgid "Prefers {value}"
+msgstr "Prefers {value}"
+
+msgid "official_rank_none"
+msgstr "Unranked"
+
+msgid "official_rank_county_magistrate"
+msgstr "County Magistrate"
+
+msgid "official_rank_commandery_governor"
+msgstr "Commandery Governor"
+
+msgid "official_rank_provincial_governor"
+msgstr "Provincial Governor"
+
+msgid "official_rank_grand_chancellor"
+msgstr "Grand Chancellor"
+
+msgid "dynasty_style_law_and_arms"
+msgstr "Law and Arms"
+
+msgid "dynasty_style_pure_discourse_and_orthodoxy"
+msgstr "Pure Discourse and Orthodoxy"
+
+msgid "dynasty_style_civil_governance"
+msgstr "Civil Governance"
+
+msgid "dynasty_style_elegant_courtly_rule"
+msgstr "Elegant Courtly Rule"
+
+msgid "dynasty_style_wild_marches"
+msgstr "Wild Marches"
+
+msgid "dynasty_style_pragmatic_commerce"
+msgstr "Pragmatic Commerce"
+
+msgid "dynasty_style_stoic_frontier_guard"
+msgstr "Stoic Frontier Guard"
+
+msgid "dynasty_style_horsemanship_and_arms"
+msgstr "Horsemanship and Arms"
+
+msgid "dynasty_style_strict_law_and_central_power"
+msgstr "Strict Law and Central Power"
+
+msgid "dynasty_style_pragmatic_conservatism"
+msgstr "Pragmatic Conservatism"
+
+msgid "dynasty_style_flexible_statecraft"
+msgstr "Flexible Statecraft"
+
+msgid "dynasty_style_endure_and_strike_late"
+msgstr "Endure and Strike Late"
+
+msgid "dynasty_title_format"
+msgstr "{name} Dynasty"
+
+msgid "dynasty_royal_house_format"
+msgstr "House {surname}"
+
+msgid "Action on cooldown, {remain} month(s) remaining"
+msgstr "Action on cooldown, {remain} month(s) remaining"
+
+msgid "Focus on governance affairs, malevolent incidents, local strongmen, and political rivals creating obstacles."
+msgstr "Focus on governance affairs, malevolent incidents, local strongmen, and political rivals creating obstacles."

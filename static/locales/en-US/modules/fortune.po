@@ -1,0 +1,97 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: en-US\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Fortune Event Text - Technique
+msgid ""
+"You comprehended an upper-grade technique『{technique_name}』in your fortune."
+msgstr ""
+"You comprehended a superior-grade technique『{technique_name}』in your "
+"fortune."
+
+msgid "You comprehended superior technique '{technique}' during the fortune."
+msgstr "You comprehended superior technique '{technique}' during the fortune."
+
+msgid ""
+"You discovered a {realm} auxiliary equipment '{auxiliary}' during the "
+"fortune."
+msgstr ""
+"You discovered a {realm} auxiliary equipment '{auxiliary}' during the "
+"fortune."
+
+# Fortune Event Text - Auxiliary
+msgid "You discovered a {realm} auxiliary『{auxiliary_name}』in your fortune."
+msgstr "You discovered a {realm} auxiliary『{auxiliary_name}』in your fortune."
+
+# Fortune - discovery intro messages
+msgid "You discovered a {realm} weapon '{weapon}' during the fortune."
+msgstr "You discovered a {realm} weapon '{weapon}' during the fortune."
+
+# Fortune Event Text - Weapon
+msgid "You discovered a {realm} weapon『{weapon_name}』in your fortune."
+msgstr "You discovered a {realm} weapon『{weapon_name}』in your fortune."
+
+msgid "fortune_dynamic_story_prompt"
+msgstr ""
+"The character's current realm is {realm}. They were just at {location} performing the action: [{action_desc}]. The final result is: [{result}].\n"
+"Task: Based on the character's realm, background, and the [action they were performing], please automatically deduce a reasonable, coherent, and creative reason for the fortune as a bridge to explain why this action led to this result. Describe rich environmental details and the character's psychological activities. Keep the word count between 100-200 words."
+
+# Fortune messages
+msgid "fortune_event_base"
+msgstr "Encountered fortune ({title}), {result}"
+
+msgid "fortune_title_auxiliary"
+msgstr "Rare Treasure Appears"
+
+msgid "fortune_title_cultivation"
+msgstr "Cultivation Advancement"
+
+msgid "fortune_title_find_master"
+msgstr "Guided by a Master"
+
+msgid "fortune_title_mystery"
+msgstr "Mysterious Fortune"
+
+msgid "fortune_title_spirit_stone"
+msgstr "Unexpected Wealth"
+
+msgid "fortune_title_technique"
+msgstr "Technique Enlightenment"
+
+msgid "fortune_title_weapon"
+msgstr "Divine Weapon Descends"
+
+msgid "unknown location"
+msgstr "unknown location"
+
+msgid "wandering aimlessly"
+msgstr "wandering aimlessly"
+
+msgid "{apprentice} became disciple of {master}"
+msgstr "{apprentice} became disciple of {master}"
+
+# Fortune Event Text - Other Types
+msgid "{avatar_name} became disciple of {master_name}"
+msgstr "{avatar_name} became disciple of {master_name}"
+
+msgid "{avatar_name} gained {exp_gain} cultivation experience"
+msgstr "{avatar_name} gained {exp_gain} cultivation experience"
+
+msgid "{avatar_name} obtained {amount} spirit stones"
+msgstr "{avatar_name} obtained {amount} spirit stones"
+
+msgid "{name} cultivation increased by {exp} points"
+msgstr "{name} cultivation increased by {exp} points"
+
+msgid "{name} obtained {amount} spirit stones"
+msgstr "{name} obtained {amount} spirit stones"

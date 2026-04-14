@@ -1,0 +1,374 @@
+meta:
+  version: "2.5.0"
+
+resources:
+  locales_dir: static/locales/
+  shared_game_configs_dir: static/game_configs/
+
+llm:
+  default_modes:
+    action_decision: "normal"
+    long_term_objective: "normal"
+    nickname: "normal"
+    single_choice: "normal"
+    relation_resolver: "fast"
+    relation_delta: "fast"
+    story_teller: "fast"
+    interaction_feedback: "fast"
+    history_influence: "normal"
+    backstory: "fast"
+    custom_content_generation: "normal"
+    random_minor_event: "fast"
+    sect_random_event: "fast"
+    sect_random_event_reason: "fast"
+    auction_need: "fast"
+    sect_decider: "normal"
+    sect_thinker: "fast"
+  task_policies:
+    action_decision:
+      enabled: true
+      sample_rate: 1.0
+      category: "core_decision"
+      commercial_action: "keep"
+      note: "Core avatar behavior; do not disable."
+    long_term_objective:
+      enabled: true
+      sample_rate: 1.0
+      category: "strategic_identity"
+      commercial_action: "keep"
+      note: "Less frequent than action_decision and still useful for world direction."
+    nickname:
+      enabled: false
+      sample_rate: 1.0
+      category: "optional_flavor"
+      commercial_action: "disable"
+      note: "Flavor only; safe to disable for commercial cost control."
+    single_choice:
+      enabled: true
+      sample_rate: 1.0
+      category: "mechanical_resolution"
+      commercial_action: "keep"
+      note: "Used for concrete game resolutions; keep."
+    relation_resolver:
+      enabled: true
+      sample_rate: 1.0
+      category: "social_state"
+      commercial_action: "keep"
+      note: "Still tied to social simulation correctness."
+    relation_delta:
+      enabled: true
+      sample_rate: 1.0
+      category: "social_state"
+      commercial_action: "keep"
+      note: "Keep until more fixed-delta rules are added."
+    story_teller:
+      enabled: true
+      sample_rate: 0.35
+      category: "premium_narrative"
+      commercial_action: "sample"
+      note: "Keep some AI-authored stories, rely on factual fallback for the rest."
+    interaction_feedback:
+      enabled: true
+      sample_rate: 1.0
+      category: "social_response"
+      commercial_action: "keep"
+      note: "Mutual actions still need counterpart response."
+    history_influence:
+      enabled: true
+      sample_rate: 1.0
+      category: "history_context"
+      commercial_action: "keep"
+      note: "Reserved for history-sensitive behavior."
+    backstory:
+      enabled: false
+      sample_rate: 1.0
+      category: "optional_flavor"
+      commercial_action: "disable"
+      note: "Flavor-only generation; safe to remove in commercial mode."
+    custom_content_generation:
+      enabled: true
+      sample_rate: 1.0
+      category: "user_requested"
+      commercial_action: "keep"
+      note: "Explicit user/admin request; keep available."
+    random_minor_event:
+      enabled: false
+      sample_rate: 1.0
+      category: "ambient_world"
+      commercial_action: "disable"
+      note: "Low-value ambient AI event; disable to cut recurring cost."
+    sect_random_event:
+      enabled: true
+      sample_rate: 1.0
+      category: "world_macro"
+      commercial_action: "keep"
+      note: "Macro world texture still useful."
+    sect_random_event_reason:
+      enabled: true
+      sample_rate: 1.0
+      category: "world_macro"
+      commercial_action: "keep"
+      note: "Reason fragment for sect macro events."
+    auction_need:
+      enabled: true
+      sample_rate: 1.0
+      category: "gathering_resolution"
+      commercial_action: "keep"
+      note: "Needed to resolve auction demand without reverting to static heuristics yet."
+    sect_decider:
+      enabled: true
+      sample_rate: 1.0
+      category: "macro_strategy"
+      commercial_action: "keep"
+      note: "Important for sect-level agency and competition."
+    sect_thinker:
+      enabled: false
+      sample_rate: 1.0
+      category: "optional_flavor"
+      commercial_action: "disable"
+      note: "Flavorful sect prose only; fallback is acceptable."
+  commercial_profiles:
+    standard:
+      note: "Default commercial profile with strong AI cost discipline."
+    story_rich:
+      note: "Premium world profile with denser narrative and ambience."
+      default_modes:
+        story_teller: "normal"
+      task_policies:
+        story_teller:
+          sample_rate: 0.85
+          commercial_action: "premium_keep"
+          note: "Premium worlds can afford much denser AI-authored storytelling."
+        sect_thinker:
+          enabled: true
+          sample_rate: 0.35
+          category: "premium_narrative"
+          commercial_action: "premium_upsell"
+          note: "Story-rich sect identity prose is only worth paying for in premium worlds."
+        random_minor_event:
+          enabled: true
+          sample_rate: 0.15
+          commercial_action: "premium_upsell"
+          note: "Keep ambient AI sparse even in premium worlds."
+    internal_full:
+      note: "Internal debugging profile with broad AI coverage."
+      task_policies:
+        nickname:
+          enabled: true
+          sample_rate: 1.0
+          commercial_action: "internal_only"
+        backstory:
+          enabled: true
+          sample_rate: 1.0
+          commercial_action: "internal_only"
+        random_minor_event:
+          enabled: true
+          sample_rate: 1.0
+          commercial_action: "internal_only"
+        sect_thinker:
+          enabled: true
+          sample_rate: 1.0
+          commercial_action: "internal_only"
+
+ai:
+  max_parse_retries: 3
+
+rooms:
+  default_room_plan: "main_public"
+  default_custom_plan: "standard_private"
+  plan_order:
+    - "main_public"
+    - "standard_private"
+    - "story_rich_private"
+    - "internal_full_private"
+  billing:
+    default_custom_status: "trial"
+    default_custom_entitled_plan: "standard_private"
+    trial_period_days: 3
+    grace_period_days: 3
+    renewal_warning_days: 7
+    expired_fallback_plan: "standard_private"
+  plans:
+    main_public:
+      commercial_profile: "standard"
+      member_limit: 0
+      sellable: false
+      price_vnd: 0
+      billing_cycle_days: 30
+      note: "Default app room with unrestricted access."
+    standard_private:
+      commercial_profile: "standard"
+      member_limit: 4
+      sellable: true
+      price_vnd: 990000
+      billing_cycle_days: 30
+      note: "Entry commercial private world with strict AI cost discipline."
+    story_rich_private:
+      commercial_profile: "story_rich"
+      member_limit: 8
+      sellable: true
+      price_vnd: 1990000
+      billing_cycle_days: 30
+      note: "Premium private world with denser AI storytelling."
+    internal_full_private:
+      commercial_profile: "internal_full"
+      member_limit: 12
+      sellable: false
+      price_vnd: 0
+      billing_cycle_days: 30
+      note: "Internal/debug tier with relaxed AI limits."
+
+world:
+  start_year: 100
+  autonomous_creation_probability: 0.001
+  autonomous_creation_story_probability: 0.5
+  fortune_probability: 0.005
+  misfortune_probability: 0.005
+  random_minor_event_prob: 0.05
+  birth_rate_per_month: 0.005
+  max_children_per_couple: 2
+  max_action_rounds_per_turn: 3
+  long_dead_cleanup_years: 20
+  gathering:
+    auction_trigger_count: 5
+    sect_teaching_prob: 0.05
+    base_epiphany_prob: 0.02
+  story:
+    enabled: true
+    probabilities:
+      combat: 0.4
+      relationship_major: 0.6
+      cultivation_major: 0.40
+      crafting: 0.10
+      daily_social: 0.08
+      sect_mission: 0.4
+      world_fortune: 0.50
+      world_misfortune: 0.35
+      gathering: 1.0
+
+sect:
+  income_per_tile: 7
+  influence_radius_divisor: 8
+  influence_radius_bias: 1
+  territory_distance_weight: 100
+  territory_strength_weight: 12
+  territory_noise_weight: 6
+  territory_dense_border_threshold: 8
+  random_event_prob_per_month: 0.03
+  decision_interval_years: 3
+  thinking_interval_years: 5
+  player_intervention_points_max: 3
+  player_intervention_points_regen_per_month: 1
+  player_directive_cost: 1
+  player_relation_intervention_cost: 1
+  player_relation_intervention_delta: 18
+  player_relation_intervention_duration_months: 36
+  player_relation_intervention_cooldown_months: 12
+  player_directive_cooldown_months: 12
+  player_directive_max_chars: 80
+  recruit_cost: 500
+  support_amount: 300
+  member_upkeep_by_realm:
+    QI_REFINEMENT: 15
+    FOUNDATION_ESTABLISHMENT: 30
+    CORE_FORMATION: 60
+    NASCENT_SOUL: 120
+
+avatar:
+  persona_num: 3
+  player_objective_cooldown_months: 6
+  player_objective_max_chars: 80
+  player_objective_cost: 1
+  player_support_cooldown_months: 6
+  player_support_cost: 1
+  player_support_amount: 200
+  player_seed_cooldown_months: 12
+  player_seed_cost: 1
+  player_seed_duration_months: 36
+
+social:
+  major_event_context_num: 10
+  minor_event_context_num: 10
+  relation:
+    min_friendliness: -100
+    max_friendliness: 100
+    yearly_regression: 2
+    yearly_regression_with_identity: 1
+    transition_hysteresis: 10
+    transition_cooldown_months: 12
+    thresholds:
+      archenemy: -60
+      disliked: -25
+      friend: 25
+      best_friend: 60
+    llm_delta:
+      min: -6
+      max: 6
+    identity_friendliness_floor:
+      lovers: 20
+      sworn_sibling: 20
+      master_apprentice: 10
+    action_modes:
+      conversation: llm
+      talk: llm
+      gift: llm
+      spar: llm
+      gathering: llm
+      random_minor_event: llm
+    fixed_deltas:
+      confess:
+        accepted:
+          a_to_b: 35
+          b_to_a: 25
+        rejected:
+          a_to_b: -20
+          b_to_a: -8
+      dual_cultivation:
+        accepted:
+          a_to_b: 12
+          b_to_a: 12
+        rejected:
+          a_to_b: -6
+          b_to_a: -2
+      swear_brotherhood:
+        accepted:
+          a_to_b: 22
+          b_to_a: 22
+        rejected:
+          a_to_b: -10
+          b_to_a: -4
+      attack:
+        started:
+          a_to_b: -25
+          b_to_a: -35
+      impart:
+        accepted:
+          a_to_b: 8
+          b_to_a: 12
+        rejected:
+          a_to_b: -4
+          b_to_a: -2
+      gathering:
+        friendly:
+          a_to_b: 4
+          b_to_a: 4
+        competitive:
+          a_to_b: -6
+          b_to_a: -8
+
+nickname:
+  major_event_threshold: 3
+  minor_event_threshold: 25
+
+save:
+  max_events_to_save: 1000
+
+frontend_defaults:
+  water_speed: low
+  cloud_freq: low
+
+df:
+  ids_separator: ";"
+
+play:
+  base_benefit_probability: 0.05

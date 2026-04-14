@@ -1,0 +1,101 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-TW\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# 事件內容
+msgid ""
+"In the auction for {item_name}, {winner_name} outbid {runner_up_name} with "
+"{price} spirit stones and won the item."
+msgstr ""
+"在{item_name}的競拍中，{winner_name}以 {price} 靈石力壓{runner_up_name}一頭，將其收入囊中。"
+
+msgid "Retreat Bonus"
+msgstr "閉關感悟"
+
+# 補充的缺失翻譯
+msgid "Unsupported item type: {item_type}"
+msgstr "不支持的物品類型：{item_type}"
+
+msgid "retreat_action_name"
+msgstr "閉關"
+
+msgid "retreat_death_append"
+msgstr "並且在閉關中耗盡了最後一絲生機，坐化了。"
+
+msgid "retreat_desc"
+msgstr "閉關，嘗試突破自我。風險極大，非大毅力者不可爲。"
+
+msgid "retreat_fail"
+msgstr "閉關失敗！元氣大傷，折損了 {years} 年陽壽。"
+
+msgid "retreat_requirements"
+msgstr "無限制；需要冷卻"
+
+msgid "retreat_start"
+msgstr "{avatar} 開始閉關，破關時間不詳。"
+
+msgid "retreat_story_prompt_fail"
+msgstr "這是關於一次失敗的閉關。描寫修士在閉關期間如何被心魔困擾、自我懷疑，最終導致反噬的過程。不需要描寫戰鬥。"
+
+msgid "retreat_story_prompt_success"
+msgstr "這是關於一次成功的閉關。描寫修士在閉關期間如何戰勝孤獨、感悟天道，最終突破心境的過程。不需要描寫戰鬥。"
+
+msgid "retreat_success"
+msgstr "閉關成功！修爲精進，對天道的感悟加深了。"
+
+msgid "{avatar_name} abandoned {item_name}."
+msgstr "{avatar_name} 放棄了{item_name}。"
+
+msgid ""
+"{avatar_name} sold newly obtained {item_name}, gained {price} spirit stones."
+msgstr "{avatar_name} 賣掉了新獲得的{item_name}，獲利 {price} 靈石。"
+
+msgid "game.sect_update_event"
+msgstr "{sect_name} 年度結算：收入 {income} 靈石，發放俸祿 {upkeep} 靈石，結餘 {net_change} 靈石。"
+
+msgid "War weariness adjusted to {weariness_after} (active wars: {active_war_count}, yearly recovery: 3, previous: {weariness_before})."
+msgstr "厭戰度調整為 {weariness_after}（交戰宗門 {active_war_count} 個，年度自然恢復 3 點，原為 {weariness_before}）。"
+
+msgid "game.sect_thinking_event"
+msgstr "{sect_name}宗門的思考：{thinking}"
+
+msgid "{winner} won the martial tournament championship and earned {amount} sect contribution for {sect_name}."
+msgstr "{winner} 以武道會奪魁之功，為 {sect_name} 贏得 {amount} 點宗門貢獻。"
+
+msgid "{teacher_name} taught and guided others at the preaching conference, earning {amount} sect contribution for {sect_name}."
+msgstr "{teacher_name} 於傳道大會中授業解惑，為 {sect_name} 贏得 {amount} 點宗門貢獻。"
+
+msgid "{winner_name} distinguished themselves in sect war and earned {amount} sect contribution for {sect_name}."
+msgstr "{winner_name} 在宗門戰爭中立下戰功，為 {sect_name} 累積了 {amount} 點宗門貢獻。"
+
+msgid "Game automatically saved"
+msgstr "遊戲已自動保存"
+
+msgid "{avatar_name} made a name in the cultivation world and came to be known as \"{nickname}\"."
+msgstr "{avatar_name}在修仙界中闖出名號，被人稱為「{nickname}」。"
+
+msgid "{avatar} self-created technique '{item}'"
+msgstr "{avatar}自創功法《{item}》。"
+
+msgid "{avatar} self-created weapon '{item}'"
+msgstr "{avatar}自創兵器《{item}》。"
+
+msgid "{avatar} self-created auxiliary equipment '{item}'"
+msgstr "{avatar}自創輔助裝備《{item}》。"
+
+msgid "Equipped newly created {kind} '{item}', sold old equipment '{old_item}' for {refund} spirit stones"
+msgstr "裝備了新自創的{kind}《{item}》，並賣出舊裝備《{old_item}》，獲得 {refund} 靈石。"
+
+msgid "Equipped newly created {kind} '{item}'"
+msgstr "裝備了新自創的{kind}《{item}》。"
+

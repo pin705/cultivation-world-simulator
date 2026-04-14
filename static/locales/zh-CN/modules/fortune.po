@@ -1,0 +1,93 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# 奇遇事件文本 - 功法
+msgid ""
+"You comprehended an upper-grade technique『{technique_name}』in your fortune."
+msgstr "你在奇遇中领悟了上品功法『{technique_name}』。"
+
+msgid "You comprehended superior technique '{technique}' during the fortune."
+msgstr "你在奇遇中领悟了上品功法『{technique}』。"
+
+msgid ""
+"You discovered a {realm} auxiliary equipment '{auxiliary}' during the "
+"fortune."
+msgstr "你在奇遇中发现了{realm}辅助装备『{auxiliary}』。"
+
+# 奇遇事件文本 - 辅助装备
+msgid "You discovered a {realm} auxiliary『{auxiliary_name}』in your fortune."
+msgstr "你在奇遇中发现了{realm}辅助装备『{auxiliary_name}』。"
+
+# Fortune - discovery intro messages
+msgid "You discovered a {realm} weapon '{weapon}' during the fortune."
+msgstr "你在奇遇中发现了{realm}兵器『{weapon}』。"
+
+# 奇遇事件文本 - 兵器
+msgid "You discovered a {realm} weapon『{weapon_name}』in your fortune."
+msgstr "你在奇遇中发现了{realm}兵器『{weapon_name}』。"
+
+msgid "fortune_dynamic_story_prompt"
+msgstr ""
+"角色当前境界是{realm}。TA刚才正在{location}执行操作：【{action_desc}】。最终的结果是：【{result}】。\n"
+"任务：请你结合角色的境界、背景以及TA【正在执行的行为】，自动推理出一个合理、连贯且富有创意的奇遇事由作为桥梁，解释为什么这个行为会导致这个结果。描写丰富的环境细节和角色的心理活动，字数控制在100-200字之间。"
+
+# Fortune messages
+msgid "fortune_event_base"
+msgstr "遭遇奇遇（{title}），{result}"
+
+msgid "fortune_title_auxiliary"
+msgstr "异宝出世"
+
+msgid "fortune_title_cultivation"
+msgstr "修为精进"
+
+msgid "fortune_title_find_master"
+msgstr "名师指路"
+
+msgid "fortune_title_mystery"
+msgstr "神秘奇遇"
+
+msgid "fortune_title_spirit_stone"
+msgstr "意外横财"
+
+msgid "fortune_title_technique"
+msgstr "功法顿悟"
+
+msgid "fortune_title_weapon"
+msgstr "神兵天降"
+
+msgid "unknown location"
+msgstr "未知地点"
+
+msgid "wandering aimlessly"
+msgstr "四处游荡"
+
+msgid "{apprentice} became disciple of {master}"
+msgstr "{apprentice} 拜 {master} 为师"
+
+# 奇遇事件文本 - 其他类型
+msgid "{avatar_name} became disciple of {master_name}"
+msgstr "{avatar_name} 拜 {master_name} 为师"
+
+msgid "{avatar_name} gained {exp_gain} cultivation experience"
+msgstr "{avatar_name} 修为增长 {exp_gain} 点"
+
+msgid "{avatar_name} obtained {amount} spirit stones"
+msgstr "{avatar_name} 获得灵石 {amount} 枚"
+
+msgid "{name} cultivation increased by {exp} points"
+msgstr "{name} 修为增长 {exp} 点"
+
+msgid "{name} obtained {amount} spirit stones"
+msgstr "{name} 获得灵石 {amount} 枚"

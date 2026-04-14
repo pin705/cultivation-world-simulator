@@ -1,0 +1,260 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: en-US\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid ", sell old {label}『{old_name}』"
+msgstr ", sell old {label}『{old_name}』"
+
+msgid ", {replace} old {label}『{old_name}』"
+msgstr ", {replace} old {label}『{old_name}』"
+
+msgid "Already lovers"
+msgstr "Already lovers"
+
+msgid "Already sworn siblings"
+msgstr "Already sworn siblings"
+
+# MutualAction: Confess
+msgid "confess_action_name"
+msgstr "Confess"
+
+msgid "confess_description"
+msgstr ""
+"Confess love to a target within interaction range. If accepted, they become "
+"lovers."
+
+msgid "confess_requirements"
+msgstr "Target within interaction range, and not already lovers."
+
+msgid "confess_story_prompt"
+msgstr ""
+"Describe the process of {initiator} confessing their love to {target}. "
+"Include their inner feelings and the atmosphere. If accepted, describe the "
+"romance of them becoming lovers. If rejected, describe the gentle refusal "
+"and regret."
+
+# MutualAction: Conversation
+msgid "conversation_action_name"
+msgstr "Conversation"
+
+msgid "conversation_description"
+msgstr "Have an exchange conversation with other"
+
+msgid "conversation_requirements"
+msgstr "Target within interaction range"
+
+# MutualAction: DriveAway
+msgid "drive_away_action_name"
+msgstr "Drive Away"
+
+msgid "drive_away_description"
+msgstr "Intimidate opponent to leave this place with force"
+
+msgid "drive_away_requirements"
+msgstr "Target within interaction range; cannot execute consecutively"
+
+msgid "feedback_talk"
+msgstr "Talk"
+
+msgid "feedback_yield"
+msgstr "Yield"
+
+# MutualAction: Gift
+msgid "gift_action_name"
+msgstr "Gift"
+
+msgid "gift_description"
+msgstr ""
+"Gift spirit stones or items to other. Use 'item_id' parameter: Item ID (int)"
+" or 'SPIRIT_STONE'."
+
+msgid "gift_requirements"
+msgstr ""
+"Initiator possesses the item; target within interaction range; elixirs "
+"cannot be gifted"
+
+# MutualAction: Impart
+msgid "impart_action_name"
+msgstr "Impart Knowledge"
+
+msgid "impart_description"
+msgstr ""
+"Impart cultivation experience to your disciple, martial grandchild, martial "
+"sibling, child, grandchild, or friend"
+
+msgid "impart_requirements"
+msgstr ""
+"Target must be your disciple, martial grandchild, martial sibling, child, "
+"grandchild, or friend; initiator level > target level + 20; target within "
+"interaction range; cannot execute consecutively"
+
+# MutualAction Base
+msgid "mutual_action_name"
+msgstr "Mutual Action"
+
+msgid "mutual_action_requirements"
+msgstr "Target within interaction range"
+
+# MutualAction: Attack
+msgid "mutual_attack_action_name"
+msgstr "Attack"
+
+msgid "mutual_attack_description"
+msgstr "Attack the target"
+
+msgid "mutual_attack_requirements"
+msgstr "Target within interaction range; cannot execute consecutively"
+
+# MutualAction: Occupy
+msgid "occupy_action_name"
+msgstr "Seize Cave Dwelling"
+
+msgid "occupy_description"
+msgstr ""
+"Occupy or seize cave dwelling. Note: This may trigger a battle with the cave"
+" dwelling owner"
+
+msgid "occupy_requirements"
+msgstr "Target within interaction range; cannot execute consecutively"
+
+msgid "occupy_story_prompt"
+msgstr ""
+"This is a battle for cave dwelling. Do not mention specific HP or damage "
+"values."
+
+# MutualAction: Spar
+msgid "spar_action_name"
+msgstr "Spar"
+
+msgid "spar_description"
+msgstr ""
+"Spar with target, stop at the right moment (greatly increases weapon "
+"proficiency, no damage)"
+
+msgid "spar_requirements"
+msgstr "Target within interaction range; cannot execute consecutively"
+
+msgid "spar_story_prompt"
+msgstr ""
+"This is a friendly sparring between two people, stopping at the right "
+"moment, without real harm. Focus on describing the exquisite moves of both "
+"sides and their mutual inspiration. Do not include bloody or severe injury "
+"descriptions."
+
+msgid "spirit stones"
+msgstr "spirit stones"
+
+msgid "swear_brotherhood_action_name"
+msgstr "Swear Brotherhood"
+
+msgid "swear_brotherhood_description"
+msgstr ""
+"Propose to become sworn siblings with a cultivator in interaction range."
+
+msgid "swear_brotherhood_requirements"
+msgstr "Target within interaction range; not already sworn siblings."
+
+msgid "swear_brotherhood_story_prompt"
+msgstr ""
+"This is a heroic swearing of brotherhood. Describe their mutual appreciation"
+" and their vow to live and die together."
+
+# MutualAction: Talk
+msgid "talk_action_name"
+msgstr "Talk"
+
+msgid "talk_description"
+msgstr "Initiate a talk with someone, cannot be self"
+
+msgid "talk_requirements"
+msgstr "Target within interaction range"
+
+msgid "{avatar1} conversation with {avatar2}: {content}"
+msgstr "{avatar1} conversation with {avatar2}: {content}"
+
+msgid "{giver} imparts cultivation knowledge to {receiver}"
+msgstr "{giver} imparts cultivation knowledge to {receiver}"
+
+msgid ""
+"{initiator} attempted to seize {target}'s cave dwelling {region}, {target} "
+"rejected and engaged in battle"
+msgstr ""
+"{initiator} attempted to seize {target}'s cave dwelling {region}, {target} "
+"rejected and engaged in battle"
+
+msgid "{initiator} attempts to gift {item} to {target}"
+msgstr "{initiator} attempts to gift {item} to {target}"
+
+msgid "{initiator} attempts to seize {region} from {host}"
+msgstr "{initiator} attempts to seize {region} from {host}"
+
+msgid "{initiator} and {target} enjoyed a tea gathering"
+msgstr "{initiator} and {target} enjoyed a tea gathering"
+
+msgid "{initiator} and {target} played a game of chess"
+msgstr "{initiator} and {target} played a game of chess"
+
+msgid "{initiator} challenges {target} to spar"
+msgstr "{initiator} challenges {target} to spar"
+
+msgid "{initiator} confesses their love to {target}"
+msgstr "{initiator} confesses their love to {target}"
+
+msgid "{initiator} forced {target} to yield {region}"
+msgstr "{initiator} forced {target} to yield {region}"
+
+msgid "{initiator} initiates {action} with {target}"
+msgstr "{initiator} initiates {action} with {target}"
+
+msgid "{initiator} proposes to become sworn siblings with {target}"
+msgstr "{initiator} proposes to become sworn siblings with {target}"
+
+msgid "{initiator} successfully gifted {item} to {target}"
+msgstr "{initiator} successfully gifted {item} to {target}"
+
+msgid "{master} imparts cultivation knowledge to apprentice {apprentice}"
+msgstr "{master} imparts cultivation knowledge to apprentice {apprentice}"
+
+msgid "{region} is not a cultivation area, cannot occupy"
+msgstr "{region} is not a cultivation area, cannot occupy"
+
+msgid "{target} accepted {initiator}'s confession, they became lovers"
+msgstr "{target} accepted {initiator}'s confession, they became lovers"
+
+msgid "{target} accepted {initiator}'s proposal, they became sworn siblings"
+msgstr "{target} accepted {initiator}'s proposal, they became sworn siblings"
+
+msgid "{target} accepted {initiator}'s talk invitation"
+msgstr "{target} accepted {initiator}'s talk invitation"
+
+msgid "{target} feedback to {initiator}: {feedback}"
+msgstr "{target}'s response to {initiator}: {feedback}"
+
+msgid "{target} rejected {initiator}'s confession"
+msgstr "{target} rejected {initiator}'s confession"
+
+msgid "{target} rejected {initiator}'s proposal to become sworn siblings"
+msgstr "{target} rejected {initiator}'s proposal to become sworn siblings"
+
+msgid "{target} rejected {initiator}'s talk invitation"
+msgstr "{target} rejected {initiator}'s talk invitation"
+
+msgid "{target} rejected {initiator}'s gift: {item}"
+msgstr "{target} rejected {initiator}'s gift: {item}"
+
+msgid ""
+"{winner} gained slight advantage in sparring, defeated {loser}. ({winner} "
+"proficiency +{w_gain}, {loser} proficiency +{l_gain})"
+msgstr ""
+"{winner} gained slight advantage in sparring, defeated {loser}. ({winner} "
+"proficiency +{w_gain}, {loser} proficiency +{l_gain})"

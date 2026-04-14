@@ -1,0 +1,33 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-TW\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Hidden Domain (祕境)
+msgid "hidden_domain_story_prompt"
+msgstr ""
+"描述探索祕境的過程。可以聚焦於單人的經歷，也可以描述多人問的互動（如相遇、合作、競爭甚至相互攻擊）。內容應涵蓋遭遇的兇險、獲得的機緣，或是空手而歸的失落與遺憾，營造神祕、緊張或充滿變數的氛圍。"
+
+msgid "perished"
+msgstr "葬身於"
+
+msgid "{names} returned from {domain} empty-handed."
+msgstr "{names} 在祕境【{domain}】中一無所獲，空手而歸。"
+
+msgid "{name} found a treasure {loot} in {domain}!"
+msgstr "{name} 在祕境【{domain}】中覓得寶物【{loot}】！"
+
+msgid "{name} perished in the hidden domain {domain}."
+msgstr "{name} 葬身於祕境【{domain}】。"
+
+msgid "{}: {}"
+msgstr "{}：{}"

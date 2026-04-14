@@ -1,0 +1,164 @@
+/**
+ * WebSocket Client
+ * 纯粹的 Socket 封装，不依赖 Store
+ */
+
+import { logError, logWarn } from '@/utils/appError'
+import type { SocketMessageDTO, SocketServerMessageDTO } from '@/types/api'
+import { loadOrCreateViewerId } from '@/utils/viewerIdentity'
+
+export type MessageHandler = (data: SocketMessageDTO) => void;
+
+export interface SocketOptions {
+  url?: string;
+  reconnectInterval?: number;
+  maxReconnectAttempts?: number;
+}
+
+export class GameSocket {
+  private ws: WebSocket | null = null;
+  private handlers: Set<MessageHandler> = new Set();
+  private statusHandlers: Set<(connected: boolean) => void> = new Set();
+  
+  private reconnectTimer: number | null = null;
+  private attempts = 0;
+  private isIntentionalClose = false;
+  private options: SocketOptions;
+  private roomId = 'main';
+
+  constructor(options: SocketOptions = {}) {
+    this.options = options;
+  }
+
+  public connect(roomId?: string) {
+    if (roomId) {
+      this.roomId = roomId.trim() || 'main';
+    }
+    this.isIntentionalClose = false;
+    this.cleanup();
+
+    const url = this.buildUrl();
+
+    try {
+      this.ws = new WebSocket(url);
+      this.ws.onopen = this.onOpen.bind(this);
+      this.ws.onmessage = this.onMessage.bind(this);
+      this.ws.onclose = this.onClose.bind(this);
+      this.ws.onerror = this.onError.bind(this);
+    } catch (e) {
+      logError('Socket connect', e);
+      this.scheduleReconnect();
+    }
+  }
+
+  public disconnect() {
+    this.isIntentionalClose = true;
+    this.cleanup();
+    this.notifyStatus(false);
+  }
+
+  public switchRoom(roomId: string) {
+    this.connect(roomId);
+  }
+
+  public on(handler: MessageHandler) {
+    this.handlers.add(handler);
+    return () => this.handlers.delete(handler);
+  }
+
+  public onStatusChange(handler: (connected: boolean) => void) {
+    this.statusHandlers.add(handler);
+    return () => this.statusHandlers.delete(handler);
+  }
+
+  private onOpen() {
+    this.attempts = 0;
+    this.notifyStatus(true);
+  }
+
+  private onMessage(event: MessageEvent) {
+    try {
+      const data = parseSocketServerMessage(event.data);
+      if (!data || data.type === 'pong') {
+        return;
+      }
+      this.handlers.forEach((handler) => handler(data));
+    } catch (e) {
+      logWarn('Socket parse message', e);
+    }
+  }
+
+  private onClose() {
+    this.notifyStatus(false);
+    if (!this.isIntentionalClose) {
+      this.scheduleReconnect();
+    }
+  }
+
+  private onError() {
+    // Error usually precedes Close, so we handle logic in Close
+  }
+
+  private cleanup() {
+    if (this.reconnectTimer) {
+      window.clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    if (this.ws) {
+      this.ws.onopen = null;
+      this.ws.onmessage = null;
+      this.ws.onclose = null;
+      this.ws.onerror = null;
+      this.ws.close();
+      this.ws = null;
+    }
+  }
+
+  private scheduleReconnect() {
+    const max = this.options.maxReconnectAttempts ?? 10;
+    if (this.attempts >= max) return;
+
+    const base = this.options.reconnectInterval ?? 1000;
+    const delay = Math.min(10000, base * (2 ** this.attempts));
+    
+    this.reconnectTimer = window.setTimeout(() => {
+      this.attempts++;
+      this.connect();
+    }, delay);
+  }
+
+  private buildUrl() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    const baseUrl = this.options.url || `${protocol}//${host}/ws`;
+    const separator = baseUrl.includes('?') ? '&' : '?';
+    const viewerId = loadOrCreateViewerId();
+    return `${baseUrl}${separator}room_id=${encodeURIComponent(this.roomId)}&viewer_id=${encodeURIComponent(viewerId)}`;
+  }
+
+  private notifyStatus(connected: boolean) {
+    this.statusHandlers.forEach(h => h(connected));
+  }
+}
+
+function parseSocketServerMessage(raw: string): SocketServerMessageDTO | null {
+  const data: unknown = JSON.parse(raw)
+  if (!data || typeof data !== 'object' || !('type' in data)) {
+    return null
+  }
+
+  const type = (data as { type?: unknown }).type
+  switch (type) {
+    case 'tick':
+    case 'toast':
+    case 'llm_config_required':
+    case 'game_reinitialized':
+    case 'pong':
+      return data as SocketServerMessageDTO
+    default:
+      return null
+  }
+}
+
+// 单例实例
+export const gameSocket = new GameSocket();

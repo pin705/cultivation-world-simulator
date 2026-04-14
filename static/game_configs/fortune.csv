@@ -1,0 +1,7 @@
+id,kind,min_realm,max_realm,weight,title_id,title
+1,weapon,QI_REFINEMENT,NASCENT_SOUL,10,fortune_title_weapon,获得兵器
+2,auxiliary,QI_REFINEMENT,NASCENT_SOUL,10,fortune_title_auxiliary,获得法宝
+3,technique,QI_REFINEMENT,NASCENT_SOUL,10,fortune_title_technique,领悟功法
+4,find_master,QI_REFINEMENT,FOUNDATION_ESTABLISHMENT,5,fortune_title_find_master,拜入师门
+5,spirit_stone,QI_REFINEMENT,NASCENT_SOUL,20,fortune_title_spirit_stone,获得灵石
+6,cultivation,QI_REFINEMENT,NASCENT_SOUL,20,fortune_title_cultivation,修为精进

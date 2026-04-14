@@ -1,0 +1,163 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cultivation-world-simulator 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-20 00:00+0000\n"
+"PO-Revision-Date: 2024-01-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: zh-TW\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid ""
+"\n"
+"(Selecting {replace} will sell old {label})"
+msgstr ""
+"\n"
+"（選擇{replace}將賣出舊{label}）"
+
+# Sect Rank
+msgid "patriarch"
+msgstr "掌門"
+
+msgid "phenomenon_change"
+msgstr "{old_name}消散，天地異象再現！{new_name}：{new_desc}。"
+
+msgid "world_creation_phenomenon"
+msgstr "世界初開，天降異象！{name}：{desc}。"
+
+msgid ""
+"{avatar_name} deliberated and redefined their long-term objective: "
+"{objective}"
+msgstr "{avatar_name} 經過深思熟慮，重新確定了自己的長期目標：{objective}"
+
+msgid "{avatar_name} determined their long-term objective: {objective}"
+msgstr "{avatar_name} 確定了自己的長期目標：{objective}"
+
+# Sect 系統 - 宗門
+msgid "Base effect"
+msgstr "基礎效果"
+
+msgid "Sect random event"
+msgstr "宗門隨機事件"
+
+msgid "Temporary effect"
+msgstr "臨時效果"
+
+msgid "{sect_name} (Alignment: {alignment}, Headquarters: {hq_name})"
+msgstr "{sect_name}（陣營：{alignment}，駐地：{hq_name}）"
+
+msgid ""
+"{sect_name} (Alignment: {alignment}, Style: {style}, Headquarters: "
+"{hq_name}){effect}"
+msgstr "{sect_name}（陣營：{alignment}，風格：{style}，駐地：{hq_name}）{effect}"
+
+msgid ""
+"{sect_name} (Orthodoxy: {orthodoxy}, Alignment: {alignment}, Headquarters: "
+"{hq_name})"
+msgstr "{sect_name}（道統：{orthodoxy}，陣營：{alignment}，駐地：{hq_name}）"
+
+msgid ""
+"{sect_name} (Orthodoxy: {orthodoxy}, Alignment: {alignment}, Style: {style},"
+" Headquarters: {hq_name}){effect}"
+msgstr ""
+"{sect_name}（道統：{orthodoxy}，陣營：{alignment}，風格：{style}，駐地：{hq_name}）{effect}"
+
+msgid "Our sect has settled its priorities for the coming years; next we should guard our rules and foundations, recruit talent with care, reward and punish fairly, and expand our momentum through steady progress."
+msgstr "我宗已定近年取捨，接下來當守住門規與根基，擇才而納、賞罰分明，以穩中求進擴張宗門氣象。"
+
+msgid "There is currently no celestial phenomenon."
+msgstr "當前無天地異象。"
+
+msgid "A celestial phenomenon is present, but its description is missing."
+msgstr "當前有天地異象，但描述缺失。"
+
+msgid "New disciples must abide by the sect rules."
+msgstr "入門後需守宗門戒律。"
+
+msgid "{sect_name} has extended a recruitment invitation to you."
+msgstr "{sect_name} 向你發出招徠。"
+
+msgid "Sect overview: {sect_info}"
+msgstr "宗門簡介：{sect_info}"
+
+msgid "Sect rules: {rule_desc}"
+msgstr "門規：{rule_desc}"
+
+msgid "If you accept, you will become a disciple of this sect."
+msgstr "若你答應加入，將成為該宗門弟子。"
+
+msgid "Accept invitation"
+msgstr "接受招徠"
+
+msgid "Join {sect_name} and become one of its disciples."
+msgstr "加入 {sect_name}，成為門下弟子。"
+
+msgid "Decline invitation"
+msgstr "拒絕招徠"
+
+msgid "Remain an independent cultivator."
+msgstr "繼續保持散修身分。"
+
+msgid "{avatar_name} accepted {sect_name}'s invitation."
+msgstr "{avatar_name} 答應了 {sect_name} 的招徠。"
+
+msgid "{avatar_name} declined {sect_name}'s invitation."
+msgstr "{avatar_name} 拒絕了 {sect_name} 的招徠。"
+
+msgid "{sect_name} declared war on {target_name}; from this point on, the two sects are at war."
+msgstr "{sect_name} 向 {target_name} 宣戰，兩宗自此進入戰爭狀態。"
+
+msgid "{sect_name} made peace with {target_name}, and the state of war between them came to an end."
+msgstr "{sect_name} 與 {target_name} 議和，雙方結束戰爭狀態。"
+
+msgid "{sect_name} spent {cost} spirit stones to recruit {avatar_name}; {avatar_name} officially became a disciple of the sect."
+msgstr "{sect_name} 花費 {cost} 靈石招徠 {avatar_name} 入門，{avatar_name} 正式成為本宗弟子。"
+
+msgid "{sect_name} judged that {avatar_name} had gravely violated the sect rules and expelled them from the sect."
+msgstr "{sect_name} 認定 {avatar_name} 嚴重違背門規，將其逐出宗門。"
+
+msgid "{sect_name} bestowed the technique \"{technique_name}\" upon {avatar_name}."
+msgstr "{sect_name} 賜予 {avatar_name} 功法《{technique_name}》。"
+
+msgid "{sect_name} granted {amount} spirit stones to {avatar_name} in support of their cultivation."
+msgstr "{sect_name} 資助 {avatar_name} {amount} 靈石，以助其修行。"
+
+msgid "recruited {count} rogue cultivators"
+msgstr "招徠散修 {count} 人"
+
+msgid "declared war {count} times"
+msgstr "宣戰 {count} 次"
+
+msgid "made peace {count} times"
+msgstr "議和 {count} 次"
+
+msgid "expelled {count} members"
+msgstr "驅逐門人 {count} 人"
+
+msgid "bestowed techniques {count} times"
+msgstr "賜下功法 {count} 次"
+
+msgid "granted spirit-stone support {count} times"
+msgstr "資助靈石 {count} 次"
+
+msgid "{sect_name} focused this round of sect decisions on consolidation and observation, with no major adjustments made."
+msgstr "{sect_name} 本輪宗門決策以觀望整固為主，未作重大調整。"
+
+msgid "{sect_name} this round of sect decisions:"
+msgstr "{sect_name} 本輪宗門決策："
+
+msgid "Every successful recruit immediately costs {recruit_cost} spirit stones and increases future yearly member upkeep."
+msgstr "每成功招募一名新人會立即消耗 {recruit_cost} 靈石，並增加後續年度成員供養支出。"
+
+msgid "Each support action always costs {support_amount} spirit stones."
+msgstr "每次資助固定消耗 {support_amount} 靈石。"
+
+msgid "Granting techniques does not directly spend spirit stones, but it consumes sect inheritance resources; frequent rewards reduce the value and rarity of the sect's scripture collection."
+msgstr "賜予功法不會直接扣減靈石，但會消耗宗門傳承資源；頻繁賜法會降低典籍的價值與稀缺性。"
+
+msgid "[{month_stamp}] {content}"
+msgstr "[{month_stamp}] {content}"

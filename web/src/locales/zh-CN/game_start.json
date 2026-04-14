@@ -1,0 +1,25 @@
+{
+  "title": "开始游戏",
+  "description": "设定世界的初始状态。注意：游戏开始后，这些设定将无法更改。",
+  "labels": {
+    "init_npc_num": "初始修士数量",
+    "sect_num": "活跃宗门数量",
+    "new_npc_rate": "每月新生修士概率",
+    "world_lore": "世界观与历史"
+  },
+  "tips": {
+    "sect_num": "宗门数量建议少于角色数量的一半"
+  },
+  "placeholders": {
+    "world_lore": "优先描述修炼体系、正邪格局、宗门生态、地域风貌，再补充关键时代脉络与历史事件。启用后会调用LLM，初始化时间会明显增加。（可选）"
+  },
+  "options": {},
+  "actions": {
+    "start": "开始"
+  },
+  "messages": {
+    "load_failed": "加载配置失败",
+    "start_success": "配置已保存，正在初始化世界...",
+    "start_failed": "开始游戏失败"
+  }
+}
