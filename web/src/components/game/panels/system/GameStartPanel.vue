@@ -9,8 +9,15 @@ import { logError } from '@/utils/appError'
 const { t } = useI18n()
 const settingStore = useSettingStore()
 
-defineProps<{
+const props = withDefaults(defineProps<{
   readonly: boolean
+  compact?: boolean
+}>(), {
+  compact: false,
+})
+
+const emit = defineEmits<{
+  (e: 'started'): void
 }>()
 
 const message = useMessage()
@@ -21,9 +28,11 @@ async function startGame() {
     loading.value = true
     await settingStore.startGameWithDraft()
     message.success(t('game_start.messages.start_success'))
+    emit('started')
   } catch (e) {
     message.error(t('game_start.messages.start_failed'))
     logError('GameStartPanel start game', e)
+  } finally {
     loading.value = false
   }
 }
@@ -31,7 +40,7 @@ async function startGame() {
 
 <template>
   <div class="game-start-panel">
-    <div class="panel-header">
+    <div v-if="!props.compact" class="panel-header">
       <h3>{{ t('game_start.title') }}</h3>
       <p class="description">{{ t('game_start.description') }}</p>
     </div>

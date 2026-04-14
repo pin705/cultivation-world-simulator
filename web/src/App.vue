@@ -142,7 +142,7 @@ function onboardingStepLabel(step: string) {
 }
 
 function openPlayerCampaignSetup() {
-  uiStore.openSystemMenu('other', true, 'game')
+  uiStore.openSystemMenu('start', true, 'game')
 }
 
 async function claimSectFromOverlay(sectId: number) {

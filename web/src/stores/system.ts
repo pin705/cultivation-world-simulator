@@ -46,8 +46,7 @@ export const useSystemStore = defineStore('system', () => {
   async function normalizeRoomAfterIdentityChange() {
     const status = await fetchInitStatus();
     if (status?.active_room_summary?.viewer_has_access === false) {
-      await systemApi.switchWorldRoom({ room_id: 'main', viewer_id: viewerId.value });
-      return await fetchInitStatus();
+      return await switchWorldRoom('main');
     }
     return status;
   }

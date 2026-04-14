@@ -53,6 +53,7 @@ watch(() => props.visible, (val) => {
     <SystemMenuStartTab
       v-if="activeTab === 'start'"
       :game-initialized="gameInitialized"
+      @close="emit('close')"
     />
 
     <SystemMenuLoadTab
