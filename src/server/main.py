@@ -130,7 +130,9 @@ from src.server.runtime import (
 from src.server.services.auth_session import (
     bootstrap_guest_auth_session,
     get_authenticated_session,
+    login_password_auth_session,
     logout_authenticated_session,
+    register_password_auth_session,
     resolve_viewer_id_from_request,
 )
 from src.server.host_runtime import (
@@ -600,6 +602,8 @@ configure_routes_and_mounts(
     create_public_auth_router=create_public_auth_router,
     get_auth_store=lambda: player_auth_store,
     bootstrap_guest_auth_session=bootstrap_guest_auth_session,
+    register_password_auth_session=register_password_auth_session,
+    login_password_auth_session=login_password_auth_session,
     get_authenticated_session=get_authenticated_session,
     logout_authenticated_session=logout_authenticated_session,
     create_websocket_router=create_websocket_router,

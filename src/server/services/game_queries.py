@@ -8,6 +8,159 @@ from fastapi import Query
 from src.server.services.public_api_contract import raise_public_error
 
 
+def _normalize_viewer_id(viewer_id: str | None) -> str | None:
+    normalized = str(viewer_id or "").strip()
+    return normalized or None
+
+
+@contextmanager
+def _viewer_runtime_scope(world, viewer_id: str | None):
+    normalized_viewer_id = _normalize_viewer_id(viewer_id)
+    if world is None or normalized_viewer_id is None:
+        yield
+        return
+
+    previous_controller_id = getattr(world, "get_active_controller_id", lambda: "local")()
+    viewer_controller_id = getattr(world, "find_player_control_seat_by_holder", lambda _vid: None)(normalized_viewer_id)
+    if not viewer_controller_id:
+        yield
+        return
+
+    getattr(world, "switch_active_controller")(viewer_controller_id)
+    try:
+        yield
+    finally:
+        current_controller_id = getattr(world, "get_active_controller_id", lambda: "local")()
+        if current_controller_id != previous_controller_id:
+            getattr(world, "switch_active_controller")(previous_controller_id)
+
+
+def _build_player_onboarding_summary(world, *, viewer_id: str | None) -> dict[str, Any] | None:
+    normalized_viewer_id = _normalize_viewer_id(viewer_id)
+    if world is None or normalized_viewer_id is None:
+        return None
+
+    viewer_profile = getattr(world, "get_player_profile_summary", lambda _vid: None)(normalized_viewer_id) or {}
+    claimed_seat_id = viewer_profile.get("controller_id")
+    intervention_points = 0
+    intervention_points_max = 0
+    owned_sect_id = None
+    owned_sect_name = None
+    main_avatar_id = None
+    main_avatar_name = None
+    claimable_sects: list[dict[str, Any]] = []
+    main_avatar_candidates: list[dict[str, Any]] = []
+
+    with _viewer_runtime_scope(world, normalized_viewer_id):
+        intervention_points = int(getattr(world, "player_intervention_points", 0) or 0)
+        intervention_points_max = int(
+            getattr(world, "get_player_intervention_points_max", lambda: 0)() or 0
+        )
+        owned_sect_id = getattr(world, "get_player_owned_sect_id", lambda: None)()
+        main_avatar_id = getattr(world, "get_player_main_avatar_id", lambda: None)()
+
+        active_sects = list(getattr(world, "existed_sects", []) or [])
+        sect_member_counts: dict[int, int] = {}
+        for avatar in getattr(getattr(world, "avatar_manager", None), "avatars", {}).values():
+            sect = getattr(avatar, "sect", None)
+            sect_id = getattr(sect, "id", None)
+            try:
+                sect_id_int = int(sect_id)
+            except (TypeError, ValueError):
+                continue
+            sect_member_counts[sect_id_int] = sect_member_counts.get(sect_id_int, 0) + 1
+
+        for sect in sorted(active_sects, key=lambda item: str(getattr(item, "name", "") or "")):
+            try:
+                sect_id_int = int(getattr(sect, "id", 0) or 0)
+            except (TypeError, ValueError):
+                continue
+            is_owned = owned_sect_id is not None and int(owned_sect_id) == sect_id_int
+            claimable_sects.append(
+                {
+                    "id": sect_id_int,
+                    "name": str(getattr(sect, "name", "") or ""),
+                    "member_count": int(sect_member_counts.get(sect_id_int, 0) or 0),
+                    "is_owned": is_owned,
+                    "can_claim": owned_sect_id is None or is_owned,
+                }
+            )
+            if is_owned:
+                owned_sect_name = str(getattr(sect, "name", "") or "") or None
+
+        if owned_sect_id is not None:
+            avatars = list(getattr(getattr(world, "avatar_manager", None), "avatars", {}).values())
+            filtered_avatars = []
+            for avatar in avatars:
+                sect = getattr(avatar, "sect", None)
+                sect_id = getattr(sect, "id", None)
+                try:
+                    sect_id_int = int(sect_id) if sect_id is not None else None
+                except (TypeError, ValueError):
+                    sect_id_int = None
+                if sect_id_int is None or sect_id_int != int(owned_sect_id):
+                    continue
+                if bool(getattr(avatar, "is_dead", False)):
+                    continue
+                filtered_avatars.append(avatar)
+            filtered_avatars.sort(
+                key=lambda avatar: (
+                    -int(getattr(avatar, "base_battle_strength", 0) or 0),
+                    -int(getattr(getattr(avatar, "age", None), "age", 0) or 0),
+                    str(getattr(avatar, "name", "") or "").lower(),
+                )
+            )
+            for avatar in filtered_avatars[:8]:
+                avatar_id = str(getattr(avatar, "id", "") or "").strip()
+                if not avatar_id:
+                    continue
+                realm = str(
+                    getattr(getattr(avatar, "cultivation_progress", None), "realm", None).value
+                    if getattr(getattr(avatar, "cultivation_progress", None), "realm", None) is not None
+                    else ""
+                ).strip() or "未知"
+                is_current = bool(main_avatar_id and avatar_id == str(main_avatar_id))
+                if is_current:
+                    main_avatar_name = str(getattr(avatar, "name", "") or "") or None
+                main_avatar_candidates.append(
+                    {
+                        "id": avatar_id,
+                        "name": str(getattr(avatar, "name", "") or ""),
+                        "realm": realm,
+                        "age": int(getattr(getattr(avatar, "age", None), "age", 0) or 0),
+                        "base_battle_strength": int(getattr(avatar, "base_battle_strength", 0) or 0),
+                        "is_current": is_current,
+                    }
+                )
+
+    if main_avatar_id and main_avatar_name is None:
+        main_avatar = getattr(getattr(world, "avatar_manager", None), "avatars", {}).get(str(main_avatar_id))
+        if main_avatar is not None:
+            main_avatar_name = str(getattr(main_avatar, "name", "") or "") or None
+
+    recommended_step = "ready"
+    if owned_sect_id is None:
+        recommended_step = "claim_sect"
+    elif main_avatar_id is None:
+        recommended_step = "set_main_avatar"
+
+    return {
+        "viewer_id": normalized_viewer_id,
+        "viewer_display_name": str(viewer_profile.get("display_name", "") or ""),
+        "claimed_seat_id": claimed_seat_id,
+        "owned_sect_id": int(owned_sect_id) if owned_sect_id is not None else None,
+        "owned_sect_name": owned_sect_name,
+        "main_avatar_id": str(main_avatar_id) if main_avatar_id else None,
+        "main_avatar_name": main_avatar_name,
+        "intervention_points": intervention_points,
+        "intervention_points_max": intervention_points_max,
+        "recommended_step": recommended_step,
+        "ready": recommended_step == "ready",
+        "claimable_sects": claimable_sects,
+        "main_avatar_candidates": main_avatar_candidates,
+    }
+
+
 def get_runtime_status(runtime, version: str, *, room_registry=None, viewer_id: str | None = None) -> dict[str, Any]:
     start_time = runtime.get("init_start_time")
     world = runtime.get("world")
@@ -101,6 +254,7 @@ def get_runtime_status(runtime, version: str, *, room_registry=None, viewer_id: 
         room_summaries = []
     if not isinstance(active_room_summary, dict):
         active_room_summary = None
+    player_onboarding = _build_player_onboarding_summary(world, viewer_id=viewer_id)
 
     return {
         "status": runtime.get("init_status", "idle"),
@@ -136,6 +290,7 @@ def get_runtime_status(runtime, version: str, *, room_registry=None, viewer_id: 
         "player_control_seats": player_control_seats,
         "player_profiles": player_profiles,
         "viewer_profile": viewer_profile,
+        "player_onboarding": player_onboarding,
     }
 
 
@@ -573,26 +728,8 @@ def get_detail(
 
     world = _require_world(runtime)
 
-    @contextmanager
-    def _viewer_detail_scope():
-        normalized_viewer_id = str(viewer_id or "").strip()
-        if not normalized_viewer_id:
-            yield
-            return
-
-        from src.server.services.player_control import activate_viewer_control_seat
-
-        previous_controller_id = getattr(world, "get_active_controller_id", lambda: "local")()
-        activate_viewer_control_seat(world, viewer_id=normalized_viewer_id)
-        try:
-            yield
-        finally:
-            current_controller_id = getattr(world, "get_active_controller_id", lambda: "local")()
-            if current_controller_id != previous_controller_id:
-                getattr(world, "switch_active_controller")(previous_controller_id)
-
     target = None
-    with _viewer_detail_scope():
+    with _viewer_runtime_scope(world, viewer_id):
         if target_type == "avatar":
             target = world.avatar_manager.get_avatar(target_id)
         elif target_type == "region":

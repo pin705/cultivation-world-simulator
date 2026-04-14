@@ -27,6 +27,8 @@ export interface AuthSessionDTO {
   viewer_id: string;
   auth_type: string;
   display_name: string;
+  email?: string | null;
+  has_password_account?: boolean;
   created_at: string;
   updated_at: string;
   last_seen_at: string;
@@ -432,6 +434,39 @@ export interface FetchEventsParams {
 
 // --- Status ---
 
+export interface PlayerOnboardingSectDTO {
+  id: number;
+  name: string;
+  member_count: number;
+  is_owned: boolean;
+  can_claim: boolean;
+}
+
+export interface PlayerOnboardingAvatarDTO {
+  id: string;
+  name: string;
+  realm: string;
+  age: number;
+  base_battle_strength: number;
+  is_current: boolean;
+}
+
+export interface PlayerOnboardingDTO {
+  viewer_id: string;
+  viewer_display_name?: string;
+  claimed_seat_id?: string | null;
+  owned_sect_id?: number | null;
+  owned_sect_name?: string | null;
+  main_avatar_id?: string | null;
+  main_avatar_name?: string | null;
+  intervention_points: number;
+  intervention_points_max: number;
+  recommended_step: 'claim_sect' | 'set_main_avatar' | 'ready';
+  ready: boolean;
+  claimable_sects: PlayerOnboardingSectDTO[];
+  main_avatar_candidates: PlayerOnboardingAvatarDTO[];
+}
+
 export interface InitStatusDTO {
   status: 'idle' | 'pending' | 'in_progress' | 'ready' | 'error';
   phase: number;
@@ -460,6 +495,7 @@ export interface InitStatusDTO {
   }>;
   player_profiles?: PlayerProfileDTO[];
   viewer_profile?: PlayerProfileDTO | null;
+  player_onboarding?: PlayerOnboardingDTO | null;
 }
 
 export interface RoomSummaryDTO {

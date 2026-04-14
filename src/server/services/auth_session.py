@@ -54,6 +54,68 @@ def bootstrap_guest_auth_session(
     }
 
 
+def register_password_auth_session(
+    *,
+    auth_store,
+    request: Request,
+    response: Response,
+    email: str,
+    password: str,
+    display_name: str | None = None,
+    preferred_viewer_id: str | None = None,
+) -> dict[str, Any]:
+    session = auth_store.register_password_account(
+        existing_session_id=request.cookies.get(AUTH_SESSION_COOKIE_NAME),
+        email=email,
+        password=password,
+        display_name=display_name,
+        preferred_viewer_id=_normalize_viewer_id(preferred_viewer_id),
+        user_agent=request.headers.get("user-agent"),
+    )
+    response.set_cookie(
+        key=AUTH_SESSION_COOKIE_NAME,
+        value=str(session["session_id"]),
+        httponly=True,
+        samesite="lax",
+        secure=_should_use_secure_cookie(request),
+        max_age=AUTH_SESSION_MAX_AGE_SECONDS,
+        path="/",
+    )
+    return {
+        "authenticated": True,
+        "session": session,
+    }
+
+
+def login_password_auth_session(
+    *,
+    auth_store,
+    request: Request,
+    response: Response,
+    email: str,
+    password: str,
+) -> dict[str, Any]:
+    session = auth_store.authenticate_password_account(
+        existing_session_id=request.cookies.get(AUTH_SESSION_COOKIE_NAME),
+        email=email,
+        password=password,
+        user_agent=request.headers.get("user-agent"),
+    )
+    response.set_cookie(
+        key=AUTH_SESSION_COOKIE_NAME,
+        value=str(session["session_id"]),
+        httponly=True,
+        samesite="lax",
+        secure=_should_use_secure_cookie(request),
+        max_age=AUTH_SESSION_MAX_AGE_SECONDS,
+        path="/",
+    )
+    return {
+        "authenticated": True,
+        "session": session,
+    }
+
+
 def get_authenticated_session(
     *,
     auth_store,

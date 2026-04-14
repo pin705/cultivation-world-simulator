@@ -37,10 +37,28 @@ export const useSystemStore = defineStore('system', () => {
   const playerControlSeats = computed(() => initStatus.value?.player_control_seats || []);
   const playerProfiles = computed(() => initStatus.value?.player_profiles || []);
   const viewerProfile = computed(() => initStatus.value?.viewer_profile || null);
+  const playerOnboarding = computed(() => initStatus.value?.player_onboarding || null);
   const activeRoomId = computed(() => initStatus.value?.active_room_id || 'main');
   const roomIds = computed(() => initStatus.value?.room_ids || ['main']);
   const activeRoomSummary = computed(() => initStatus.value?.active_room_summary || null);
   const roomSummaries = computed(() => initStatus.value?.room_summaries || []);
+
+  async function normalizeRoomAfterIdentityChange() {
+    const status = await fetchInitStatus();
+    if (status?.active_room_summary?.viewer_has_access === false) {
+      await systemApi.switchWorldRoom({ room_id: 'main', viewer_id: viewerId.value });
+      return await fetchInitStatus();
+    }
+    return status;
+  }
+
+  function applyAuthSession(session: AuthSessionDTO | null) {
+    authSession.value = session;
+    if (session?.viewer_id) {
+      viewerId.value = session.viewer_id;
+      storeViewerId(session.viewer_id);
+    }
+  }
 
   async function ensureViewerSession() {
     if (authBootstrapped.value) {
@@ -55,11 +73,7 @@ export const useSystemStore = defineStore('system', () => {
         const res = await authApi.bootstrapGuestSession({
           preferred_viewer_id: viewerId.value,
         });
-        authSession.value = res.session ?? null;
-        if (res.session?.viewer_id) {
-          viewerId.value = res.session.viewer_id;
-          storeViewerId(res.session.viewer_id);
-        }
+        applyAuthSession(res.session ?? null);
         authBootstrapped.value = true;
         return authSession.value;
       } catch (e) {
@@ -100,6 +114,51 @@ export const useSystemStore = defineStore('system', () => {
         logError('SystemStore fetch init status', e);
       }
       return null;
+    }
+  }
+
+  async function registerPasswordSession(email: string, password: string, displayName?: string) {
+    try {
+      const res = await authApi.registerPasswordSession({
+        email,
+        password,
+        display_name: displayName,
+        preferred_viewer_id: viewerId.value,
+      });
+      applyAuthSession(res.session ?? null);
+      authBootstrapped.value = true;
+      await normalizeRoomAfterIdentityChange();
+      return res.session ?? null;
+    } catch (e) {
+      logError('SystemStore register password session', e);
+      return null;
+    }
+  }
+
+  async function loginPasswordSession(email: string, password: string) {
+    try {
+      const res = await authApi.loginPasswordSession({ email, password });
+      applyAuthSession(res.session ?? null);
+      authBootstrapped.value = true;
+      await normalizeRoomAfterIdentityChange();
+      return res.session ?? null;
+    } catch (e) {
+      logError('SystemStore login password session', e);
+      return null;
+    }
+  }
+
+  async function logoutSession() {
+    try {
+      await authApi.logout();
+      authBootstrapped.value = false;
+      authSession.value = null;
+      await ensureViewerSession();
+      await normalizeRoomAfterIdentityChange();
+      return true;
+    } catch (e) {
+      logError('SystemStore logout session', e);
+      return false;
     }
   }
 
@@ -375,10 +434,14 @@ export const useSystemStore = defineStore('system', () => {
     playerControlSeats,
     playerProfiles,
     viewerProfile,
+    playerOnboarding,
     activeRoomSummary,
     roomSummaries,
     
     ensureViewerSession,
+    registerPasswordSession,
+    loginPasswordSession,
+    logoutSession,
     fetchInitStatus,
     switchControlSeat,
     releaseControlSeat,

@@ -93,6 +93,8 @@ def configure_routes_and_mounts(
     create_public_auth_router,
     get_auth_store,
     bootstrap_guest_auth_session,
+    register_password_auth_session,
+    login_password_auth_session,
     get_authenticated_session,
     logout_authenticated_session,
     create_websocket_router,
@@ -204,6 +206,8 @@ def configure_routes_and_mounts(
         create_public_auth_router(
             get_auth_store=get_auth_store,
             bootstrap_guest_auth_session=bootstrap_guest_auth_session,
+            register_password_auth_session=register_password_auth_session,
+            login_password_auth_session=login_password_auth_session,
             get_authenticated_session=get_authenticated_session,
             logout_authenticated_session=logout_authenticated_session,
         )

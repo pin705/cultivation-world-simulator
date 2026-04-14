@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
+import { avatarApi, worldApi } from '@/api'
 import { useSystemStore } from '@/stores/system'
 import { useSocketStore } from '@/stores/socket'
 import { logError } from '@/utils/appError'
@@ -19,8 +20,10 @@ const socketStore = useSocketStore()
 const {
   initStatus,
   viewerId,
+  authSession,
   viewerProfile,
   playerProfiles,
+  playerOnboarding,
   activeRoomId,
   roomIds,
   activeRoomSummary,
@@ -29,6 +32,12 @@ const {
   playerControlSeatIds,
   playerControlSeats,
 } = storeToRefs(systemStore)
+const authMode = ref<'register' | 'login'>('register')
+const pendingAuthEmail = ref('')
+const pendingAuthPassword = ref('')
+const pendingAuthDisplayName = ref('')
+const authError = ref('')
+const isSubmittingAuth = ref(false)
 const pendingRoomId = ref('')
 const pendingJoinRoomId = ref('')
 const pendingInviteCode = ref('')
@@ -51,6 +60,8 @@ const isSwitchingSeat = ref(false)
 const pendingDisplayName = ref('')
 const profileError = ref('')
 const isSavingProfile = ref(false)
+const onboardingError = ref('')
+const isSubmittingOnboarding = ref(false)
 const pendingReconcileTransferNote = ref('')
 const pendingReconcilePaymentRef = ref('')
 const pendingReconcileAmountVnd = ref('')
@@ -70,6 +81,26 @@ const normalizedPendingDisplayName = computed(() => pendingDisplayName.value.tri
 const currentViewerDisplayName = computed(() => (
   viewerProfile.value?.display_name?.trim()
   || viewerId.value
+))
+const isRegisteredAccount = computed(() => authSession.value?.auth_type === 'password')
+const accountEmail = computed(() => authSession.value?.email?.trim() || '')
+const normalizedPendingAuthEmail = computed(() => pendingAuthEmail.value.trim().toLowerCase())
+const normalizedPendingAuthPassword = computed(() => pendingAuthPassword.value)
+const normalizedPendingAuthDisplayName = computed(() => pendingAuthDisplayName.value.trim())
+const hasValidPendingAuthEmail = computed(() => (
+  normalizedPendingAuthEmail.value.includes('@')
+  && normalizedPendingAuthEmail.value.split('@')[1]?.includes('.')
+))
+const canRegisterPasswordAccount = computed(() => (
+  !isSubmittingAuth.value
+  && !isRegisteredAccount.value
+  && hasValidPendingAuthEmail.value
+  && normalizedPendingAuthPassword.value.length >= 8
+))
+const canLoginPasswordAccount = computed(() => (
+  !isSubmittingAuth.value
+  && hasValidPendingAuthEmail.value
+  && normalizedPendingAuthPassword.value.length >= 8
 ))
 const canSaveProfile = computed(() => (
   canManageProfile.value
@@ -275,6 +306,15 @@ const seatEntries = computed(() => {
   })
 })
 const roomPlayerEntries = computed(() => playerProfiles.value || [])
+const onboardingState = computed(() => playerOnboarding.value)
+const onboardingClaimableSects = computed(() => onboardingState.value?.claimable_sects || [])
+const onboardingMainAvatarCandidates = computed(() => onboardingState.value?.main_avatar_candidates || [])
+const onboardingRecommendedStep = computed(() => onboardingState.value?.recommended_step || 'claim_sect')
+const onboardingReady = computed(() => Boolean(onboardingState.value?.ready))
+const canRunOnboardingAction = computed(() => (
+  initStatus.value?.status === 'ready'
+  && !isSubmittingOnboarding.value
+))
 const canReleaseActiveSeat = computed(() => {
   const activeSeat = seatEntries.value.find((item) => item.id === activeControllerId.value)
   return Boolean(activeSeat?.isMine) && !isSwitchingSeat.value
@@ -367,6 +407,14 @@ watch(
   viewerProfile,
   (value) => {
     pendingDisplayName.value = value?.display_name || ''
+  },
+  { immediate: true },
+)
+
+watch(
+  onboardingState,
+  () => {
+    onboardingError.value = ''
   },
   { immediate: true },
 )
@@ -521,6 +569,78 @@ function playerMetaLabel(profile: {
     parts.push(t('ui.player_identity_seat', { id: profile.controller_id }))
   }
   return parts.join(' · ')
+}
+
+function onboardingStepLabel(step: string) {
+  if (step === 'ready') {
+    return t('ui.player_campaign_step_ready')
+  }
+  if (step === 'set_main_avatar') {
+    return t('ui.player_campaign_step_main_avatar')
+  }
+  return t('ui.player_campaign_step_claim_sect')
+}
+
+function formatOnboardingSectMeta(sect: {
+  member_count: number
+  is_owned: boolean
+}) {
+  const parts = [t('ui.player_campaign_members', { count: sect.member_count })]
+  if (sect.is_owned) {
+    parts.push(t('ui.player_campaign_owned'))
+  }
+  return parts.join(' · ')
+}
+
+function formatOnboardingAvatarMeta(avatar: {
+  realm: string
+  age: number
+  base_battle_strength: number
+  is_current: boolean
+}) {
+  const parts = [
+    avatar.realm,
+    t('ui.player_campaign_age', { age: avatar.age }),
+    t('ui.player_campaign_power', { value: avatar.base_battle_strength }),
+  ]
+  if (avatar.is_current) {
+    parts.push(t('ui.player_campaign_main_avatar_current'))
+  }
+  return parts.join(' · ')
+}
+
+async function claimSectFromOnboarding(sectId: number) {
+  if (!canRunOnboardingAction.value) {
+    return
+  }
+  isSubmittingOnboarding.value = true
+  onboardingError.value = ''
+  try {
+    await worldApi.claimSect({ sect_id: sectId })
+    await systemStore.fetchInitStatus()
+  } catch (error) {
+    logError('SystemMenuOtherTab.claimSectFromOnboarding', error)
+    onboardingError.value = t('ui.player_campaign_claim_failed')
+  } finally {
+    isSubmittingOnboarding.value = false
+  }
+}
+
+async function setMainAvatarFromOnboarding(avatarId: string) {
+  if (!canRunOnboardingAction.value) {
+    return
+  }
+  isSubmittingOnboarding.value = true
+  onboardingError.value = ''
+  try {
+    await avatarApi.setMainAvatar({ avatar_id: avatarId })
+    await systemStore.fetchInitStatus()
+  } catch (error) {
+    logError('SystemMenuOtherTab.setMainAvatarFromOnboarding', error)
+    onboardingError.value = t('ui.player_campaign_main_avatar_failed')
+  } finally {
+    isSubmittingOnboarding.value = false
+  }
 }
 
 async function savePlayerProfile() {
@@ -797,6 +917,83 @@ async function joinPrivateRoomByInvite() {
     isJoiningRoomByInvite.value = false
   }
 }
+
+async function submitRegisterPasswordAccount() {
+  if (!canRegisterPasswordAccount.value) {
+    return
+  }
+  isSubmittingAuth.value = true
+  authError.value = ''
+  try {
+    const result = await systemStore.registerPasswordSession(
+      normalizedPendingAuthEmail.value,
+      normalizedPendingAuthPassword.value,
+      normalizedPendingAuthDisplayName.value || undefined,
+    )
+    if (!result) {
+      authError.value = t('ui.auth_register_failed')
+      return
+    }
+    pendingAuthPassword.value = ''
+    if (normalizedPendingAuthDisplayName.value) {
+      pendingDisplayName.value = normalizedPendingAuthDisplayName.value
+    }
+    socketStore.switchRoom(activeRoomId.value)
+  } catch (error) {
+    logError('SystemMenuOtherTab.submitRegisterPasswordAccount', error)
+    authError.value = t('ui.auth_register_failed')
+  } finally {
+    isSubmittingAuth.value = false
+  }
+}
+
+async function submitLoginPasswordAccount() {
+  if (!canLoginPasswordAccount.value) {
+    return
+  }
+  isSubmittingAuth.value = true
+  authError.value = ''
+  try {
+    const result = await systemStore.loginPasswordSession(
+      normalizedPendingAuthEmail.value,
+      normalizedPendingAuthPassword.value,
+    )
+    if (!result) {
+      authError.value = t('ui.auth_login_failed')
+      return
+    }
+    pendingAuthPassword.value = ''
+    pendingAuthDisplayName.value = ''
+    socketStore.switchRoom(activeRoomId.value)
+  } catch (error) {
+    logError('SystemMenuOtherTab.submitLoginPasswordAccount', error)
+    authError.value = t('ui.auth_login_failed')
+  } finally {
+    isSubmittingAuth.value = false
+  }
+}
+
+async function logoutPasswordAccount() {
+  if (isSubmittingAuth.value) {
+    return
+  }
+  isSubmittingAuth.value = true
+  authError.value = ''
+  try {
+    const ok = await systemStore.logoutSession()
+    if (!ok) {
+      authError.value = t('ui.auth_logout_failed')
+      return
+    }
+    pendingAuthPassword.value = ''
+    socketStore.switchRoom(activeRoomId.value)
+  } catch (error) {
+    logError('SystemMenuOtherTab.logoutPasswordAccount', error)
+    authError.value = t('ui.auth_logout_failed')
+  } finally {
+    isSubmittingAuth.value = false
+  }
+}
 </script>
 
 <template>
@@ -804,6 +1001,109 @@ async function joinPrivateRoomByInvite() {
     <div class="panel-header">
       <h3>{{ t('ui.other_options') }}</h3>
       <p class="description">{{ t('ui.other_options_desc') }}</p>
+    </div>
+
+    <div class="seat-panel">
+      <div class="seat-panel-header">
+        <div class="seat-panel-title-wrap">
+          <div class="btn-icon seat-icon" :style="{ '--icon-url': `url(${logOutIcon})` }" aria-hidden="true"></div>
+          <div>
+            <div class="seat-panel-title">{{ t('ui.auth_title') }}</div>
+            <div class="seat-panel-desc">{{ t('ui.auth_desc') }}</div>
+          </div>
+        </div>
+        <div class="seat-current">
+          {{ isRegisteredAccount ? t('ui.auth_status_registered') : t('ui.auth_status_guest') }}
+        </div>
+      </div>
+
+      <div class="seat-panel-body">
+        <div v-if="isRegisteredAccount" class="seat-unavailable">
+          <div>{{ t('ui.auth_email_label') }}: {{ accountEmail || t('ui.auth_email_missing') }}</div>
+          <button
+            type="button"
+            class="seat-create-btn seat-create-btn--secondary"
+            :disabled="isSubmittingAuth"
+            @click="logoutPasswordAccount"
+            v-sound
+          >
+            {{ t('ui.auth_logout') }}
+          </button>
+        </div>
+
+        <template v-else>
+          <div class="seat-chip-row">
+            <button
+              type="button"
+              class="seat-chip"
+              :class="{ active: authMode === 'register' }"
+              :disabled="isSubmittingAuth"
+              @click="authMode = 'register'"
+              v-sound
+            >
+              {{ t('ui.auth_mode_register') }}
+            </button>
+            <button
+              type="button"
+              class="seat-chip"
+              :class="{ active: authMode === 'login' }"
+              :disabled="isSubmittingAuth"
+              @click="authMode = 'login'"
+              v-sound
+            >
+              {{ t('ui.auth_mode_login') }}
+            </button>
+          </div>
+
+          <div class="seat-create-row seat-create-row--stack">
+            <input
+              v-model="pendingAuthEmail"
+              class="seat-input"
+              type="email"
+              autocomplete="email"
+              :placeholder="t('ui.auth_email_placeholder')"
+            />
+            <input
+              v-model="pendingAuthPassword"
+              class="seat-input"
+              type="password"
+              autocomplete="current-password"
+              :placeholder="t('ui.auth_password_placeholder')"
+              @keydown.enter.prevent="authMode === 'register' ? submitRegisterPasswordAccount() : submitLoginPasswordAccount()"
+            />
+            <input
+              v-if="authMode === 'register'"
+              v-model="pendingAuthDisplayName"
+              class="seat-input"
+              type="text"
+              :placeholder="t('ui.auth_display_name_placeholder')"
+              @keydown.enter.prevent="submitRegisterPasswordAccount"
+            />
+            <button
+              v-if="authMode === 'register'"
+              type="button"
+              class="seat-create-btn"
+              :disabled="!canRegisterPasswordAccount"
+              @click="submitRegisterPasswordAccount"
+              v-sound
+            >
+              {{ t('ui.auth_register_submit') }}
+            </button>
+            <button
+              v-else
+              type="button"
+              class="seat-create-btn"
+              :disabled="!canLoginPasswordAccount"
+              @click="submitLoginPasswordAccount"
+              v-sound
+            >
+              {{ t('ui.auth_login_submit') }}
+            </button>
+          </div>
+          <div class="seat-panel-desc">{{ t('ui.auth_hint_play_now') }}</div>
+          <div v-if="authError" class="seat-error">{{ authError }}</div>
+        </template>
+      </div>
     </div>
 
     <div class="seat-panel">
@@ -859,6 +1159,96 @@ async function joinPrivateRoomByInvite() {
         </div>
 
         <div v-if="profileError" class="seat-error">{{ profileError }}</div>
+      </div>
+
+      <div v-else class="seat-unavailable">{{ t('ui.control_seats_unavailable') }}</div>
+    </div>
+
+    <div class="seat-panel">
+      <div class="seat-panel-header">
+        <div class="seat-panel-title-wrap">
+          <div class="btn-icon seat-icon" :style="{ '--icon-url': `url(${usersIcon})` }" aria-hidden="true"></div>
+          <div>
+            <div class="seat-panel-title">{{ t('ui.player_campaign_title') }}</div>
+            <div class="seat-panel-desc">{{ t('ui.player_campaign_desc') }}</div>
+          </div>
+        </div>
+        <div class="seat-current">{{ onboardingStepLabel(onboardingRecommendedStep) }}</div>
+      </div>
+
+      <div v-if="canManageProfile && onboardingState" class="seat-panel-body">
+        <div class="room-access-summary">
+          <span>
+            {{ t('ui.player_campaign_current_sect') }}
+            {{ onboardingState.owned_sect_name || t('ui.player_campaign_unclaimed') }}
+          </span>
+          <span>
+            {{ t('ui.player_campaign_current_main_avatar') }}
+            {{ onboardingState.main_avatar_name || t('ui.player_campaign_unselected') }}
+          </span>
+          <span>
+            {{ t('ui.player_campaign_intervention_points', {
+              current: onboardingState.intervention_points,
+              max: onboardingState.intervention_points_max,
+            }) }}
+          </span>
+        </div>
+
+        <div v-if="onboardingRecommendedStep === 'claim_sect'" class="player-roster">
+          <div class="player-roster-title">{{ t('ui.player_campaign_claim_title') }}</div>
+          <div v-if="onboardingClaimableSects.length" class="player-roster-list">
+            <div
+              v-for="sect in onboardingClaimableSects"
+              :key="sect.id"
+              class="player-roster-item"
+              :class="{ active: sect.is_owned }"
+            >
+              <div class="player-roster-name">{{ sect.name }}</div>
+              <div class="player-roster-meta">{{ formatOnboardingSectMeta(sect) }}</div>
+              <button
+                type="button"
+                class="seat-create-btn"
+                :disabled="!canRunOnboardingAction || !sect.can_claim"
+                @click="claimSectFromOnboarding(sect.id)"
+                v-sound
+              >
+                {{ sect.is_owned ? t('ui.player_campaign_claimed') : t('ui.player_campaign_claim_action') }}
+              </button>
+            </div>
+          </div>
+          <div v-else class="seat-unavailable">{{ t('ui.player_campaign_claim_empty') }}</div>
+        </div>
+
+        <div v-else-if="onboardingRecommendedStep === 'set_main_avatar'" class="player-roster">
+          <div class="player-roster-title">{{ t('ui.player_campaign_main_avatar_title') }}</div>
+          <div v-if="onboardingMainAvatarCandidates.length" class="player-roster-list">
+            <div
+              v-for="avatar in onboardingMainAvatarCandidates"
+              :key="avatar.id"
+              class="player-roster-item"
+              :class="{ active: avatar.is_current }"
+            >
+              <div class="player-roster-name">{{ avatar.name }}</div>
+              <div class="player-roster-meta">{{ formatOnboardingAvatarMeta(avatar) }}</div>
+              <button
+                type="button"
+                class="seat-create-btn"
+                :disabled="!canRunOnboardingAction || avatar.is_current"
+                @click="setMainAvatarFromOnboarding(avatar.id)"
+                v-sound
+              >
+                {{ avatar.is_current ? t('ui.player_campaign_main_avatar_selected') : t('ui.player_campaign_main_avatar_action') }}
+              </button>
+            </div>
+          </div>
+          <div v-else class="seat-unavailable">{{ t('ui.player_campaign_main_avatar_empty') }}</div>
+        </div>
+
+        <div v-else class="seat-unavailable">
+          {{ t('ui.player_campaign_ready_desc') }}
+        </div>
+
+        <div v-if="onboardingError" class="seat-error">{{ onboardingError }}</div>
       </div>
 
       <div v-else class="seat-unavailable">{{ t('ui.control_seats_unavailable') }}</div>
@@ -1453,6 +1843,10 @@ async function joinPrivateRoomByInvite() {
   gap: 10px;
 }
 
+.seat-create-row--stack {
+  flex-direction: column;
+}
+
 .player-roster {
   display: flex;
   flex-direction: column;
@@ -1569,6 +1963,17 @@ async function joinPrivateRoomByInvite() {
 .seat-create-btn:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.seat-create-btn--secondary {
+  align-self: flex-start;
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #ddd;
+}
+
+.seat-create-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .seat-actions-row {

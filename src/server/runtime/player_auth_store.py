@@ -4,6 +4,8 @@ import os
 import secrets
 import sqlite3
 import threading
+import hashlib
+import hmac
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Protocol
@@ -20,6 +22,41 @@ def _normalize_text(value: str | None) -> str | None:
 
 def _normalize_display_name(value: str | None) -> str:
     return " ".join(str(value or "").split()).strip()
+
+
+def _normalize_email(value: str | None) -> str | None:
+    normalized = str(value or "").strip().lower()
+    return normalized or None
+
+
+def _validate_email(email: str | None) -> str:
+    normalized = _normalize_email(email)
+    if normalized is None or "@" not in normalized or "." not in normalized.split("@")[-1]:
+        raise ValueError("A valid email is required")
+    return normalized
+
+
+def _validate_password(password: str | None) -> str:
+    normalized = str(password or "")
+    if len(normalized) < 8:
+        raise ValueError("Password must be at least 8 characters")
+    return normalized
+
+
+def _hash_password(password: str, *, salt: str | None = None) -> tuple[str, str]:
+    normalized_salt = salt or secrets.token_hex(16)
+    digest = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        normalized_salt.encode("utf-8"),
+        240_000,
+    ).hex()
+    return normalized_salt, digest
+
+
+def _verify_password(password: str, *, salt: str, expected_hash: str) -> bool:
+    _, calculated = _hash_password(password, salt=salt)
+    return hmac.compare_digest(calculated, expected_hash)
 
 
 def _build_viewer_id() -> str:
@@ -47,6 +84,26 @@ class PlayerAuthStoreProtocol(Protocol):
     def delete_session(self, session_id: str | None) -> None: ...
 
     def update_player_display_name(self, viewer_id: str, display_name: str) -> dict[str, Any] | None: ...
+
+    def register_password_account(
+        self,
+        *,
+        existing_session_id: str | None,
+        email: str,
+        password: str,
+        display_name: str | None = None,
+        preferred_viewer_id: str | None = None,
+        user_agent: str | None = None,
+    ) -> dict[str, Any]: ...
+
+    def authenticate_password_account(
+        self,
+        *,
+        existing_session_id: str | None,
+        email: str,
+        password: str,
+        user_agent: str | None = None,
+    ) -> dict[str, Any]: ...
 
     def close(self) -> None: ...
 
@@ -96,6 +153,19 @@ class SQLitePlayerAuthStore:
                 ON auth_sessions(viewer_id)
                 """
             )
+            self._conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS auth_password_accounts (
+                    email TEXT PRIMARY KEY,
+                    viewer_id TEXT NOT NULL UNIQUE,
+                    password_salt TEXT NOT NULL,
+                    password_hash TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY(viewer_id) REFERENCES auth_players(viewer_id) ON DELETE CASCADE
+                )
+                """
+            )
             self._conn.commit()
 
     def _fetch_session_locked(self, session_id: str | None) -> dict[str, Any] | None:
@@ -117,9 +187,11 @@ class SQLitePlayerAuthStore:
                 p.display_name,
                 p.created_at AS player_created_at,
                 p.updated_at AS player_updated_at,
-                p.last_seen_at AS player_last_seen_at
+                p.last_seen_at AS player_last_seen_at,
+                a.email AS account_email
             FROM auth_sessions s
             JOIN auth_players p ON p.viewer_id = s.viewer_id
+            LEFT JOIN auth_password_accounts a ON a.viewer_id = p.viewer_id
             WHERE s.session_id = ?
             """,
             (normalized_session_id,),
@@ -138,6 +210,8 @@ class SQLitePlayerAuthStore:
             "session_updated_at": str(row["session_updated_at"]),
             "session_last_seen_at": str(row["session_last_seen_at"]),
             "user_agent": str(row["user_agent"] or ""),
+            "email": _normalize_email(row["account_email"]),
+            "has_password_account": row["account_email"] is not None,
         }
 
     def _fetch_player_locked(self, viewer_id: str | None) -> dict[str, Any] | None:
@@ -148,9 +222,18 @@ class SQLitePlayerAuthStore:
             return None
         row = self._conn.execute(
             """
-            SELECT viewer_id, auth_type, display_name, created_at, updated_at, last_seen_at
+            SELECT
+                p.viewer_id,
+                p.auth_type,
+                p.display_name,
+                p.created_at,
+                p.updated_at,
+                p.last_seen_at,
+                a.email AS account_email
             FROM auth_players
-            WHERE viewer_id = ?
+            p
+            LEFT JOIN auth_password_accounts a ON a.viewer_id = p.viewer_id
+            WHERE p.viewer_id = ?
             """,
             (normalized_viewer_id,),
         ).fetchone()
@@ -163,6 +246,33 @@ class SQLitePlayerAuthStore:
             "created_at": str(row["created_at"]),
             "updated_at": str(row["updated_at"]),
             "last_seen_at": str(row["last_seen_at"]),
+            "email": _normalize_email(row["account_email"]),
+            "has_password_account": row["account_email"] is not None,
+        }
+
+    def _fetch_password_account_locked(self, email: str | None) -> dict[str, Any] | None:
+        if self._conn is None:
+            return None
+        normalized_email = _normalize_email(email)
+        if normalized_email is None:
+            return None
+        row = self._conn.execute(
+            """
+            SELECT email, viewer_id, password_salt, password_hash, created_at, updated_at
+            FROM auth_password_accounts
+            WHERE email = ?
+            """,
+            (normalized_email,),
+        ).fetchone()
+        if row is None:
+            return None
+        return {
+            "email": str(row["email"]),
+            "viewer_id": str(row["viewer_id"]),
+            "password_salt": str(row["password_salt"]),
+            "password_hash": str(row["password_hash"]),
+            "created_at": str(row["created_at"]),
+            "updated_at": str(row["updated_at"]),
         }
 
     def _viewer_exists_locked(self, viewer_id: str | None) -> bool:
@@ -297,6 +407,143 @@ class SQLitePlayerAuthStore:
             self._conn.commit()
             return self._fetch_player_locked(normalized_viewer_id)
 
+    def register_password_account(
+        self,
+        *,
+        existing_session_id: str | None,
+        email: str,
+        password: str,
+        display_name: str | None = None,
+        preferred_viewer_id: str | None = None,
+        user_agent: str | None = None,
+    ) -> dict[str, Any]:
+        if self._conn is None:
+            raise RuntimeError("Auth store is not initialized")
+        normalized_email = _validate_email(email)
+        normalized_password = _validate_password(password)
+        normalized_display_name = _normalize_display_name(display_name)
+        normalized_user_agent = str(user_agent or "").strip()
+        with self._lock:
+            if self._fetch_password_account_locked(normalized_email) is not None:
+                raise ValueError("Email is already registered")
+
+            existing = self._fetch_session_locked(existing_session_id)
+            if existing is not None and existing.get("has_password_account"):
+                raise ValueError("Current session is already registered")
+
+            now = _utc_now_iso()
+            password_salt, password_hash = _hash_password(normalized_password)
+            if existing is not None:
+                viewer_id = existing["viewer_id"]
+                session_id = existing["session_id"]
+                effective_display_name = normalized_display_name or str(existing.get("display_name") or "")
+                self._conn.execute(
+                    """
+                    UPDATE auth_players
+                    SET auth_type = ?, display_name = ?, updated_at = ?, last_seen_at = ?
+                    WHERE viewer_id = ?
+                    """,
+                    ("password", effective_display_name, now, now, viewer_id),
+                )
+                self._conn.execute(
+                    """
+                    INSERT INTO auth_password_accounts (email, viewer_id, password_salt, password_hash, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (normalized_email, viewer_id, password_salt, password_hash, now, now),
+                )
+                self._touch_session_locked(session_id, viewer_id)
+                self._conn.commit()
+                payload = self._fetch_session_locked(session_id)
+                if payload is None:
+                    raise RuntimeError("Failed to load updated registered session")
+                payload["is_new_session"] = False
+                payload["is_new_player"] = False
+                return payload
+
+            viewer_id = self._choose_viewer_id_locked(preferred_viewer_id)
+            session_id = self._choose_session_id_locked()
+            effective_display_name = normalized_display_name or normalized_email.split("@", 1)[0]
+            self._conn.execute(
+                """
+                INSERT INTO auth_players (viewer_id, auth_type, display_name, created_at, updated_at, last_seen_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (viewer_id, "password", effective_display_name, now, now, now),
+            )
+            self._conn.execute(
+                """
+                INSERT INTO auth_password_accounts (email, viewer_id, password_salt, password_hash, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (normalized_email, viewer_id, password_salt, password_hash, now, now),
+            )
+            self._conn.execute(
+                """
+                INSERT INTO auth_sessions (session_id, viewer_id, user_agent, created_at, updated_at, last_seen_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (session_id, viewer_id, normalized_user_agent, now, now, now),
+            )
+            self._conn.commit()
+            payload = self._fetch_session_locked(session_id)
+            if payload is None:
+                raise RuntimeError("Failed to load registered session")
+            payload["is_new_session"] = True
+            payload["is_new_player"] = True
+            return payload
+
+    def authenticate_password_account(
+        self,
+        *,
+        existing_session_id: str | None,
+        email: str,
+        password: str,
+        user_agent: str | None = None,
+    ) -> dict[str, Any]:
+        if self._conn is None:
+            raise RuntimeError("Auth store is not initialized")
+        normalized_email = _validate_email(email)
+        normalized_password = _validate_password(password)
+        normalized_user_agent = str(user_agent or "").strip()
+        with self._lock:
+            account = self._fetch_password_account_locked(normalized_email)
+            if account is None or not _verify_password(
+                normalized_password,
+                salt=account["password_salt"],
+                expected_hash=account["password_hash"],
+            ):
+                raise ValueError("Invalid email or password")
+
+            existing = self._fetch_session_locked(existing_session_id)
+            if existing is not None and existing["viewer_id"] == account["viewer_id"]:
+                self._touch_session_locked(existing["session_id"], existing["viewer_id"])
+                payload = self._fetch_session_locked(existing["session_id"]) or existing
+                payload["is_new_session"] = False
+                payload["is_new_player"] = False
+                return payload
+
+            if existing is not None:
+                self._conn.execute("DELETE FROM auth_sessions WHERE session_id = ?", (existing["session_id"],))
+
+            session_id = self._choose_session_id_locked()
+            now = _utc_now_iso()
+            self._conn.execute(
+                """
+                INSERT INTO auth_sessions (session_id, viewer_id, user_agent, created_at, updated_at, last_seen_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (session_id, account["viewer_id"], normalized_user_agent, now, now, now),
+            )
+            self._touch_session_locked(session_id, account["viewer_id"])
+            self._conn.commit()
+            payload = self._fetch_session_locked(session_id)
+            if payload is None:
+                raise RuntimeError("Failed to load authenticated session")
+            payload["is_new_session"] = True
+            payload["is_new_player"] = False
+            return payload
+
     def close(self) -> None:
         with self._lock:
             if self._conn is not None:
@@ -306,6 +553,8 @@ class SQLitePlayerAuthStore:
 
 class PostgresPlayerAuthStore:
     """PostgreSQL-backed auth/session store for online deployments."""
+
+    _SCHEMA_LOCK_KEY = "cws_player_auth_store_schema"
 
     def __init__(self, *, database_url: str) -> None:
         self._database_url = str(database_url or "").strip()
@@ -328,35 +577,57 @@ class PostgresPlayerAuthStore:
             self._conn = self._psycopg.connect(self._database_url)
             with self._conn.cursor() as cursor:
                 cursor.execute(
-                    """
-                    CREATE TABLE IF NOT EXISTS auth_players (
-                        viewer_id TEXT PRIMARY KEY,
-                        auth_type TEXT NOT NULL,
-                        display_name TEXT NOT NULL,
-                        created_at TIMESTAMPTZ NOT NULL,
-                        updated_at TIMESTAMPTZ NOT NULL,
-                        last_seen_at TIMESTAMPTZ NOT NULL
+                    "SELECT pg_advisory_lock(hashtext(%s))",
+                    (self._SCHEMA_LOCK_KEY,),
+                )
+                try:
+                    cursor.execute(
+                        """
+                        CREATE TABLE IF NOT EXISTS auth_players (
+                            viewer_id TEXT PRIMARY KEY,
+                            auth_type TEXT NOT NULL,
+                            display_name TEXT NOT NULL,
+                            created_at TIMESTAMPTZ NOT NULL,
+                            updated_at TIMESTAMPTZ NOT NULL,
+                            last_seen_at TIMESTAMPTZ NOT NULL
+                        )
+                        """
                     )
-                    """
-                )
-                cursor.execute(
-                    """
-                    CREATE TABLE IF NOT EXISTS auth_sessions (
-                        session_id TEXT PRIMARY KEY,
-                        viewer_id TEXT NOT NULL REFERENCES auth_players(viewer_id) ON DELETE CASCADE,
-                        user_agent TEXT NOT NULL,
-                        created_at TIMESTAMPTZ NOT NULL,
-                        updated_at TIMESTAMPTZ NOT NULL,
-                        last_seen_at TIMESTAMPTZ NOT NULL
+                    cursor.execute(
+                        """
+                        CREATE TABLE IF NOT EXISTS auth_sessions (
+                            session_id TEXT PRIMARY KEY,
+                            viewer_id TEXT NOT NULL REFERENCES auth_players(viewer_id) ON DELETE CASCADE,
+                            user_agent TEXT NOT NULL,
+                            created_at TIMESTAMPTZ NOT NULL,
+                            updated_at TIMESTAMPTZ NOT NULL,
+                            last_seen_at TIMESTAMPTZ NOT NULL
+                        )
+                        """
                     )
-                    """
-                )
-                cursor.execute(
-                    """
-                    CREATE INDEX IF NOT EXISTS idx_auth_sessions_viewer_id
-                    ON auth_sessions(viewer_id)
-                    """
-                )
+                    cursor.execute(
+                        """
+                        CREATE INDEX IF NOT EXISTS idx_auth_sessions_viewer_id
+                        ON auth_sessions(viewer_id)
+                        """
+                    )
+                    cursor.execute(
+                        """
+                        CREATE TABLE IF NOT EXISTS auth_password_accounts (
+                            email TEXT PRIMARY KEY,
+                            viewer_id TEXT NOT NULL UNIQUE REFERENCES auth_players(viewer_id) ON DELETE CASCADE,
+                            password_salt TEXT NOT NULL,
+                            password_hash TEXT NOT NULL,
+                            created_at TIMESTAMPTZ NOT NULL,
+                            updated_at TIMESTAMPTZ NOT NULL
+                        )
+                        """
+                    )
+                finally:
+                    cursor.execute(
+                        "SELECT pg_advisory_unlock(hashtext(%s))",
+                        (self._SCHEMA_LOCK_KEY,),
+                    )
             self._conn.commit()
 
     def _fetch_session_locked(self, session_id: str | None) -> dict[str, Any] | None:
@@ -379,9 +650,11 @@ class PostgresPlayerAuthStore:
                     p.display_name,
                     p.created_at AS player_created_at,
                     p.updated_at AS player_updated_at,
-                    p.last_seen_at AS player_last_seen_at
+                    p.last_seen_at AS player_last_seen_at,
+                    a.email AS account_email
                 FROM auth_sessions s
                 JOIN auth_players p ON p.viewer_id = s.viewer_id
+                LEFT JOIN auth_password_accounts a ON a.viewer_id = p.viewer_id
                 WHERE s.session_id = %s
                 """,
                 (normalized_session_id,),
@@ -401,6 +674,8 @@ class PostgresPlayerAuthStore:
             "created_at": str(row[8]),
             "updated_at": str(row[9]),
             "last_seen_at": str(row[10]),
+            "email": _normalize_email(row[11]),
+            "has_password_account": row[11] is not None,
         }
 
     def _fetch_player_locked(self, viewer_id: str | None) -> dict[str, Any] | None:
@@ -412,9 +687,17 @@ class PostgresPlayerAuthStore:
         with self._conn.cursor() as cursor:
             cursor.execute(
                 """
-                SELECT viewer_id, auth_type, display_name, created_at, updated_at, last_seen_at
-                FROM auth_players
-                WHERE viewer_id = %s
+                SELECT
+                    p.viewer_id,
+                    p.auth_type,
+                    p.display_name,
+                    p.created_at,
+                    p.updated_at,
+                    p.last_seen_at,
+                    a.email AS account_email
+                FROM auth_players p
+                LEFT JOIN auth_password_accounts a ON a.viewer_id = p.viewer_id
+                WHERE p.viewer_id = %s
                 """,
                 (normalized_viewer_id,),
             )
@@ -428,6 +711,35 @@ class PostgresPlayerAuthStore:
             "created_at": str(row[3]),
             "updated_at": str(row[4]),
             "last_seen_at": str(row[5]),
+            "email": _normalize_email(row[6]),
+            "has_password_account": row[6] is not None,
+        }
+
+    def _fetch_password_account_locked(self, email: str | None) -> dict[str, Any] | None:
+        if self._conn is None:
+            return None
+        normalized_email = _normalize_email(email)
+        if normalized_email is None:
+            return None
+        with self._conn.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT email, viewer_id, password_salt, password_hash, created_at, updated_at
+                FROM auth_password_accounts
+                WHERE email = %s
+                """,
+                (normalized_email,),
+            )
+            row = cursor.fetchone()
+        if row is None:
+            return None
+        return {
+            "email": str(row[0]),
+            "viewer_id": str(row[1]),
+            "password_salt": str(row[2]),
+            "password_hash": str(row[3]),
+            "created_at": str(row[4]),
+            "updated_at": str(row[5]),
         }
 
     def _viewer_exists_locked(self, viewer_id: str | None) -> bool:
@@ -565,6 +877,147 @@ class PostgresPlayerAuthStore:
                 )
             self._conn.commit()
             return self._fetch_player_locked(normalized_viewer_id)
+
+    def register_password_account(
+        self,
+        *,
+        existing_session_id: str | None,
+        email: str,
+        password: str,
+        display_name: str | None = None,
+        preferred_viewer_id: str | None = None,
+        user_agent: str | None = None,
+    ) -> dict[str, Any]:
+        if self._conn is None:
+            raise RuntimeError("Auth store is not initialized")
+        normalized_email = _validate_email(email)
+        normalized_password = _validate_password(password)
+        normalized_display_name = _normalize_display_name(display_name)
+        normalized_user_agent = str(user_agent or "").strip()
+        with self._lock:
+            if self._fetch_password_account_locked(normalized_email) is not None:
+                raise ValueError("Email is already registered")
+
+            existing = self._fetch_session_locked(existing_session_id)
+            if existing is not None and existing.get("has_password_account"):
+                raise ValueError("Current session is already registered")
+
+            now = _utc_now_iso()
+            password_salt, password_hash = _hash_password(normalized_password)
+            if existing is not None:
+                viewer_id = existing["viewer_id"]
+                session_id = existing["session_id"]
+                effective_display_name = normalized_display_name or str(existing.get("display_name") or "")
+                with self._conn.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        UPDATE auth_players
+                        SET auth_type = %s, display_name = %s, updated_at = %s, last_seen_at = %s
+                        WHERE viewer_id = %s
+                        """,
+                        ("password", effective_display_name, now, now, viewer_id),
+                    )
+                    cursor.execute(
+                        """
+                        INSERT INTO auth_password_accounts (email, viewer_id, password_salt, password_hash, created_at, updated_at)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        """,
+                        (normalized_email, viewer_id, password_salt, password_hash, now, now),
+                    )
+                self._touch_session_locked(session_id, viewer_id)
+                self._conn.commit()
+                payload = self._fetch_session_locked(session_id)
+                if payload is None:
+                    raise RuntimeError("Failed to load updated registered session")
+                payload["is_new_session"] = False
+                payload["is_new_player"] = False
+                return payload
+
+            viewer_id = self._choose_viewer_id_locked(preferred_viewer_id)
+            session_id = self._choose_session_id_locked()
+            effective_display_name = normalized_display_name or normalized_email.split("@", 1)[0]
+            with self._conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO auth_players (viewer_id, auth_type, display_name, created_at, updated_at, last_seen_at)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (viewer_id, "password", effective_display_name, now, now, now),
+                )
+                cursor.execute(
+                    """
+                    INSERT INTO auth_password_accounts (email, viewer_id, password_salt, password_hash, created_at, updated_at)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (normalized_email, viewer_id, password_salt, password_hash, now, now),
+                )
+                cursor.execute(
+                    """
+                    INSERT INTO auth_sessions (session_id, viewer_id, user_agent, created_at, updated_at, last_seen_at)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (session_id, viewer_id, normalized_user_agent, now, now, now),
+                )
+            self._conn.commit()
+            payload = self._fetch_session_locked(session_id)
+            if payload is None:
+                raise RuntimeError("Failed to load registered session")
+            payload["is_new_session"] = True
+            payload["is_new_player"] = True
+            return payload
+
+    def authenticate_password_account(
+        self,
+        *,
+        existing_session_id: str | None,
+        email: str,
+        password: str,
+        user_agent: str | None = None,
+    ) -> dict[str, Any]:
+        if self._conn is None:
+            raise RuntimeError("Auth store is not initialized")
+        normalized_email = _validate_email(email)
+        normalized_password = _validate_password(password)
+        normalized_user_agent = str(user_agent or "").strip()
+        with self._lock:
+            account = self._fetch_password_account_locked(normalized_email)
+            if account is None or not _verify_password(
+                normalized_password,
+                salt=account["password_salt"],
+                expected_hash=account["password_hash"],
+            ):
+                raise ValueError("Invalid email or password")
+
+            existing = self._fetch_session_locked(existing_session_id)
+            if existing is not None and existing["viewer_id"] == account["viewer_id"]:
+                self._touch_session_locked(existing["session_id"], existing["viewer_id"])
+                payload = self._fetch_session_locked(existing["session_id"]) or existing
+                payload["is_new_session"] = False
+                payload["is_new_player"] = False
+                return payload
+
+            if existing is not None:
+                with self._conn.cursor() as cursor:
+                    cursor.execute("DELETE FROM auth_sessions WHERE session_id = %s", (existing["session_id"],))
+
+            session_id = self._choose_session_id_locked()
+            now = _utc_now_iso()
+            with self._conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO auth_sessions (session_id, viewer_id, user_agent, created_at, updated_at, last_seen_at)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (session_id, account["viewer_id"], normalized_user_agent, now, now, now),
+                )
+            self._touch_session_locked(session_id, account["viewer_id"])
+            self._conn.commit()
+            payload = self._fetch_session_locked(session_id)
+            if payload is None:
+                raise RuntimeError("Failed to load authenticated session")
+            payload["is_new_session"] = True
+            payload["is_new_player"] = False
+            return payload
 
     def close(self) -> None:
         with self._lock:

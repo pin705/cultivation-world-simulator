@@ -127,6 +127,67 @@ def test_v1_guest_auth_bootstrap_sets_cookie_and_returns_session(tmp_path):
         main.player_auth_store = original_store
 
 
+def test_v1_auth_register_creates_password_session(tmp_path):
+    original_store = main.player_auth_store
+    main.player_auth_store = PlayerAuthStore(db_path=tmp_path / "player_auth.sqlite3")
+    try:
+        client = TestClient(main.app)
+        response = client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": "pilot@example.com",
+                "password": "Password123",
+                "display_name": "Pilot",
+                "preferred_viewer_id": "viewer_pilot",
+            },
+        )
+
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["ok"] is True
+        assert payload["data"]["session"]["viewer_id"] == "viewer_pilot"
+        assert payload["data"]["session"]["auth_type"] == "password"
+        assert payload["data"]["session"]["email"] == "pilot@example.com"
+    finally:
+        main.player_auth_store.close()
+        main.player_auth_store = original_store
+
+
+def test_v1_auth_login_reuses_registered_viewer_identity(tmp_path):
+    original_store = main.player_auth_store
+    main.player_auth_store = PlayerAuthStore(db_path=tmp_path / "player_auth.sqlite3")
+    try:
+        client = TestClient(main.app)
+        register_response = client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": "pilot@example.com",
+                "password": "Password123",
+                "display_name": "Pilot",
+                "preferred_viewer_id": "viewer_pilot",
+            },
+        )
+        assert register_response.status_code == 200
+
+        client.post("/api/v1/auth/session/logout")
+
+        login_response = client.post(
+            "/api/v1/auth/login",
+            json={
+                "email": "pilot@example.com",
+                "password": "Password123",
+            },
+        )
+        assert login_response.status_code == 200
+        payload = login_response.json()
+        assert payload["ok"] is True
+        assert payload["data"]["session"]["viewer_id"] == "viewer_pilot"
+        assert payload["data"]["session"]["auth_type"] == "password"
+    finally:
+        main.player_auth_store.close()
+        main.player_auth_store = original_store
+
+
 def test_v1_world_room_switch_uses_cookie_session_when_viewer_id_missing(tmp_path):
     original = _reset_state()
     original_store = main.player_auth_store
