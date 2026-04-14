@@ -132,6 +132,7 @@ def configure_routes_and_mounts(
     build_saves,
     build_detail,
     build_deceased_list,
+    build_recap,  # NEW: recap query builder
     create_public_command_router,
     resolve_viewer_id,
     run_start_game,
@@ -177,6 +178,8 @@ def configure_routes_and_mounts(
     run_save_game,
     run_delete_save,
     run_load_game,
+    run_acknowledge_recap,  # NEW: recap acknowledgment
+    run_spend_action_point,  # NEW: action point spending
     assets_path: str,
     web_dist_path: str,
     is_dev_mode: bool,
@@ -237,6 +240,7 @@ def configure_routes_and_mounts(
             build_saves=build_saves,
             build_detail=build_detail,
             build_deceased_list=build_deceased_list,
+            build_recap=build_recap,  # NEW: recap query
             resolve_viewer_id=resolve_viewer_id,
         )
     )
@@ -286,6 +290,8 @@ def configure_routes_and_mounts(
             run_save_game=run_save_game,
             run_delete_save=run_delete_save,
             run_load_game=run_load_game,
+            run_acknowledge_recap=run_acknowledge_recap,  # NEW: recap acknowledgment
+            run_spend_action_point=run_spend_action_point,  # NEW: action point spending
             resolve_viewer_id=resolve_viewer_id,
         )
     )

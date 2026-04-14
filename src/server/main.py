@@ -79,6 +79,8 @@ from src.server.services.game_queries import (
     get_world_state,
 )
 from src.server.services.event_control import cleanup_events as cleanup_events_command
+from src.server.recap_query import build_recap_query
+from src.server.recap_commands import handle_acknowledge_recap, handle_spend_action_point
 from src.server.api.public_v1 import (
     create_public_auth_router,
     create_public_command_router,
@@ -596,6 +598,52 @@ def test_llm_connection(req) -> dict:
 handle_llm_updated = create_llm_updated_handler(runtime=room_registry, manager=manager)
 
 
+# ==============================================================================
+# Recap query and command wrappers (for online business recap-first gameplay loop)
+# ==============================================================================
+
+def build_public_recap(viewer_id: str) -> dict:
+    """Build recap query response for the given viewer."""
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    
+    world = runtime["world"]
+    return build_recap_query(world, viewer_id)
+
+
+async def run_acknowledge_recap(req) -> dict:
+    """Handle recap acknowledgment and refresh action points."""
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    
+    world = runtime["world"]
+    viewer_id = getattr(req, "viewer_id", None)
+    if not viewer_id:
+        return {"error": "viewer_id is required"}
+    
+    return handle_acknowledge_recap(world, viewer_id)
+
+
+async def run_spend_action_point(req) -> dict:
+    """Handle spending one action point."""
+    runtime = room_registry.get_runtime()
+    if not runtime or not runtime.get("world"):
+        return {"error": "Game not started"}
+    
+    world = runtime["world"]
+    viewer_id = getattr(req, "viewer_id", None)
+    if not viewer_id:
+        return {"error": "viewer_id is required"}
+    
+    try:
+        return handle_spend_action_point(world, viewer_id)
+    except ValueError as e:
+        return {"error": str(e)}
+
+
+
 def resolve_request_viewer_id(request, explicit_viewer_id: str | None = None) -> str | None:
     return resolve_viewer_id_from_request(
         request=request,
@@ -647,6 +695,7 @@ configure_routes_and_mounts(
     build_saves=build_public_saves,
     build_detail=build_public_detail,
     build_deceased_list=build_public_deceased_list,
+    build_recap=build_public_recap,  # NEW: recap query
     create_public_command_router=create_public_command_router,
     resolve_viewer_id=resolve_request_viewer_id,
     run_start_game=run_start_game,
@@ -692,6 +741,8 @@ configure_routes_and_mounts(
     run_save_game=run_save_game,
     run_delete_save=run_delete_save,
     run_load_game=run_load_game,
+    run_acknowledge_recap=run_acknowledge_recap,  # NEW: recap acknowledgment
+    run_spend_action_point=run_spend_action_point,  # NEW: action point spending
     assets_path=ASSETS_PATH,
     web_dist_path=WEB_DIST_PATH,
     is_dev_mode=IS_DEV_MODE,
