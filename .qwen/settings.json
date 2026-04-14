@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(python3 *)",
+      "Bash(ls *)",
+      "Bash(which *)",
+      "Bash(command *)",
+      "Bash(echo *)",
+      "Bash(uv *)",
+      "Bash(npm view *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)"
+    ]
+  },
+  "$version": 3
+}
